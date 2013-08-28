@@ -12,4 +12,8 @@ public class TransactionManager {
 	public void handleRequest(Request request) {
 
 	}
+
+	public boolean isInTransaction(String player) {
+		return transactions.containsKey(player.toLowerCase());
+	}
 }

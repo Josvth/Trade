@@ -2,9 +2,12 @@ package me.josvth.trade.transaction.inventory;
 
 import me.josvth.trade.transaction.Transaction;
 
+import me.josvth.trade.transaction.TransactionStage;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+
+import static me.josvth.trade.transaction.TransactionStage.*;
 
 public class TransactionHolder implements InventoryHolder {
 
@@ -44,10 +47,10 @@ public class TransactionHolder implements InventoryHolder {
 	@Override
 	public Inventory getInventory() {
 		switch (transaction.getStage()) {
-			case TransactionStage.PRE:
-			case TransactionStage.IN_PROGRESS:
+			case PRE:
+			case IN_PROGRESS:
 				return getTransactionInventory();
-			case TransactionStage.POST:
+			case POST:
 				return getConfirmInventory();
 		}
 		return null;

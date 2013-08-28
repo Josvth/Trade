@@ -8,11 +8,14 @@ public class Request {
 	private final String requester;
 	private final String requested;
 
+	private final RequestMethod method;
+
 	private long submitDate = -1;
 
-	public Request(String requester, String requested) {
+	public Request(String requester, String requested, RequestMethod method) {
 		this.requester = requester;
 		this.requested = requested;
+		this.method = method;
 	}
 
 	public String getRequester() {
@@ -29,6 +32,10 @@ public class Request {
 
 	public Player getRequestedPlayer() {
 		return Bukkit.getPlayerExact(requested);
+	}
+
+	public RequestMethod getMethod() {
+		return method;
 	}
 
 	public long getSubmitDate() {
