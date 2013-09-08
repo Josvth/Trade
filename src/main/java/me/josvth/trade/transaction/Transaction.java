@@ -1,62 +1,81 @@
 package me.josvth.trade.transaction;
 
-import me.josvth.trade.goods.Tradeable;
+import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.inventory.TransactionLayout;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Transaction {
 
-	private final String playerA;
-	private final String playerB;
+	private final TransactionManager manager;
 
-	private TransactionLayout transactionLayout = null;
+	private TransactionLayout layout = null;
 
-	private List<Tradeable> itemsA = new ArrayList<Tradeable>();
-	private List<Tradeable> itemsB = new ArrayList<Tradeable>();
+	private final Trader traderA;
+	private final Trader traderB;
 
 	private TransactionStage stage = TransactionStage.PRE;
 
-	public Transaction(String playerA, String playerB) {
-		this.playerA = playerA;
-		this.playerB = playerB;
+	public Transaction(TransactionManager manager, String playerA, String playerB) {
+		this.manager = manager;
+
+		traderA = new Trader(this, playerA, layout.getOfferSize());
+		traderB = new Trader(this, playerB, layout.getOfferSize());
+
+		traderA.setOther(traderB);
+		traderB.setOther(traderA);
+
 	}
 
-	public TransactionLayout getTransactionLayout() {
-		return transactionLayout;
+	public Trade getPlugin() {
+		return manager.getPlugin();
 	}
 
-	public Player getPlayer(String playerName) {
-		Player player = null;
-		if (playerA.equals(playerName))
-			player = Bukkit.getPlayer(playerName);
-		if (playerB.equals(playerName))
-			player = Bukkit.getPlayer(playerName);
-		if (player == null)
-			throw new IllegalArgumentException("Player " + playerName + " is not participating in this trade or went offline.");
-		return player;
+	public Trader getTraderA() {
+		return traderA;
 	}
 
-	public String getOther(String playerName) {
-		if (playerA.equals(playerName))
-			return playerB;
-		if (playerB.equals(playerName))
-			return playerA;
-		throw new IllegalArgumentException("Player " + playerName + " is not participating in this trade.");
+	public Trader getTraderB() {
+		return traderB;
 	}
 
-	public Player getOtherPlayer(String playerName) {
-		if (playerA.equals(playerName))
-			return getPlayer(playerB);
-		if (playerB.equals(playerName))
-			return getPlayer(playerA);
-		throw new IllegalArgumentException("Player " + playerName + " is not participating in this trade.");
+	public Trader getTrader(String playerName) {
+		if (traderA.getName().equals(playerName))
+			return traderA;
+		if (traderB.getName().equals(playerName))
+			return traderB;
+		throw new IllegalArgumentException("Player " + playerName + " is not participating in this trade or went offline.");
+	}
+
+	public TransactionLayout getLayout() {
+		return layout;
+	}
+
+	public void setLayout(TransactionLayout layout) {
+		this.layout = layout;
 	}
 
 	public TransactionStage getStage() {
 		return stage;
 	}
+
+	public boolean isStarted() {
+		return stage == TransactionStage.IN_PROGRESS;
+	}
+
+	public void start() {
+
+		if (isStarted()) throw new IllegalArgumentException("Cannot start an already started transaction");
+
+		if (layout == null) throw new IllegalStateException("Cannot start transaction without an layout.");
+
+
+	}
+
+	public void stop() {
+
+	}
+
+	public void cancel() {
+
+	}
+
 }

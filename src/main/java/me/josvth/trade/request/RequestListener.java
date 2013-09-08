@@ -3,8 +3,10 @@ package me.josvth.trade.request;
 import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.bukkitformatlibrary.managers.FormatManager;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class RequestListener implements Listener {
@@ -18,7 +20,7 @@ public class RequestListener implements Listener {
 	}
 
 	@EventHandler
-	public void onInteract(PlayerInteractEntityEvent event) {
+	public void onRightClick(PlayerInteractEntityEvent event) {
 
 		if (!(event.getRightClicked() instanceof Player)) return;
 
@@ -31,6 +33,31 @@ public class RequestListener implements Listener {
 			method = RequestMethod.SHIFT_RIGHT_CLICK;
 		else
 			method = RequestMethod.RIGHT_CLICK;
+
+		handleEvent(event, requester, requested, method);
+
+	}
+
+	@EventHandler
+	public void onLeftClick(EntityDamageByEntityEvent event) {
+
+		if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof Player)) return;
+
+		Player requester = (Player) event.getDamager();
+		Player requested = (Player) event.getEntity();
+
+		RequestMethod method;
+
+		if (requester.isSneaking())
+			method = RequestMethod.SHIFT_LEFT_CLICK;
+		else
+			method = RequestMethod.LEFT_CLICK;
+
+		handleEvent(event, requester, requested, method);
+
+	}
+
+	private void handleEvent(Cancellable event, Player requester, Player requested, RequestMethod method) {
 
 		// First we check if the requester his answering a request
 		Request request = requestManager.getRequest(requester.getName(), requested.getName());
@@ -70,5 +97,6 @@ public class RequestListener implements Listener {
 				formatManager.create("personal", restriction.requestMessagePath).send(requester, "%player%", requested.getName());
 
 		}
+
 	}
 }
