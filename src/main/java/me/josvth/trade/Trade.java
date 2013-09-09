@@ -3,7 +3,8 @@ package me.josvth.trade;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.TransactionLayout;
-import me.josvth.trade.transaction.inventory.slot.SlotInfo;
+import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
+import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.inventory.slot.TradeSlot;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -18,7 +19,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Trade extends JavaPlugin implements Listener {
 
@@ -37,14 +37,19 @@ public class Trade extends JavaPlugin implements Listener {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-		List<SlotInfo> slots = new ArrayList<SlotInfo>();
+		Slot[] slots = new Slot[9];
 
-		slots.add(SlotInfo.create(TradeSlot.class, 0));
-		slots.add(SlotInfo.create(TradeSlot.class, 1));
-		slots.add(SlotInfo.create(TradeSlot.class, 2));
-		slots.add(SlotInfo.create(TradeSlot.class, 3));
+		slots[0] = new TradeSlot(0,0);
+		slots[1] = new TradeSlot(1,1);
+		slots[2] = new TradeSlot(2,2);
+		slots[3] = new TradeSlot(3,3);
 
-		TransactionHolder holder = new TransactionHolder(new Trader(null, sender.getName()), new TransactionLayout(1, slots));
+		slots[5] = new MirrorSlot(5,0);
+		slots[6] = new MirrorSlot(6,1);
+		slots[7] = new MirrorSlot(7,2);
+		slots[8] = new MirrorSlot(8,3);
+
+		TransactionHolder holder = new TransactionHolder(this, new Trader(null, sender.getName(), 4), 9, "This is a title.", slots);
 
 		((Player)sender).openInventory(holder.getInventory());
 

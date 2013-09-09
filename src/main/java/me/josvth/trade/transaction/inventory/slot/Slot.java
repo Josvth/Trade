@@ -6,31 +6,22 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public abstract class Slot {
+import java.util.Set;
 
-	protected final TransactionHolder holder;
+public abstract class Slot {
 
 	protected final int slot;
 
-	public Slot(TransactionHolder holder, int slot) {
-		this.holder = holder;
+	public Slot(int slot) {
 		this.slot = slot;
 	}
 
-	public TransactionHolder getHolder() {
-		return holder;
+	protected void setSlot(TransactionHolder holder, ItemStack stack) {
+		holder.getInventory().setItem(slot, stack);
 	}
 
-	public Inventory getInventory() {
-		return holder.getInventory();
-	}
-
-	public void setInventoryItem(ItemStack item) {
-		getInventory().setItem(slot, item);
-	}
-
-	public ItemStack getInventoryItem() {
-		return getInventory().getItem(slot);
+	protected ItemStack getSlot(TransactionHolder holder) {
+		return holder.getInventory().getItem(slot);
 	}
 
 	// Event handling
@@ -42,7 +33,7 @@ public abstract class Slot {
 		return false;
 	}
 
-	public void update() {
+	public void update(TransactionHolder holder) {
 
 	}
 

@@ -8,19 +8,19 @@ public class MoneyTradeable extends Tradeable {
 		super(TradeableType.MONEY);
 	}
 
+
 	@Override
-	public Tradeable add(Tradeable tradeable) {
+	public <T extends Tradeable> T add(T tradeable) {
 		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	@Override
-	public ItemStack getItem() {
+	public ItemStack getDisplayItem() {
 		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	@Override
-	public boolean isEmpty() {
+	public boolean isWorthless() {
 		return false;  //To change body of implemented methods use File | Settings | File Templates.
 	}
-
 }

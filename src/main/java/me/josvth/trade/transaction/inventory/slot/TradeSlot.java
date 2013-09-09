@@ -7,51 +7,52 @@ import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class TradeSlot extends Slot {
 
 	private final int tradeSlot;
 
-	private final OfferList offerList;
-
-	private Tradeable tradeable;
-
-	public TradeSlot(TransactionHolder holder, int slot, int tradeSlot) {
-		super(holder, slot);
+	public TradeSlot(int slot, int tradeSlot) {
+		super(slot);
 		this.tradeSlot = tradeSlot;
-		this.offerList = holder.getTrader().getOffers();
-	}
-
-	public Tradeable getTradeable() {
-		return tradeable;
-	}
-
-	public void setTradeable(Tradeable tradeable) {
-		this.tradeable = tradeable;
-		this.offerList.set(tradeSlot, tradeable);
-	}
-
-	public boolean isEmpty() {
-		return tradeable == null;
 	}
 
 	// Event handling
 	@Override
 	public boolean onClick(InventoryClickEvent event) {
 
-		InventoryAction action = event.getAction();
+		TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
+		Tradeable tradeable = holder.getOffers().get(tradeSlot);
+
+		// If we have a tradeable on this slot we let the tradeable handle the event
 		if (tradeable == null) {
 
-			if (InventoryAction.PLACE_ALL == action)
-				setTradeable(new ItemTradeable(event.getCursor())); // TODO Clone item here?
+			ItemStack newItem = null;
+
+			switch (event.getAction()) {
+				case PLACE_ALL:
+					newItem = event.getCursor().clone();
+					break;
+				case PLACE_SOME:
+					throw new IllegalStateException("PLACE_SOME");
+				case PLACE_ONE:
+					newItem = event.getCursor().clone();
+					newItem.setAmount(1);
+					break;
+				case UNKNOWN:
+					throw new IllegalStateException("UNKNOWN");
+			}
+
+			holder.getOffers().set(tradeSlot, new ItemTradeable(newItem));
 
 		} else {
 
 			tradeable.onClick(event);
 
 			if (tradeable.isWorthless())
-				setTradeable(null);
+				holder.getOffers().set(tradeSlot, null);
 
 		}
 
@@ -65,12 +66,11 @@ public class TradeSlot extends Slot {
 	}
 
 	@Override
-	public void update() {
-
-		tradeable = offerList.get(tradeSlot);
+	public void update(TransactionHolder holder) {
+		Tradeable tradeable = holder.getOffers().get(tradeSlot);
 
 		if (tradeable != null)
-			setInventoryItem(tradeable.getDisplayItem());
-
+			holder.getInventory().setItem(slot, tradeable.getDisplayItem());
 	}
+
 }

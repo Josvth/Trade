@@ -7,21 +7,17 @@ import me.josvth.trade.transaction.inventory.TransactionHolder;
 public class MirrorSlot extends Slot {
 
 	private final int mirrorSlot;
-	private final OfferList offerList;
 
-	public MirrorSlot(TransactionHolder holder, int slot, int mirrorSlot) {
-   		super(holder, slot);
+	public MirrorSlot(int slot, int mirrorSlot) {
+   		super(slot);
 		this.mirrorSlot = mirrorSlot;
-		this.offerList = holder.getTrader().getOther().getOffers();
 	}
 
 	@Override
-	public void update() {
-
-		Tradeable tradeable = offerList.get(mirrorSlot);
+	public void update(TransactionHolder holder) {
+		Tradeable tradeable = holder.getOffers().get(mirrorSlot);
 
 		if (tradeable != null)
-			setInventoryItem(tradeable.getDisplayItem());
-
+			holder.getInventory().setItem(slot, tradeable.getDisplayItem());
 	}
 }
