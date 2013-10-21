@@ -25,12 +25,12 @@ public abstract class Slot {
 	}
 
 	// Event handling
-	public boolean onClick(InventoryClickEvent event) {
-		return false;
+	public void onClick(InventoryClickEvent event) {
+		event.setCancelled(true);
 	}
 
-	public boolean onDrag(InventoryDragEvent event) {
-		return false;
+	public void onDrag(InventoryDragEvent event) {
+		event.setCancelled(true);
 	}
 
 	public void update(TransactionHolder holder) {

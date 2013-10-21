@@ -1,13 +1,18 @@
 package me.josvth.trade.transaction.inventory.slot;
 
+import me.josvth.trade.Trade;
 import me.josvth.trade.goods.ItemTradeable;
 import me.josvth.trade.goods.Tradeable;
-import me.josvth.trade.transaction.OfferList;
+import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Iterator;
+import java.util.Set;
 
 public class TradeSlot extends Slot {
 
@@ -20,16 +25,20 @@ public class TradeSlot extends Slot {
 
 	// Event handling
 	@Override
-	public boolean onClick(InventoryClickEvent event) {
+	public void onClick(InventoryClickEvent event) {
 
-		TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-		Tradeable tradeable = holder.getOffers().get(tradeSlot);
+		final Tradeable tradeable = holder.getOffers().get(tradeSlot);
 
 		// If we have a tradeable on this slot we let the tradeable handle the event
 		if (tradeable == null) {
 
+			// TODO An alternative would be to determine the new item in the update() method instead of during the event.
+
 			ItemStack newItem = null;
+
+			((Player) event.getWhoClicked()).sendMessage(event.getAction().name());
 
 			switch (event.getAction()) {
 				case PLACE_ALL:
@@ -41,36 +50,100 @@ public class TradeSlot extends Slot {
 					newItem = event.getCursor().clone();
 					newItem.setAmount(1);
 					break;
-				case UNKNOWN:
-					throw new IllegalStateException("UNKNOWN");
+				default:
+					throw new IllegalStateException("Not handled action: " + event.getAction().name());
 			}
 
-			holder.getOffers().set(tradeSlot, new ItemTradeable(newItem));
+			holder.getOffers().set(tradeSlot, (newItem == null)? null : new ItemTradeable(newItem));
+
+			MirrorSlot.updateMirrors(tradeSlot, holder.getTrader().getOther().getHolder(), true);
 
 		} else {
 
 			tradeable.onClick(event);
 
-			if (tradeable.isWorthless())
+			if (tradeable.isWorthless()) {
 				holder.getOffers().set(tradeSlot, null);
+			}
+
+			updateTradeSlots(tradeSlot, holder, true);
+			MirrorSlot.updateMirrors(tradeSlot, holder.getTrader().getOther().getHolder(), true);
 
 		}
 
-		return false;
+	}
 
+	public boolean isEmpty(TransactionHolder holder) {
+		return holder.getOffers().get(tradeSlot) == null;
 	}
 
 	@Override
-	public boolean onDrag(InventoryDragEvent event) {
-		return super.onDrag(event);    //To change body of overridden methods use File | Settings | File Templates.
+	public void onDrag(InventoryDragEvent event) {
+
+		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+
+		if (event.getNewItems().containsKey(slot)) {
+			holder.getOffers().set(tradeSlot, new ItemTradeable(event.getNewItems().get(slot)));
+		} else {
+			holder.getOffers().set(tradeSlot, null);
+		}
+
+		MirrorSlot.updateMirrors(tradeSlot, holder.getTrader().getOther().getHolder(), true);
+
 	}
 
 	@Override
 	public void update(TransactionHolder holder) {
-		Tradeable tradeable = holder.getOffers().get(tradeSlot);
 
-		if (tradeable != null)
+		final Tradeable tradeable = holder.getOffers().get(tradeSlot);
+
+		if (tradeable != null) {
 			holder.getInventory().setItem(slot, tradeable.getDisplayItem());
+		} else {
+			holder.getInventory().setItem(slot, null);
+		}
+
+	}
+
+	public int getTradeSlot() {
+		return tradeSlot;
+	}
+
+	public static void updateTradeSlots(int tradeSlot, TransactionHolder holder, boolean nextTick) {
+
+		final Set<TradeSlot> slots = holder.getLayout().getSlotsOfType(TradeSlot.class);
+
+		final Iterator<TradeSlot> iterator = slots.iterator();
+
+		while (iterator.hasNext()) {
+			final TradeSlot slot = iterator.next();
+			if (slot.getTradeSlot() == tradeSlot) {
+				if (!nextTick) {
+					slot.update(holder);
+				}
+			} else {
+				iterator.remove();
+			}
+		}
+
+		if (nextTick && !slots.isEmpty()) {
+			Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(holder, slots));
+		}
+
+	}
+
+	public static void updateTradeSlots(TransactionHolder holder, boolean nextTick) {
+
+		final Set<TradeSlot> slots = holder.getLayout().getSlotsOfType(TradeSlot.class);
+
+		if (!nextTick) {
+			for (Slot slot : slots) {
+				slot.update(holder);
+			}
+		} else if (!slots.isEmpty()) {
+			Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(holder, slots));
+		}
+
 	}
 
 }

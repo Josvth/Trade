@@ -17,14 +17,17 @@
     </prerequisites>
 
     <properties>
-        <package.path>${project.basedir}/target</package.path>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <package.dir>${project.build.directory}</package.dir>
+        <package.name>${project.build.finalName}</package.name>
+        <package.path>${project.build.directory}</package.path>
     </properties>
 
     <repositories>
         <repository>
             <id>bukkit-repo</id>
             <name>Bukkit Repository</name>
-            <url>http://repo.bukkit.org/tradeable/groups/public/</url>
+            <url>http://repo.bukkit.org/content/groups/public/</url>
         </repository>
     </repositories>
 
@@ -32,7 +35,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.6.2-R0.1</version>
+            <version>1.6.4-R0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
@@ -44,33 +47,21 @@
     </dependencies>
 
     <build>
-        <finalName>${project.build.name}-${project.build.version}</finalName>
-        <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+
         <resources>
             <resource>
                 <targetPath>.</targetPath>
-                <filtering>true</filtering>
                 <directory>${basedir}/src/main/resources/</directory>
+                <filtering>true</filtering>
                 <includes>
-                    <include>**/*</include>
+                    <include>config.yml</include>
+                    <include>plugin.yml</include>
                 </includes>
             </resource>
         </resources>
+
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.6</version>
-                <executions>
-                    <execution>
-                        <id>resources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>resources</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -80,56 +71,24 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>2.5</version>
-                <executions>
-                    <execution>
-                        <id>default-clean</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.7</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.4</version>
-            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
-                <executions>
-                    <execution>
-                        <id>make-jar</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
-                    <skipIfEmpty>true</skipIfEmpty>
+                    <archive>
+                        <addMavenDescriptor>true</addMavenDescriptor>
+                        <manifest>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                    <outputDirectory>${package.dir}</outputDirectory>
+                    <finalName>${package.name}</finalName>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.3</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.15</version>
-            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -141,85 +100,6 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-                <executions>
-                    <execution>
-                        <id>javadoc-jar</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.0.1</version>
-                <executions>
-                    <execution>
-                        <id>make-report</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>pmd</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.5.2</version>
-                <executions>
-                    <execution>
-                        <id>make-report</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>findbugs</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.8</version>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>${project.artifactId}</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>jar</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${package.path}</outputDirectory>
-                                    <destFileName>${project.build.finalName}.jar</destFileName>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -264,17 +144,6 @@
         <!--<project.build.name>${env.JOB_NAME}</project.build.name>-->
         <!--</properties>-->
         <!--</profile>-->
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <project.build.number>0</project.build.number>
-                <project.build.version>${project.version}-b${project.build.number}</project.build.version>
-                <project.build.name>${project.name}</project.build.name>
-            </properties>
-        </profile>
         <profile>
             <id>cloudbees-release-repo</id>
             <activation>

@@ -1,11 +1,12 @@
 package me.josvth.trade;
 
 import me.josvth.trade.transaction.Trader;
+import me.josvth.trade.transaction.Transaction;
+import me.josvth.trade.transaction.TransactionListener;
+import me.josvth.trade.transaction.TransactionManager;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.TransactionLayout;
-import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
-import me.josvth.trade.transaction.inventory.slot.Slot;
-import me.josvth.trade.transaction.inventory.slot.TradeSlot;
+import me.josvth.trade.transaction.inventory.slot.*;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -20,9 +21,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Trade extends JavaPlugin implements Listener {
+public class Trade extends JavaPlugin {
 
 	private static Trade instance;
+
+	private TransactionManager transactionManager;
+
+	// Listeners
+	private TransactionListener transactionListener;
 
 	public static Trade getInstance() {
 		return instance;
@@ -31,47 +37,48 @@ public class Trade extends JavaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		instance = this;
-		getServer().getPluginManager().registerEvents(this, this);
+
+		// Load managers
+		transactionManager = new TransactionManager(this);
+
+		// Register listeners
+		transactionListener = new TransactionListener(transactionManager, null);
+		getServer().getPluginManager().registerEvents(transactionListener, this);
+
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-		Slot[] slots = new Slot[9];
+		if (!(sender instanceof Player)) {
+			return true;
+		}
 
-		slots[0] = new TradeSlot(0,0);
-		slots[1] = new TradeSlot(1,1);
-		slots[2] = new TradeSlot(2,2);
-		slots[3] = new TradeSlot(3,3);
+		Player player = (Player) sender;
 
-		slots[5] = new MirrorSlot(5,0);
-		slots[6] = new MirrorSlot(6,1);
-		slots[7] = new MirrorSlot(7,2);
-		slots[8] = new MirrorSlot(8,3);
+		if (args[0].equalsIgnoreCase("new")) {
 
-		TransactionHolder holder = new TransactionHolder(this, new Trader(null, sender.getName(), 4), 9, "This is a title.", slots);
+			final Transaction transaction = transactionManager.createTransaction(sender.getName(), sender.getName());
 
-		((Player)sender).openInventory(holder.getInventory());
+			transaction.start();
+
+		}
+
+		if (args[0].equalsIgnoreCase("open")) {
+
+			Transaction transaction = transactionManager.getTransaction(player.getName());
+
+			if (transaction != null) {
+				transaction.getTrader(player.getName()).openInventory();
+			} else {
+				player.sendMessage("NOT TRADING!");
+			}
+
+		}
 
 		return true;
 
 	}
 
-	@EventHandler
-	public void onDrag(InventoryDragEvent event) {
 
-		((Player)event.getWhoClicked()).sendMessage("DRAG!"); // Just a message to show a click is registered.
-
-		event.getInventory().addItem(new ItemStack(Material.ANVIL, 1)); // Adding items to the inventory in an event causes out of sync issues.
-
-	}
-
-	@EventHandler
-	public void onClick(InventoryClickEvent event){
-
-		((Player)event.getWhoClicked()).sendMessage("CLICK!"); // Just a message to show a click is registered.
-
-		event.getInventory().addItem(new ItemStack(Material.ANVIL, 1)); // Adding items to the inventory in an event causes out of sync issues.
-
-	}
 }

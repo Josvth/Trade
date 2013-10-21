@@ -1,6 +1,6 @@
 main: me.josvth.trade.Trade
-name: ${project.build.name}
-version: ${project.build.version}
+name: ${project.name}
+version: ${project.version}
 author: Josvth
 commands:
   trade:

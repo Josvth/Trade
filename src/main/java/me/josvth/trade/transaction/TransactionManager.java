@@ -34,26 +34,30 @@ public class TransactionManager {
 
 		transaction = new Transaction(this, playerA, playerB);
 
-		addTransaction(transaction);
-
 		return transaction;
 
 	}
 
 	public boolean isInTransaction(String player) {
-		return transactions.containsKey(player.toLowerCase());
+		return transactions.containsKey(player);
 	}
 
 	public Transaction getTransaction(String player) {
-		return transactions.get(player.toLowerCase());
+		return transactions.get(player);
 	}
 
-	private void addTransaction(Transaction transaction) {
+	public void addTransaction(Transaction transaction) {
 		transactions.put(transaction.getTraderA().getName(), transaction);
 		transactions.put(transaction.getTraderB().getName(), transaction);
 	}
 
-	private Transaction removeTransaction(String player) {
-		return transactions.remove(player.toLowerCase());
+	public void removeTransaction(Transaction transaction) {
+		removeTransaction(transaction.getTraderA().getName());
+		removeTransaction(transaction.getTraderB().getName());
 	}
+
+	private Transaction removeTransaction(String player) {
+		return transactions.remove(player);
+	}
+
 }
