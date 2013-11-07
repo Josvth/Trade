@@ -15,15 +15,17 @@ import java.util.Map;
 public class ExperienceSlot extends Slot {
 
 	private final ItemStack experienceItem;
+	private final boolean keepMeta;
 
 	private final int smallModifier;
 	private final int largeModifier;
 
-	public ExperienceSlot(int slot, ItemStack experienceItem, int smallModifier, int largeModifier) {
+	public ExperienceSlot(int slot, ItemStack experienceItem, boolean keepMeta, int smallModifier, int largeModifier) {
 		super(slot);
 		this.experienceItem = experienceItem;
 		this.smallModifier = smallModifier;
 		this.largeModifier = largeModifier;
+		this.keepMeta = keepMeta;
 	}
 
 	@Override

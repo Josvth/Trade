@@ -16,6 +16,10 @@ public class TransactionManager {
 		this.plugin = plugin;
 	}
 
+	public void load() {
+
+	}
+
 	public Trade getPlugin() {
 		return plugin;
 	}
@@ -33,6 +37,8 @@ public class TransactionManager {
 		if (transaction != null) transaction.cancel();
 
 		transaction = new Transaction(this, playerA, playerB);
+
+		transaction.setLayout(plugin.getLayoutManager().getLayout(playerA, playerB));
 
 		return transaction;
 

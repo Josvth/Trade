@@ -1,30 +1,19 @@
 package me.josvth.trade;
 
-import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.TransactionListener;
 import me.josvth.trade.transaction.TransactionManager;
-import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.inventory.TransactionLayout;
-import me.josvth.trade.transaction.inventory.slot.*;
-import org.bukkit.Material;
+import me.josvth.trade.transaction.inventory.LayoutManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Trade extends JavaPlugin {
 
 	private static Trade instance;
 
+	private LayoutManager layoutManager;
 	private TransactionManager transactionManager;
 
 	// Listeners
@@ -34,17 +23,28 @@ public class Trade extends JavaPlugin {
 		return instance;
 	}
 
+	public Trade() {
+		instance = this;
+	}
+
 	@Override
 	public void onEnable() {
-		instance = this;
 
 		// Load managers
+		layoutManager = new LayoutManager(null);
+		layoutManager.load();
+
 		transactionManager = new TransactionManager(this);
+		transactionManager.load();
 
 		// Register listeners
 		transactionListener = new TransactionListener(transactionManager, null);
 		getServer().getPluginManager().registerEvents(transactionListener, this);
 
+	}
+
+	public LayoutManager getLayoutManager() {
+		return layoutManager;
 	}
 
 	@Override
@@ -79,6 +79,7 @@ public class Trade extends JavaPlugin {
 		return true;
 
 	}
+
 
 
 }

@@ -4,6 +4,7 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -15,12 +16,14 @@ public class AcceptSlot extends Slot {
 	private final ItemStack acceptItem;
 	private final ItemStack pendingItem;
 
-	public AcceptSlot(int slot, ItemStack acceptItem, ItemStack pendingItem) {
+	private final boolean keepMeta;
+
+	public AcceptSlot(int slot, ItemStack acceptItem, ItemStack pendingItem, boolean keepMeta) {
 		super(slot);
 		this.acceptItem = acceptItem;
 		this.pendingItem = pendingItem;
+		this.keepMeta = keepMeta;
 	}
-
 	@Override
 	public void onClick(InventoryClickEvent event) {
 

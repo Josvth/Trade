@@ -7,10 +7,12 @@ import org.bukkit.inventory.ItemStack;
 public class CloseSlot extends Slot {
 
 	private final ItemStack closeItem;
+	private final boolean keepMeta;
 
-	public CloseSlot(int slot, ItemStack closeItem) {
+	public CloseSlot(int slot, ItemStack closeItem, boolean keepMeta) {
 		super(slot);
 		this.closeItem = closeItem;
+		this.keepMeta = keepMeta;
 	}
 
 	@Override

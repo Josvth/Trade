@@ -14,13 +14,15 @@ import java.util.Map;
 public class MoneySlot extends Slot {
 
 	private final ItemStack moneyItem;
+	private final boolean keepMeta;
 
 	private final double smallModifier;
 	private final double largeModifier;
 
-	public MoneySlot(int slot, ItemStack moneyItem, double smallModifier, double largeModifier) {
+	public MoneySlot(int slot, ItemStack moneyItem, boolean keepMeta, double smallModifier, double largeModifier) {
 		super(slot);
 		this.moneyItem = moneyItem;
+		this.keepMeta = keepMeta;
 		this.smallModifier = smallModifier;
 		this.largeModifier = largeModifier;
 	}

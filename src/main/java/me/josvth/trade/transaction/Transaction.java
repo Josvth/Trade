@@ -1,16 +1,13 @@
 package me.josvth.trade.transaction;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.transaction.inventory.TransactionLayout;
-import me.josvth.trade.transaction.inventory.slot.*;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
+import me.josvth.trade.transaction.inventory.Layout;
 
 public class Transaction {
 
 	private final TransactionManager manager;
 
-	private TransactionLayout layout = null;
+	private Layout layout = null;
 
 	private final Trader traderA;
 	private final Trader traderB;
@@ -19,28 +16,6 @@ public class Transaction {
 
 	public Transaction(TransactionManager manager, String playerA, String playerB) {
 		this.manager = manager;
-
-		// TEMPORARY UNTIL LAYOUT MANAGER IS READY
-		Slot[] slots = new Slot[18];
-
-		slots[0] = new TradeSlot(0,0);
-		slots[1] = new TradeSlot(1,1);
-		slots[2] = new TradeSlot(2,2);
-
-		slots[3] = new AcceptSlot(3, new ItemStack(Material.STAINED_CLAY, 0, (short) 5), new ItemStack(Material.STAINED_CLAY, 0, (short) 4));
-		slots[4] = new RefuseSlot(4, new ItemStack(Material.STAINED_CLAY, 0, (short) 6));
-		slots[5] = new StatusSlot(5, new ItemStack(Material.STAINED_CLAY, 0, (short) 4), new ItemStack(Material.STAINED_CLAY, 0, (short) 5));
-
-		slots[6] = new MirrorSlot(6,0);
-		slots[7] = new MirrorSlot(7,1);
-		slots[8] = new MirrorSlot(8,2);
-
-		slots[11] = new MoneySlot(11, new ItemStack(Material.GOLD_INGOT, 0), 1, 5);
-		slots[12] = new ExperienceSlot(12, new ItemStack(Material.EXP_BOTTLE, 0), 1, 5);
-		slots[13] = new CloseSlot(13, new ItemStack(Material.BONE, 0));
-
-		layout = new TransactionLayout(2, slots);
-		// END TEMP
 
 		traderA = new Trader(this, playerA, layout.getOfferSize());
 		// FOR DEBUGGING PURPOSES
@@ -72,11 +47,11 @@ public class Transaction {
 		throw new IllegalArgumentException("Player " + playerName + " is not participating in this trade or went offline.");
 	}
 
-	public TransactionLayout getLayout() {
+	public Layout getLayout() {
 		return layout;
 	}
 
-	public void setLayout(TransactionLayout layout) {
+	public void setLayout(Layout layout) {
 		this.layout = layout;
 	}
 

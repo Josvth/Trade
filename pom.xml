@@ -29,6 +29,11 @@
             <name>Bukkit Repository</name>
             <url>http://repo.bukkit.org/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>convent-repo</id>
+            <name>ConventNunnery Repository</name>
+            <url>http://repository-topplethenun.forge.cloudbees.com/snapshot/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -43,6 +48,13 @@
             <groupId>bukkitformatlibrary</groupId>
             <artifactId>bukkitformatlibrary</artifactId>
             <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>net.nunnerycode.bukkit</groupId>
+            <artifactId>ExtendibleBukkitConfig</artifactId>
+            <version>1.1.3</version>
+            <type>jar</type>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

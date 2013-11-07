@@ -13,10 +13,13 @@ public class StatusSlot extends Slot{
 	private final ItemStack consideringItem;
 	private final ItemStack acceptedItem;
 
-	public StatusSlot(int slot, ItemStack consideringItem, ItemStack acceptedItem) {
+	private final boolean keepMeta;
+
+	public StatusSlot(int slot, ItemStack consideringItem, ItemStack acceptedItem, boolean keepMeta) {
 		super(slot);
 		this.consideringItem = consideringItem;
 		this.acceptedItem = acceptedItem;
+		this.keepMeta = keepMeta;
 	}
 
 	@Override

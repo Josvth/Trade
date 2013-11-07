@@ -7,10 +7,12 @@ import org.bukkit.inventory.ItemStack;
 public class RefuseSlot extends Slot {
 
 	private final ItemStack refuseItem;
+	private final boolean keepMeta;
 
-	public RefuseSlot(int slot, ItemStack refuseItem) {
+	public RefuseSlot(int slot, ItemStack refuseItem, boolean keepMeta) {
 		super(slot);
 		this.refuseItem = refuseItem;
+		this.keepMeta = keepMeta;
 	}
 
 	@Override

@@ -27,11 +27,11 @@ public class TransactionHolder implements InventoryHolder {
 
 	private final Trader trader;
 
-	private final TransactionLayout layout;
+	private final Layout layout;
 
 	private Inventory inventory;
 
-	public TransactionHolder(Trade trade, Trader trader, TransactionLayout layout) {
+	public TransactionHolder(Trade trade, Trader trader, Layout layout) {
 		this.plugin = trade;
 		this.trader = trader;
 		this.layout = layout;
@@ -41,7 +41,7 @@ public class TransactionHolder implements InventoryHolder {
 		return trader;
 	}
 
-	public TransactionLayout getLayout() {
+	public Layout getLayout() {
 		return layout;
 	}
 
