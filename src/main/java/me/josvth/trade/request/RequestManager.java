@@ -1,6 +1,11 @@
 package me.josvth.trade.request;
 
+import me.josvth.bukkitformatlibrary.managers.FormatManager;
+import me.josvth.trade.Trade;
+import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.TransactionManager;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -10,16 +15,34 @@ import java.util.Set;
 
 public class RequestManager {
 
+	private final Trade plugin;
+
+	private final FormatManager formatManager;
 	private final TransactionManager transactionManager;
+
+	private final RequestListener listener;
 
 	private final RequestOptions options = new RequestOptions();
 
-	private Set<String> ignoring = new HashSet<String>();
+	private final Set<String> ignoring = new HashSet<String>();
 
-	private Map<String, Set<Request>> activeRequests = new HashMap<String, Set<Request>>();
+	private final Map<String, Set<Request>> activeRequests = new HashMap<String, Set<Request>>();
 
-	public RequestManager(TransactionManager transactionManager) {
+	public RequestManager(Trade plugin, FormatManager formatManager, TransactionManager transactionManager) {
+		this.plugin = plugin;
+		this.formatManager = formatManager;
 		this.transactionManager = transactionManager;
+		this.listener = new RequestListener(this, this.formatManager);
+	}
+
+	public void load(ConfigurationSection section) {
+		Bukkit.getPluginManager().registerEvents(listener, plugin);
+		options.load(section);
+	}
+
+	public void unload() {
+		ignoring.clear();
+		activeRequests.clear();
 	}
 
 	public RequestOptions getOptions() {
@@ -65,9 +88,9 @@ public class RequestManager {
 		RequestRestriction restriction = RequestRestriction.ALLOW;
 
 		if (!requester.getWorld().equals(requested.getWorld()) && !options.allowCrossWorld())
-			restriction = RequestRestriction.CROSSWORLD;
+			restriction = RequestRestriction.CROSS_WORLD;
 		else if (!requester.getGameMode().equals(requested.getGameMode()) && !options.allowCrossGameMode())
-			restriction = RequestRestriction.CROSSGAMEMODE;
+			restriction = RequestRestriction.CROSS_GAME_MODE;
 		else if (!requester.canSee(requested) && !options.mustSee())
 			restriction = RequestRestriction.VISION;
 		else if (requester.getLocation().distance(requested.getPlayer().getLocation()) > options.getMaxDistance())
@@ -160,7 +183,7 @@ public class RequestManager {
 
 		if (restriction == RequestRestriction.ALLOW) {
 
-			transactionManager.handleRequest(request);
+			handleRequest(request);
 
 			activeRequests.remove(request.getRequested().toLowerCase());
 
@@ -168,6 +191,12 @@ public class RequestManager {
 
 		return restriction;
 
+	}
+
+	public Transaction handleRequest(Request request) {
+		final Transaction transaction = transactionManager.createTransaction(request.getRequester(), request.getRequested());
+		transaction.start();
+		return transaction;
 	}
 
 }

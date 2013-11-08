@@ -1,7 +1,10 @@
 package me.josvth.trade.transaction;
 
+import me.josvth.bukkitformatlibrary.managers.FormatManager;
 import me.josvth.trade.Trade;
 import me.josvth.trade.request.Request;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,18 +13,26 @@ public class TransactionManager {
 
 	private final Trade plugin;
 
+	private final FormatManager formatManager;
+	private final TransactionListener listener;
+
 	private Map<String, Transaction> transactions = new HashMap<String, Transaction>();
 
-	public TransactionManager(Trade plugin) {
+	public TransactionManager(Trade plugin, FormatManager formatManager) {
 		this.plugin = plugin;
+		this.formatManager = formatManager;
+		this.listener = new TransactionListener(this, this.formatManager);
+	}
+
+	public void load(ConfigurationSection section) {
+
+		Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
+
+		// TODO load transaction configuration
 	}
 
 	public Trade getPlugin() {
 		return plugin;
-	}
-
-	public Transaction handleRequest(Request request) {
-		return createTransaction(request.getRequester(), request.getRequested());
 	}
 
 	public Transaction createTransaction(String playerA, String playerB) {

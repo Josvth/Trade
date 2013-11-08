@@ -70,13 +70,13 @@ public class RequestListener implements Listener {
 				RequestRestriction restriction = requestManager.accept(request);
 
 				if (restriction == RequestRestriction.ALLOW) {
-//					FormattedMessage message = formatManager.create("personal", "trading.started");
-//					message.send(requester, "%player%", requested.getName());
-//					message.send(requested, "%player%", requester.getName());
+					FormattedMessage message = formatManager.getMessage("trading.started");
+					message.send(requester, "%player%", requested.getName());
+					message.send(requested, "%player%", requester.getName());
 				} else {
-//					FormattedMessage message = formatManager.create("personal", restriction.tradeMessagePath);
-//					message.send(requester, "%player%", requested.getName());
-//					message.send(requested, "%player%", requester.getName());
+					FormattedMessage message = formatManager.getMessage(restriction.tradeMessagePath);
+					message.send(requester, "%player%", requested.getName());
+					message.send(requested, "%player%", requester.getName());
 				}
 
 			}
@@ -93,8 +93,10 @@ public class RequestListener implements Listener {
 				event.setCancelled(true);
 			}
 
-			if (restriction != RequestRestriction.METHOD && restriction != RequestRestriction.PERMISSION);
-//				formatManager.create("personal", restriction.requestMessagePath).send(requester, "%player%", requested.getName());
+			if (restriction != RequestRestriction.METHOD && restriction != RequestRestriction.PERMISSION) {
+				FormattedMessage message = formatManager.getMessage(restriction.requestMessagePath);
+				message.send(requester, "%player%", requested.getName());
+			}
 
 		}
 

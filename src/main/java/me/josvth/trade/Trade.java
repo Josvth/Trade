@@ -4,7 +4,6 @@ import com.conventnunnery.libraries.config.ConventYamlConfiguration;
 import me.josvth.bukkitformatlibrary.managers.YamlFormatManager;
 import me.josvth.trade.request.RequestManager;
 import me.josvth.trade.transaction.Transaction;
-import me.josvth.trade.transaction.TransactionListener;
 import me.josvth.trade.transaction.TransactionManager;
 import me.josvth.trade.transaction.inventory.LayoutManager;
 import org.bukkit.command.Command;
@@ -29,19 +28,24 @@ public class Trade extends JavaPlugin {
 	private TransactionManager transactionManager;
 	private RequestManager requestManager;
 
-	// Listeners
-	private TransactionListener transactionListener;
-
 	public static Trade getInstance() {
 		return instance;
 	}
 
 	public Trade() {
+
 		instance = this;
+
+		formatManager = new YamlFormatManager();
+		layoutManager = new LayoutManager();
+
+		transactionManager = new TransactionManager(this, formatManager);
+		requestManager = new RequestManager(this, formatManager, transactionManager);
+
 	}
 
 	@Override
-	public void onEnable() {
+	public void onLoad() {
 
 		// Load configurations
 		generalConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "config.yml"), getDescription().getVersion());
@@ -57,21 +61,28 @@ public class Trade extends JavaPlugin {
 		layoutConfiguration.load();
 
 		// Load managers
-		formatManager = new YamlFormatManager();
 		formatManager.loadFormatters(generalConfiguration.getConfigurationSection("formatters"));
 		formatManager.loadMessages(messageConfiguration);
 
-		layoutManager = new LayoutManager(layoutConfiguration);
-		layoutManager.load();
+		layoutManager.load(layoutConfiguration);
 
-		transactionManager = new TransactionManager(this);
+		transactionManager.load(generalConfiguration.getConfigurationSection("trading"));
 
-		requestManager = new RequestManager(transactionManager);
+		requestManager.load(generalConfiguration.getConfigurationSection("requesting"));
 
-		// Register listeners
-		transactionListener = new TransactionListener(transactionManager, formatManager);
-		getServer().getPluginManager().registerEvents(transactionListener, this);
+	}
 
+	@Override
+	public void onEnable() {
+
+	}
+
+	@Override
+	public void onDisable() {
+		requestManager.unload();
+		//transactionManager.unload();
+		layoutManager.unload();
+		formatManager.unload();
 	}
 
 	public YamlFormatManager getFormatManager() {

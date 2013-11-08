@@ -1,17 +1,12 @@
 package me.josvth.trade.transaction.inventory;
 
-import com.conventnunnery.libraries.config.ConventYamlConfiguration;
 import me.josvth.trade.transaction.inventory.slot.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class LayoutManager {
@@ -45,17 +40,9 @@ public class LayoutManager {
 
 	}
 
-	private final ConventYamlConfiguration configuration;
-
 	private final Map<String, Layout> layouts = new HashMap<String, Layout>();
 
-	public LayoutManager(ConventYamlConfiguration layoutConfiguration) {
-		this.configuration = layoutConfiguration;
-	}
-
-	public int load() {
-
-		layouts.clear();
+	public int load(ConfigurationSection configuration) {
 
 		layouts.put("default", DEFAULT_LAYOUT);
 
@@ -166,6 +153,10 @@ public class LayoutManager {
 
 		return layouts.size();
 
+	}
+
+	public void unload() {
+		layouts.clear();
 	}
 
 	public Layout getLayout(String playerNameA, String playerNameB) {

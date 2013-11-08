@@ -20,11 +20,9 @@ public class TransactionListener implements Listener {
 
 	@EventHandler
 	public void onDrag(InventoryDragEvent event) {
-
 		if (event.getInventory().getHolder() instanceof TransactionHolder) {
 			((TransactionHolder) event.getInventory().getHolder()).onDrag(event);
 		}
-
 	}
 
 	@EventHandler
