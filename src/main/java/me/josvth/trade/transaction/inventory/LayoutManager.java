@@ -26,9 +26,9 @@ public class LayoutManager {
 		slots[1] = new TradeSlot(1,1);
 		slots[2] = new TradeSlot(2,2);
 
-		slots[3] = new AcceptSlot(3, new ItemStack(Material.STAINED_CLAY, 0, (short) 5), new ItemStack(Material.STAINED_CLAY, 0, (short) 4), false);
-		slots[4] = new RefuseSlot(4, new ItemStack(Material.STAINED_CLAY, 0, (short) 6), false);
-		slots[5] = new StatusSlot(5, new ItemStack(Material.STAINED_CLAY, 0, (short) 4), new ItemStack(Material.STAINED_CLAY, 0, (short) 5), false);
+		slots[3] = new AcceptSlot(3, new ItemDescription(Material.STAINED_CLAY, 0, (byte) 5), new ItemDescription(Material.STAINED_CLAY, 0, (byte) 4));
+		slots[4] = new RefuseSlot(4, new ItemDescription(Material.STAINED_CLAY, 0, (byte) 6));
+		slots[5] = new StatusSlot(5, new ItemDescription(Material.STAINED_CLAY, 0, (byte) 4), new ItemDescription(Material.STAINED_CLAY, 0, (byte) 5));
 
 		slots[6] = new MirrorSlot(6,0);
 		slots[7] = new MirrorSlot(7,1);
@@ -36,9 +36,9 @@ public class LayoutManager {
 
 		slots[9] = new TradeSlot(9,0);
 
-		slots[11] = new MoneySlot(11, new ItemStack(Material.GOLD_INGOT, 0), false, 1, 5);
-		slots[12] = new ExperienceSlot(12, new ItemStack(Material.EXP_BOTTLE, 0), false, 1, 5);
-		slots[13] = new CloseSlot(13, new ItemStack(Material.BONE, 0), false);
+		slots[11] = new MoneySlot(11, new ItemDescription(Material.GOLD_INGOT, 0), 1, 5);
+		slots[12] = new ExperienceSlot(12, new ItemDescription(Material.EXP_BOTTLE, 0), 1, 5);
+		slots[13] = new CloseSlot(13, new ItemDescription(Material.BONE, 0));
 
 		DEFAULT_LAYOUT = new Layout("default", 3, 3);
 		DEFAULT_LAYOUT.setSlots(slots);
@@ -104,28 +104,24 @@ public class LayoutManager {
 				if ("accept".equalsIgnoreCase(type)) {
 					slot = new AcceptSlot(
 							slotID,
-							getItemStackFromSection(slotSection.getConfigurationSection("accept-item")),
-							getItemStackFromSection(slotSection.getConfigurationSection("accepted-item")),
-							false
-					);
+							ItemDescription.fromSection(slotSection.getConfigurationSection("accept-item")),
+							ItemDescription.fromSection(slotSection.getConfigurationSection("accepted-item"))
+						);
 				} else if ("refuse".equalsIgnoreCase(type)) {
 					slot = new RefuseSlot(
 							slotID,
-							getItemStackFromSection(slotSection.getConfigurationSection("refuse-item")),
-							false
+							ItemDescription.fromSection(slotSection.getConfigurationSection("refuse-item"))
 					);
 				} else if ("close".equalsIgnoreCase(type)) {
 					slot = new CloseSlot(
 							slotID,
-							getItemStackFromSection(slotSection.getConfigurationSection("close-item")),
-							false
+							ItemDescription.fromSection(slotSection.getConfigurationSection("close-item"))
 					);
 				} else if ("status".equalsIgnoreCase(type)) {
 					slot = new StatusSlot(
 							slotID,
-							getItemStackFromSection(slotSection.getConfigurationSection("considering-item")),
-							getItemStackFromSection(slotSection.getConfigurationSection("accepted-item")),
-							false
+							ItemDescription.fromSection(slotSection.getConfigurationSection("considering-item")),
+							ItemDescription.fromSection(slotSection.getConfigurationSection("accepted-item"))
 					);
 				} else if ("trade".equalsIgnoreCase(type)) {
 					slot = new TradeSlot(
@@ -140,16 +136,14 @@ public class LayoutManager {
 				} else if ("money".equalsIgnoreCase(type)) {
 					slot = new MoneySlot(
 							slotID,
-							getItemStackFromSection(slotSection.getConfigurationSection("money-item")),
-							false,
+							ItemDescription.fromSection(slotSection.getConfigurationSection("money-item")),
 							slotSection.getInt("small-modifier", 5),
 							slotSection.getInt("large-modifier", 10)
 					);
 				} else if ("experience".equalsIgnoreCase(type)) {
 					slot = new ExperienceSlot(
 							slotID,
-							getItemStackFromSection(slotSection.getConfigurationSection("experience-item")),
-							false,
+							ItemDescription.fromSection(slotSection.getConfigurationSection("experience-item")),
 							slotSection.getInt("small-modifier", 1),
 							slotSection.getInt("large-modifier", 5)
 					);
@@ -179,13 +173,13 @@ public class LayoutManager {
 		Layout found = DEFAULT_LAYOUT;
 		boolean permissionBased = false;
 
+		final Player playerA = Bukkit.getPlayerExact(playerNameA);
+		final Player playerB = Bukkit.getPlayerExact(playerNameB);
+
 		for (Layout layout : layouts.values()) {
 			if (layout.getPriority() > found.getPriority() || (layout.getPermission() != null && permissionBased == false)) {
 
 				if (layout.getPermission() != null) {
-
-					final Player playerA = Bukkit.getPlayerExact(playerNameA);
-					final Player playerB = Bukkit.getPlayerExact(playerNameB);
 
 					final boolean AHasPermission = playerA != null && playerA.hasPermission(layout.getPermission());
 					final boolean BHasPermission = playerB != null && playerB.hasPermission(layout.getPermission());
@@ -207,61 +201,5 @@ public class LayoutManager {
 
 	}
 
-	/*
-    item:
-      material: WOOL		(Deprecated: material: 35)
-      damage: 0 			(Optional, default: 0)
-      data: 0           	(Optional, default: 0)
-      amount: 1         	(Optional, default: 0)
-      display-name: Accept  (Optional)
-      lore:                 (Optional)
-        - "This"
-        - "is"
-        - "lore"
-	 */
-	private static final ItemStack getItemStackFromSection(ConfigurationSection section) {
 
-		if (section == null) {
-			return null;
-		}
-
-		Material material = null;
-
-		if (section.isInt("id")) {
-			material = Material.getMaterial(section.getInt("id"));
-		} else if (section.isString("id")) {
-			material = Material.getMaterial(section.getString("id"));
-		}
-
-		if (material == null) {
-			return null;
-		}
-
-		int amount = section.getInt("amount", 0);
-		short damage = (short) section.getInt("damage", 0);
-		byte data = (byte) section.getInt("data", 0);
-
-		String displayName = section.getString("display-name");
-		List<String> lore = section.getStringList("lore");
-
-		ItemStack itemStack = new ItemStack(material, amount, damage, data);
-
-		if (displayName != null && lore != null) {
-			final ItemMeta meta = itemStack.getItemMeta();
-
-			if (displayName != null) {
-				meta.setDisplayName(displayName);
-			}
-
-			if (lore != null) {
-				meta.setLore(lore);
-			}
-
-			itemStack.setItemMeta(meta);
-
-		}
-
-		return itemStack;
-
-	}
 }

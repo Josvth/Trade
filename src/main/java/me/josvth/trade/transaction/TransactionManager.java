@@ -16,10 +16,6 @@ public class TransactionManager {
 		this.plugin = plugin;
 	}
 
-	public void load() {
-
-	}
-
 	public Trade getPlugin() {
 		return plugin;
 	}

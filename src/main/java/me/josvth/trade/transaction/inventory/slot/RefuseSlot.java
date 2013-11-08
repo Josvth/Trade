@@ -1,18 +1,17 @@
 package me.josvth.trade.transaction.inventory.slot;
 
+import me.josvth.trade.transaction.inventory.ItemDescription;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class RefuseSlot extends Slot {
 
-	private final ItemStack refuseItem;
-	private final boolean keepMeta;
+	private final ItemDescription refuseDescription;
 
-	public RefuseSlot(int slot, ItemStack refuseItem, boolean keepMeta) {
+	public RefuseSlot(int slot, ItemDescription refuseDescription) {
 		super(slot);
-		this.refuseItem = refuseItem;
-		this.keepMeta = keepMeta;
+		this.refuseDescription = refuseDescription;
 	}
 
 	@Override
@@ -28,7 +27,7 @@ public class RefuseSlot extends Slot {
 
 	@Override
 	public void update(TransactionHolder holder) {
-		setSlot(holder, refuseItem);
+		setSlot(holder, refuseDescription.create());
 	}
 
 }

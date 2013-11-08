@@ -4,6 +4,7 @@ import me.josvth.trade.goods.ExperienceTradeable;
 import me.josvth.trade.goods.Tradeable;
 import me.josvth.trade.transaction.OfferList;
 import me.josvth.trade.transaction.Trader;
+import me.josvth.trade.transaction.inventory.ItemDescription;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -14,18 +15,16 @@ import java.util.Map;
 
 public class ExperienceSlot extends Slot {
 
-	private final ItemStack experienceItem;
-	private final boolean keepMeta;
+	private final ItemDescription experienceDescription;
 
 	private final int smallModifier;
 	private final int largeModifier;
 
-	public ExperienceSlot(int slot, ItemStack experienceItem, boolean keepMeta, int smallModifier, int largeModifier) {
+	public ExperienceSlot(int slot, ItemDescription experienceDescription, int smallModifier, int largeModifier) {
 		super(slot);
-		this.experienceItem = experienceItem;
+		this.experienceDescription = experienceDescription;
 		this.smallModifier = smallModifier;
 		this.largeModifier = largeModifier;
-		this.keepMeta = keepMeta;
 	}
 
 	@Override
@@ -86,6 +85,6 @@ public class ExperienceSlot extends Slot {
 
 	@Override
 	public void update(TransactionHolder holder) {
-		setSlot(holder, experienceItem);
+		setSlot(holder, experienceDescription.create());
 	}
 }

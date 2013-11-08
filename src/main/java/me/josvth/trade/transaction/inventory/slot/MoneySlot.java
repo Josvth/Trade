@@ -4,6 +4,7 @@ import me.josvth.trade.goods.ExperienceTradeable;
 import me.josvth.trade.goods.MoneyTradeable;
 import me.josvth.trade.goods.Tradeable;
 import me.josvth.trade.transaction.OfferList;
+import me.josvth.trade.transaction.inventory.ItemDescription;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -13,16 +14,14 @@ import java.util.Map;
 
 public class MoneySlot extends Slot {
 
-	private final ItemStack moneyItem;
-	private final boolean keepMeta;
+	private final ItemDescription moneyDescription;
 
 	private final double smallModifier;
 	private final double largeModifier;
 
-	public MoneySlot(int slot, ItemStack moneyItem, boolean keepMeta, double smallModifier, double largeModifier) {
+	public MoneySlot(int slot, ItemDescription moneyDescription, double smallModifier, double largeModifier) {
 		super(slot);
-		this.moneyItem = moneyItem;
-		this.keepMeta = keepMeta;
+		this.moneyDescription = moneyDescription;
 		this.smallModifier = smallModifier;
 		this.largeModifier = largeModifier;
 	}
@@ -83,7 +82,7 @@ public class MoneySlot extends Slot {
 
 	@Override
 	public void update(TransactionHolder holder) {
-		setSlot(holder, moneyItem);
+		setSlot(holder, moneyDescription.create());
 	}
 
 }

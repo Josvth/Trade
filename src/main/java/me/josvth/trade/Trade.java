@@ -1,5 +1,8 @@
 package me.josvth.trade;
 
+import com.conventnunnery.libraries.config.ConventYamlConfiguration;
+import me.josvth.bukkitformatlibrary.managers.YamlFormatManager;
+import me.josvth.trade.request.RequestManager;
 import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.TransactionListener;
 import me.josvth.trade.transaction.TransactionManager;
@@ -9,12 +12,22 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+
 public class Trade extends JavaPlugin {
 
 	private static Trade instance;
 
+	// Configurations
+	private ConventYamlConfiguration generalConfiguration;
+	private ConventYamlConfiguration layoutConfiguration;
+	private ConventYamlConfiguration messageConfiguration;
+
+	// Managers
+	private YamlFormatManager formatManager;
 	private LayoutManager layoutManager;
 	private TransactionManager transactionManager;
+	private RequestManager requestManager;
 
 	// Listeners
 	private TransactionListener transactionListener;
@@ -30,21 +43,51 @@ public class Trade extends JavaPlugin {
 	@Override
 	public void onEnable() {
 
+		// Load configurations
+		generalConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "config.yml"), getDescription().getVersion());
+		generalConfiguration.setDefaults(getResource("config.yml"));
+		generalConfiguration.load();
+
+		messageConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "messages.yml"), getDescription().getVersion());
+		messageConfiguration.setDefaults(getResource("messages.yml"));
+		messageConfiguration.load();
+
+		layoutConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "layouts.yml"), getDescription().getVersion());
+		layoutConfiguration.setDefaults(getResource("layouts.yml"));
+		layoutConfiguration.load();
+
 		// Load managers
-		layoutManager = new LayoutManager(null);
+		formatManager = new YamlFormatManager();
+		formatManager.loadFormatters(generalConfiguration.getConfigurationSection("formatters"));
+		formatManager.loadMessages(messageConfiguration);
+
+		layoutManager = new LayoutManager(layoutConfiguration);
 		layoutManager.load();
 
 		transactionManager = new TransactionManager(this);
-		transactionManager.load();
+
+		requestManager = new RequestManager(transactionManager);
 
 		// Register listeners
-		transactionListener = new TransactionListener(transactionManager, null);
+		transactionListener = new TransactionListener(transactionManager, formatManager);
 		getServer().getPluginManager().registerEvents(transactionListener, this);
 
 	}
 
+	public YamlFormatManager getFormatManager() {
+		return formatManager;
+	}
+
 	public LayoutManager getLayoutManager() {
 		return layoutManager;
+	}
+
+	public TransactionManager getTransactionManager() {
+		return transactionManager;
+	}
+
+	public RequestManager getRequestManager() {
+		return requestManager;
 	}
 
 	@Override

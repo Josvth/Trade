@@ -2,6 +2,7 @@ package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
 import me.josvth.trade.tasks.SlotUpdateTask;
+import me.josvth.trade.transaction.inventory.ItemDescription;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
@@ -10,24 +11,21 @@ import java.util.Set;
 
 public class StatusSlot extends Slot{
 
-	private final ItemStack consideringItem;
-	private final ItemStack acceptedItem;
+	private final ItemDescription consideringDescription;
+	private final ItemDescription acceptedDescription;
 
-	private final boolean keepMeta;
-
-	public StatusSlot(int slot, ItemStack consideringItem, ItemStack acceptedItem, boolean keepMeta) {
+	public StatusSlot(int slot, ItemDescription consideringDescription, ItemDescription acceptedDescription) {
 		super(slot);
-		this.consideringItem = consideringItem;
-		this.acceptedItem = acceptedItem;
-		this.keepMeta = keepMeta;
+		this.consideringDescription = consideringDescription;
+		this.acceptedDescription = acceptedDescription;
 	}
 
 	@Override
 	public void update(TransactionHolder holder) {
 		if (holder.getTrader().getOther().hasAccepted()) {
-			setSlot(holder, acceptedItem);
+			setSlot(holder, consideringDescription.create());
 		} else {
-			setSlot(holder, consideringItem);
+			setSlot(holder, acceptedDescription.create());
 		}
 	}
 
