@@ -2,6 +2,7 @@ package me.josvth.trade.transaction;
 
 import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.bukkitformatlibrary.managers.FormatManager;
+import me.josvth.trade.offer.OfferList;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

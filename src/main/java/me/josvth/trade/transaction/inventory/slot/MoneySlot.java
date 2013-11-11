@@ -1,9 +1,9 @@
 package me.josvth.trade.transaction.inventory.slot;
 
-import me.josvth.trade.tradeable.ExperienceTradeable;
-import me.josvth.trade.tradeable.MoneyTradeable;
-import me.josvth.trade.tradeable.Tradeable;
-import me.josvth.trade.transaction.OfferList;
+import me.josvth.trade.offer.ExperienceOffer;
+import me.josvth.trade.offer.MoneyOffer;
+import me.josvth.trade.offer.Offer;
+import me.josvth.trade.offer.OfferList;
 import me.josvth.trade.util.ItemDescription;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.entity.Player;
@@ -45,7 +45,7 @@ public class MoneySlot extends Slot {
 
 			// TODO remove balance
 
-			final Map<Integer, Tradeable> remainders = offers.add(new MoneyTradeable(moneyToAdd));
+			final Map<Integer, Offer> remainders = offers.add(new MoneyOffer(moneyToAdd));
 
 			// TODO handle remainders
 
@@ -57,9 +57,9 @@ public class MoneySlot extends Slot {
 
 			final double moneyToRemove = event.isShiftClick()? largeModifier : smallModifier;
 
-			final Map<Integer, Tradeable> remainders = offers.remove(new MoneyTradeable(moneyToRemove));
+			final Map<Integer, Offer> remainders = offers.remove(new MoneyOffer(moneyToRemove));
 
-			final ExperienceTradeable remaining = (ExperienceTradeable) remainders.get(0);
+			final ExperienceOffer remaining = (ExperienceOffer) remainders.get(0);
 
 			// TODO Regrant money
 			if (remaining != null) {

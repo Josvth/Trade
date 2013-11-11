@@ -26,17 +26,17 @@
 
     <repositories>
         <repository>
-            <id>bukkit-repo</id>
+            <offerID>bukkit-repo</offerID>
             <name>Bukkit Repository</name>
             <url>http://repo.bukkit.org/content/groups/public/</url>
         </repository>
         <repository>
-            <id>convent-repo</id>
+            <offerID>convent-repo</offerID>
             <name>ConventNunnery Repository</name>
             <url>http://repository-topplethenun.forge.cloudbees.com/snapshot/</url>
         </repository>
         <repository>
-            <id>cloudbees-snapshot-repo</id>
+            <offerID>cloudbees-snapshot-repo</offerID>
             <name>Cloudbees Snapshot Repo</name>
             <url>http://repository-josvth.forge.cloudbees.com/snapshot/</url>
         </repository>
@@ -115,7 +115,7 @@
                 <version>2.2.1</version>
                 <executions>
                     <execution>
-                        <id>sources</id>
+                        <offerID>sources</offerID>
                         <phase>verify</phase>
                         <goals>
                             <goal>jar</goal>

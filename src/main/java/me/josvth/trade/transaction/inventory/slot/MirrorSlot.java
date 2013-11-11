@@ -1,7 +1,7 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.tradeable.Tradeable;
+import me.josvth.trade.offer.Offer;
 import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.Bukkit;
@@ -24,10 +24,10 @@ public class MirrorSlot extends Slot {
 
 	@Override
 	public void update(TransactionHolder holder) {
-		final Tradeable tradeable = holder.getOtherTrader().getOffers().get(mirrorSlot);
+		final Offer offer = holder.getOtherTrader().getOffers().get(mirrorSlot);
 
-		if (tradeable != null) {
-			holder.getInventory().setItem(slot, tradeable.getDisplayItem());
+		if (offer != null) {
+			holder.getInventory().setItem(slot, offer.getDisplayItem());
 		} else {
 			holder.getInventory().setItem(slot, null);
 		}

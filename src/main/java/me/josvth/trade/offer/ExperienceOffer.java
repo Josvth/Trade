@@ -1,8 +1,7 @@
-package me.josvth.trade.tradeable;
+package me.josvth.trade.offer;
 
 import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.trade.transaction.Trader;
-import me.josvth.trade.transaction.inventory.slot.TradeSlot;
 import me.josvth.trade.util.ItemDescription;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -10,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 
-public class ExperienceTradeable extends Tradeable {
+public class ExperienceOffer extends Offer {
 
 	private static final ItemDescription DEFAULT_ITEM_DESCRIPTION = new ItemDescription(
 			Material.EXP_BOTTLE, 0, (short)0, (byte)0,
@@ -33,29 +32,29 @@ public class ExperienceTradeable extends Tradeable {
 	private final ItemDescription itemDescription;
 	private final ItemDescription otherItemDescription;
 
-	public ExperienceTradeable() {
-		this(0, DEFAULT_ITEM_DESCRIPTION, DEFAULT_OTHER_ITEM_DESCRIPTION);
+	public ExperienceOffer(OfferList list, int offerID) {
+		this(list, offerID, 0, DEFAULT_ITEM_DESCRIPTION, DEFAULT_OTHER_ITEM_DESCRIPTION);
 	}
 
-	public ExperienceTradeable(int levels) {
-		this(levels, DEFAULT_ITEM_DESCRIPTION, DEFAULT_OTHER_ITEM_DESCRIPTION);
+	public ExperienceOffer(OfferList list, int offerID, int levels) {
+		this(list, offerID, levels, DEFAULT_ITEM_DESCRIPTION, DEFAULT_OTHER_ITEM_DESCRIPTION);
 	}
 
-	public ExperienceTradeable(int levels, ItemDescription itemDescription, ItemDescription otherItemDescription) {
-		super(TradeableType.EXPERIENCE);
+	public ExperienceOffer(OfferList list, int offerID, int levels, ItemDescription itemDescription, ItemDescription otherItemDescription) {
+		super(list, offerID);
 		this.levels = levels;
 		this.itemDescription = itemDescription;
 		this.otherItemDescription = otherItemDescription;
 	}
 
 	@Override
-	public <T extends Tradeable> T add(T tradeable) {
+	public <T extends Offer> T add(T tradeable) {
 
-		if (!(tradeable instanceof ExperienceTradeable)) {
+		if (!(tradeable instanceof ExperienceOffer)) {
 			return tradeable;
 		}
 
-		ExperienceTradeable remaining = ((ExperienceTradeable) tradeable).clone();
+		ExperienceOffer remaining = ((ExperienceOffer) tradeable).clone();
 
 		int newLevels = levels + remaining.getLevels();
 
@@ -74,13 +73,13 @@ public class ExperienceTradeable extends Tradeable {
 	}
 
 	@Override
-	public <T extends Tradeable> T remove(T tradeable) {
+	public <T extends Offer> T remove(T tradeable) {
 
-		if (!(tradeable instanceof ExperienceTradeable)) {
+		if (!(tradeable instanceof ExperienceOffer)) {
 			return tradeable;
 		}
 
-		ExperienceTradeable remaining = ((ExperienceTradeable) tradeable).clone();
+		ExperienceOffer remaining = ((ExperienceOffer) tradeable).clone();
 
 		if (remaining.getLevels() > 0) {
 
@@ -130,8 +129,8 @@ public class ExperienceTradeable extends Tradeable {
 		trader.getPlayer().setLevel(trader.getPlayer().getLevel() + levels);
 	}
 
-	public ExperienceTradeable clone() {
-		return new ExperienceTradeable(levels);
+	public ExperienceOffer clone() {
+		return new ExperienceOffer(list, offerID, levels, itemDescription, otherItemDescription);
 	}
 
 	@Override

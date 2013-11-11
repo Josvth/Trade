@@ -2,9 +2,9 @@ package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.trade.Trade;
-import me.josvth.trade.tradeable.ExperienceTradeable;
+import me.josvth.trade.offer.ExperienceOffer;
 import me.josvth.trade.tasks.SlotUpdateTask;
-import me.josvth.trade.transaction.OfferList;
+import me.josvth.trade.offer.OfferList;
 import me.josvth.trade.util.ItemDescription;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.Bukkit;
@@ -55,7 +55,7 @@ public class ExperienceSlot extends Slot {
 				return;
 			}
 
-			final ExperienceTradeable remainder = (ExperienceTradeable) offers.add(new ExperienceTradeable(levelsToAdd)).get(0);
+			final ExperienceOffer remainder = (ExperienceOffer) offers.add(new ExperienceOffer(levelsToAdd)).get(0);
 
 			if (remainder != null) {
 				player.setLevel(player.getLevel() - levelsToAdd + remainder.getLevels());
@@ -75,7 +75,7 @@ public class ExperienceSlot extends Slot {
 
 			final int levelsToRemove = event.isShiftClick()? largeModifier : smallModifier;
 
-			final ExperienceTradeable remaining = (ExperienceTradeable) offers.remove(new ExperienceTradeable(levelsToRemove)).get(0);
+			final ExperienceOffer remaining = (ExperienceOffer) offers.remove(new ExperienceOffer(levelsToRemove)).get(0);
 
 			if (remaining != null) {
 				player.setLevel(player.getLevel() + levelsToRemove - remaining.getLevels());
@@ -98,7 +98,7 @@ public class ExperienceSlot extends Slot {
 	@Override
 	public void update(TransactionHolder holder) {
 		int levels = 0;
-		for (ExperienceTradeable tradeable : holder.getOffers().getOfClass(ExperienceTradeable.class).values()) {
+		for (ExperienceOffer tradeable : holder.getOffers().getOfClass(ExperienceOffer.class).values()) {
 			levels += tradeable.getLevels();
 		}
 		setSlot(holder, experienceDescription.create("%levels%", String.valueOf(levels), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier)));

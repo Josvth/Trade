@@ -1,12 +1,9 @@
 package me.josvth.trade.transaction.inventory;
 
-import me.josvth.trade.tradeable.ExperienceTradeable;
-import me.josvth.trade.tradeable.ItemTradeable;
-import me.josvth.trade.tradeable.MoneyTradeable;
-import me.josvth.trade.tradeable.Tradeable;
+import me.josvth.trade.offer.*;
+import me.josvth.trade.offer.ExperienceOffer;
+import me.josvth.trade.offer.Offer;
 import me.josvth.trade.transaction.inventory.slot.*;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -102,14 +99,14 @@ public class Layout {
 
 	}
 
-	public <T extends Tradeable> T createTradeable(Class<T> clazz) {
+	public <T extends Offer> T createTradeable(Class<T> clazz) {
 
-		if (ItemTradeable.class.isAssignableFrom(clazz)) {
-			return (T) new ItemTradeable();
-		} else if (ExperienceTradeable.class.isAssignableFrom(clazz)) {
-			return (T) new ExperienceTradeable();
-		} else if (MoneyTradeable.class.isAssignableFrom(clazz)) {
-			return (T) new MoneyTradeable();
+		if (ItemOffer.class.isAssignableFrom(clazz)) {
+			return (T) new ItemOffer();
+		} else if (ExperienceOffer.class.isAssignableFrom(clazz)) {
+			return (T) new ExperienceOffer();
+		} else if (MoneyOffer.class.isAssignableFrom(clazz)) {
+			return (T) new MoneyOffer();
 		}
 
 		throw new IllegalArgumentException("Class is not supported.");

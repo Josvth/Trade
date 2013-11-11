@@ -1,8 +1,8 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.tradeable.ItemTradeable;
-import me.josvth.trade.tradeable.Tradeable;
+import me.josvth.trade.offer.ItemOffer;
+import me.josvth.trade.offer.Offer;
 import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.Bukkit;
@@ -29,7 +29,7 @@ public class TradeSlot extends Slot {
 
 		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-		final Tradeable tradeable = holder.getOffers().get(tradeSlot);
+		final Offer offer = holder.getOffers().get(tradeSlot);
 
 		// We cancel the others accept if they had accepted
 		if (holder.getOtherTrader().hasAccepted()) {
@@ -43,8 +43,8 @@ public class TradeSlot extends Slot {
 			Trade.getInstance().getFormatManager().getMessage("trading.offer-changed").send(holder.getOtherTrader().getPlayer(), "%player%", holder.getTrader().getName());
 		}
 
-		// If we have a tradeable on this slot we let the tradeable handle the event
-		if (tradeable == null) {
+		// If we have a offer on this slot we let the offer handle the event
+		if (offer == null) {
 
 			// TODO An alternative would be to determine the new item in the update() method instead of during the event.
 
@@ -66,15 +66,15 @@ public class TradeSlot extends Slot {
 					throw new IllegalStateException("Not handled action: " + event.getAction().name());
 			}
 
-			holder.getOffers().set(tradeSlot, (newItem == null)? null : new ItemTradeable(newItem));
+			holder.getOffers().set(tradeSlot, (newItem == null)? null : new ItemOffer(newItem));
 
 			MirrorSlot.updateMirrors(tradeSlot, holder.getOtherHolder(), true);
 
 		} else {
 
-			tradeable.onClick(event);
+			offer.onClick(event);
 
-			if (tradeable.isWorthless()) {
+			if (offer.isWorthless()) {
 				holder.getOffers().set(tradeSlot, null);
 			}
 
@@ -95,7 +95,7 @@ public class TradeSlot extends Slot {
 		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
 		if (event.getNewItems().containsKey(slot)) {
-			holder.getOffers().set(tradeSlot, new ItemTradeable(event.getNewItems().get(slot)));
+			holder.getOffers().set(tradeSlot, new ItemOffer(event.getNewItems().get(slot)));
 		} else {
 			holder.getOffers().set(tradeSlot, null);
 		}
@@ -107,10 +107,10 @@ public class TradeSlot extends Slot {
 	@Override
 	public void update(TransactionHolder holder) {
 
-		final Tradeable tradeable = holder.getOffers().get(tradeSlot);
+		final Offer offer = holder.getOffers().get(tradeSlot);
 
-		if (tradeable != null) {
-			holder.getInventory().setItem(slot, tradeable.getDisplayItem());
+		if (offer != null) {
+			holder.getInventory().setItem(slot, offer.getDisplayItem());
 		} else {
 			holder.getInventory().setItem(slot, null);
 		}

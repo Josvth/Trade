@@ -1,27 +1,25 @@
-package me.josvth.trade.tradeable;
+package me.josvth.trade.offer;
 
 import me.josvth.trade.transaction.Trader;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 
-public abstract class Tradeable {
+public abstract class Offer {
 
-	protected final TradeableType type;
+	protected final OfferList list;
+   	protected final int offerID;
 
-	public Tradeable(TradeableType type) {
-		this.type = type;
+	public Offer(OfferList list, int offerID) {
+		this.list = list;
+		this.offerID = offerID;
 	}
 
-	public TradeableType getType() {
-		return type;
-	}
-
-	public <T extends Tradeable> T add(T tradeable) {
+	public <T extends Offer> T add(T tradeable) {
 		return tradeable;
 	}
 
-	public <T extends Tradeable> T remove(T tradeable) {
+	public <T extends Offer> T remove(T tradeable) {
 		return tradeable;
 	}
 

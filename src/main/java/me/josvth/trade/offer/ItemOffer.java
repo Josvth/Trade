@@ -1,23 +1,22 @@
-package me.josvth.trade.tradeable;
+package me.josvth.trade.offer;
 
 import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.Trader;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemTradeable extends Tradeable {
+public class ItemOffer extends Offer {
 
 	private ItemStack item = null;
 
-	public ItemTradeable() {
-		super(TradeableType.ITEM);
+	public ItemOffer(OfferList list, int id) {
+		this(list, id, null);
 	}
 
-	public ItemTradeable(ItemStack item) {
-		super(TradeableType.ITEM);
+	public ItemOffer(OfferList list, int id, ItemStack item) {
+		super(list, id);
 		this.item = item;
 	}
 
@@ -53,12 +52,12 @@ public class ItemTradeable extends Tradeable {
 	}
 
 	@Override
-	public <T extends Tradeable> T add(T tradeable) {
+	public <T extends Offer> T add(T tradeable) {
 
-		if (!(tradeable instanceof ItemTradeable))
+		if (!(tradeable instanceof ItemOffer))
 			return tradeable;
 
-		ItemTradeable remaining = ((ItemTradeable) tradeable).clone();
+		ItemOffer remaining = ((ItemOffer) tradeable).clone();
 
 		if (!getItem().isSimilar(remaining.getItem())) {
 			return tradeable;
@@ -77,12 +76,12 @@ public class ItemTradeable extends Tradeable {
 	}
 
 	@Override
-	public <T extends Tradeable> T remove(T tradeable) {
+	public <T extends Offer> T remove(T tradeable) {
 		return tradeable;
 	}
 
-	public ItemTradeable clone() {
-		return new ItemTradeable(item);
+	public ItemOffer clone() {
+		return new ItemOffer(list, offerID, item);
 	}
 
 	// Event handling
@@ -113,7 +112,7 @@ public class ItemTradeable extends Tradeable {
 				item.setAmount(item.getAmount() + 1);
 				break;
 			case SWAP_WITH_CURSOR:
-				item = event.getCursor().clone(); // We clone here to make sure that our tradeable item is not bound to the inventory one
+				item = event.getCursor().clone(); // We clone here to make sure that our offer item is not bound to the inventory one
 				break;
 			default:
 				throw new IllegalStateException("UNHANDLED ACTION: " + event.getAction().name());

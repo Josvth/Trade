@@ -1,9 +1,9 @@
 package me.josvth.trade.transaction.inventory;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.tradeable.ItemTradeable;
-import me.josvth.trade.tradeable.Tradeable;
-import me.josvth.trade.transaction.OfferList;
+import me.josvth.trade.offer.ItemOffer;
+import me.josvth.trade.offer.Offer;
+import me.josvth.trade.offer.OfferList;
 import me.josvth.trade.transaction.Trader;
 
 import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
@@ -86,11 +86,11 @@ public class TransactionHolder implements InventoryHolder {
 
 			if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
 
-				final Iterator<Map.Entry<Integer, ItemTradeable>> iterator = getOffers().getOfClass(ItemTradeable.class).entrySet().iterator();
+				final Iterator<Map.Entry<Integer, ItemOffer>> iterator = getOffers().getOfClass(ItemOffer.class).entrySet().iterator();
 
-				final ItemTradeable itemTradeable = new ItemTradeable(event.getCurrentItem());
+				final ItemOffer itemTradeable = new ItemOffer(event.getCurrentItem());
 
-				final HashMap<Integer, Tradeable> remaining = trader.getOffers().add(itemTradeable); // TODO Clone item here?
+				final HashMap<Integer, Offer> remaining = trader.getOffers().add(itemTradeable); // TODO Clone item here?
 
 				if (remaining.get(0) != null)
 					event.setCurrentItem(remaining.get(0).getDisplayItem());

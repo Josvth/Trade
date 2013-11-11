@@ -1,30 +1,30 @@
-package me.josvth.trade.tradeable;
+package me.josvth.trade.offer;
 
 import me.josvth.trade.transaction.Trader;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class MoneyTradeable extends Tradeable {
+public class MoneyOffer extends Offer {
 
 	private double amount = 0;
 
-	public MoneyTradeable() {
-		super(TradeableType.MONEY);
+	public MoneyOffer(OfferList list, int offerID) {
+		this(list, offerID, 0);
 	}
 
-	public MoneyTradeable(double amount) {
-		super(TradeableType.MONEY);
+	public MoneyOffer(OfferList list, int offerID, double amount) {
+		super(list, offerID);
 		this.amount = amount;
 	}
 
 	@Override
-	public <T extends Tradeable> T add(T tradeable) {
+	public <T extends Offer> T add(T tradeable) {
 
-		if (!(tradeable instanceof MoneyTradeable))
+		if (!(tradeable instanceof MoneyOffer))
 			return tradeable;
 
-		MoneyTradeable remaining = ((MoneyTradeable) tradeable).clone();
+		MoneyOffer remaining = ((MoneyOffer) tradeable).clone();
 
 		amount += remaining.getAmount();
 
@@ -33,13 +33,13 @@ public class MoneyTradeable extends Tradeable {
 	}
 
 	@Override
-	public <T extends Tradeable> T remove(T tradeable) {
+	public <T extends Offer> T remove(T tradeable) {
 
-		if (!(tradeable instanceof MoneyTradeable)) {
+		if (!(tradeable instanceof MoneyOffer)) {
 			return tradeable;
 		}
 
-		MoneyTradeable remaining = ((MoneyTradeable) tradeable).clone();
+		MoneyOffer remaining = ((MoneyOffer) tradeable).clone();
 
 		amount -= remaining.getAmount();
 
@@ -63,8 +63,8 @@ public class MoneyTradeable extends Tradeable {
 	}
 
 	@Override
-	protected MoneyTradeable clone() {
-		return new MoneyTradeable(amount);
+	protected MoneyOffer clone() {
+		return new MoneyOffer(list, offerID, amount);
 	}
 
 	@Override
