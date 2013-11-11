@@ -1,8 +1,8 @@
 package me.josvth.trade.transaction.inventory;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.goods.ItemTradeable;
-import me.josvth.trade.goods.Tradeable;
+import me.josvth.trade.tradeable.ItemTradeable;
+import me.josvth.trade.tradeable.Tradeable;
 import me.josvth.trade.transaction.OfferList;
 import me.josvth.trade.transaction.Trader;
 

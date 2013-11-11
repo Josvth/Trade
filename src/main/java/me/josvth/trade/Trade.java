@@ -88,7 +88,7 @@ public class Trade extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		requestManager.unload();
-		//transactionManager.unload();
+		transactionManager.unload();
 		layoutManager.unload();
 		formatManager.unload();
 	}

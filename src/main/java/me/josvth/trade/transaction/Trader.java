@@ -84,7 +84,7 @@ public class Trader {
 
     }
 
-	public boolean isRefused() {
+	public boolean hasRefused() {
 		return refused;
 	}
 
@@ -106,7 +106,7 @@ public class Trader {
 	}
 
 	public void closeInventory() {
-		getPlayer().closeInventory(); // TODO Check for Transaction Inventory?
+		getPlayer().closeInventory();
 	}
 
 }

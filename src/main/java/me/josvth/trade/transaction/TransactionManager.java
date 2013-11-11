@@ -1,5 +1,6 @@
 package me.josvth.trade.transaction;
 
+import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.bukkitformatlibrary.managers.FormatManager;
 import me.josvth.trade.Trade;
 import me.josvth.trade.request.Request;
@@ -7,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 public class TransactionManager {
@@ -24,12 +26,22 @@ public class TransactionManager {
 		this.listener = new TransactionListener(this, this.formatManager);
 	}
 
+	public void initialize() {
+		Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
+	}
+
 	public void load(ConfigurationSection section) {
 		// TODO load transaction configuration
 	}
 
-	public void initialize() {
-		Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
+	public void unload() {
+		for (Transaction transaction : new LinkedHashSet<Transaction>(transactions.values())) {
+			transaction.stop(false);
+			final FormattedMessage message = formatManager.getMessage("trading.reload");
+			message.send(transaction.getTraderA().getPlayer());
+			message.send(transaction.getTraderB().getPlayer());
+		}
+		transactions.clear();
 	}
 
 	public Trade getPlugin() {
@@ -71,6 +83,5 @@ public class TransactionManager {
 	private Transaction removeTransaction(String player) {
 		return transactions.remove(player);
 	}
-
 
 }

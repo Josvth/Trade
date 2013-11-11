@@ -37,16 +37,18 @@ public class TransactionListener implements Listener {
 	@EventHandler
 	public void onDisconnect(PlayerQuitEvent event) {
 
-		Transaction transaction = transactionManager.getTransaction(event.getPlayer().getName());
+		final Transaction transaction = transactionManager.getTransaction(event.getPlayer().getName());
 
-		if (transaction == null) return;
+		if (transaction == null) {
+			return;
+		}
 
-		Trader trader = transaction.getTrader(event.getPlayer().getName());
+		final Trader trader = transaction.getTrader(event.getPlayer().getName());
 
-		transaction.cancel();
+		transaction.stop(false);
 
-//		formatManager.create("personal", "trade.cancelled.disconnect").send(trader.getPlayer());
-//		formatManager.create("personal", "trade.cancelled.other-disconnect").send(trader.getOther().getPlayer(), "%player%", event.getPlayer().getName());
+		formatManager.getMessage("trading.disconnect").send(trader.getPlayer());
+		formatManager.getMessage("trading.disconnect-other").send(trader.getOther().getPlayer(), "%player%", event.getPlayer().getName());
 
 	}
 

@@ -1,11 +1,10 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.goods.Tradeable;
+import me.josvth.trade.tradeable.Tradeable;
 import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.Bukkit;
-import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.Iterator;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package me.josvth.trade.goods;
+package me.josvth.trade.tradeable;
 
 import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.Trader;
@@ -10,11 +10,14 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemTradeable extends Tradeable {
 
-	private ItemStack item;
+	private ItemStack item = null;
+
+	public ItemTradeable() {
+		super(TradeableType.ITEM);
+	}
 
 	public ItemTradeable(ItemStack item) {
 		super(TradeableType.ITEM);
-		Validate.notNull(item, "Item can't be null.");
 		this.item = item;
 	}
 
@@ -84,7 +87,7 @@ public class ItemTradeable extends Tradeable {
 
 	// Event handling
 	@Override
-	public boolean onClick(InventoryClickEvent event) {
+	public void onClick(InventoryClickEvent event) {
 		// TODO should I do this "predicting what's going to happen" or should I use the update system to update tradeables?
 		switch (event.getAction()) {
 			case PICKUP_ALL:
@@ -116,14 +119,11 @@ public class ItemTradeable extends Tradeable {
 				throw new IllegalStateException("UNHANDLED ACTION: " + event.getAction().name());
 		}
 
-		return true;
-
 	}
 
 	@Override
-	public boolean onDrag(int slot, InventoryDragEvent event) {
+	public void onDrag(int slot, InventoryDragEvent event) {
 		item = event.getNewItems().get(slot);
-		return true;
 	}
 
 }

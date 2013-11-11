@@ -1,4 +1,4 @@
-package me.josvth.trade.goods;
+package me.josvth.trade.tradeable;
 
 public enum TradeableType {
 	ITEM,

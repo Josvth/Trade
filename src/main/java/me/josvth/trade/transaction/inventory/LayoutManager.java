@@ -1,14 +1,12 @@
 package me.josvth.trade.transaction.inventory;
 
+import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.bukkitformatlibrary.managers.FormatManager;
 import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.inventory.slot.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import me.josvth.trade.util.ItemDescription;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -160,7 +158,10 @@ public class LayoutManager {
 							slotID,
 							ItemDescription.fromSection(slotSection.getConfigurationSection("experience-item"), formatManager),
 							slotSection.getInt("small-modifier", 1),
-							slotSection.getInt("large-modifier", 5)
+							slotSection.getInt("large-modifier", 5),
+							new FormattedMessage(formatManager.preformatMessage(slotSection.getString("messages.add", "messages.add"))),
+							new FormattedMessage(formatManager.preformatMessage(slotSection.getString("messages.remove", "messages.remove"))),
+							new FormattedMessage(formatManager.preformatMessage(slotSection.getString("messages.insufficient", "messages.insufficient")))
 					);
 				}
 

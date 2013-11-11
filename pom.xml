@@ -68,7 +68,7 @@
 
     <build>
 
-        <finalName>${project.artifactId}-${project.version}</finalName>
+        <finalName>${project.name}-${project.version}</finalName>
 
         <resources>
             <resource>
@@ -105,7 +105,7 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
-                    <outputDirectory>${package.dir}</outputDirectory>
+                    <outputDirectory>${package.directory}</outputDirectory>
                 </configuration>
             </plugin>
 
@@ -137,7 +137,7 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>bukkitformatlibrary:bukkitformatlibrary</include>
+                                    <include>me.josvth:bukkitformatlibrary</include>
                                     <include>net.nunnerycode.bukkit:ExtendibleBukkitConfig</include>
                                 </includes>
                             </artifactSet>

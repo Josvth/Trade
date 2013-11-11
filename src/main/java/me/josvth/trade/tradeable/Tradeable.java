@@ -1,4 +1,4 @@
-package me.josvth.trade.goods;
+package me.josvth.trade.tradeable;
 
 import me.josvth.trade.transaction.Trader;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -27,6 +27,10 @@ public abstract class Tradeable {
 
 	public abstract ItemStack getDisplayItem();
 
+	public ItemStack getOtherDisplayItem() {
+		return getDisplayItem();
+	}
+
 	public double getAmount() {
 		return 0;
 	}
@@ -42,12 +46,12 @@ public abstract class Tradeable {
 	public abstract void grant(Trader trader);
 
 	// Event handling
-	public boolean onClick(InventoryClickEvent event) {
-		return false;
+	public void onClick(InventoryClickEvent event) {
+
 	}
 
-	public boolean onDrag(int slot, InventoryDragEvent event) {
-		return false;
+	public void onDrag(int slot, InventoryDragEvent event) {
+
 	}
 
 }

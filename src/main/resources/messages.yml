@@ -10,6 +10,9 @@ trading:
   refused: "You refused the trade."
   refused-other: "%player% refused the trade."
   success: "You successfully traded with %player%."
+  disconnect: "Your trade was cancelled because you disconnected."
+  disconnect-other: "Your trade was cancelled because %player% disconnected."
+  reload: "Your trade was cancelled because of a reload."
 requesting:
   timeout: "Your request to trade with %player% timed out."
   requested-by: "You have been requested to trade by %player%."

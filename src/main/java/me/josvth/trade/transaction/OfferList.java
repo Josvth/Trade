@@ -1,6 +1,6 @@
 package me.josvth.trade.transaction;
 
-import me.josvth.trade.goods.Tradeable;
+import me.josvth.trade.tradeable.Tradeable;
 
 import java.util.*;
 

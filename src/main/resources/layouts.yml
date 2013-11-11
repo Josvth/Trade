@@ -56,12 +56,29 @@ default:
           - "Right click to remove %small% level(s)"
           - "Shift left click to add %large% levels"
           - "Shift right click to remove %large% levels"
-      small-modifier: 1
-      large-modifier: 5
+    small-modifier: 1
+    large-modifier: 5
+    messages:
+      add: "Added %levels% levels to the trade."
+      remove: "Removed %levels% levels from the trade."
+      insufficient: "You don't have %levels% levels!"
     13:
       type: close
       close-item:
         material: 352
         display-name: "Click to close this inventory."
-
-
+  tradeables:
+    experience:
+      item:
+        material: 384
+        display-name: "You added %levels% levels."
+        lore:
+          - "Left click to add %small% level(s)"
+          - "Right click to remove %small% level(s)"
+          - "Shift left click to add %large% levels"
+          - "Shift right click to remove %large% levels"
+      item-other:
+        material: 384
+        display-name: "%player% offers %levels% levels."
+      small-modifier: 1
+      large-modifier: 5

@@ -1,9 +1,8 @@
 package me.josvth.trade.transaction.inventory.slot;
 
-import me.josvth.trade.transaction.inventory.ItemDescription;
+import me.josvth.trade.util.ItemDescription;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 
 public class CloseSlot extends Slot {
 

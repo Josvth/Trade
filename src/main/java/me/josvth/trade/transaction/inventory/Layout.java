@@ -1,5 +1,9 @@
 package me.josvth.trade.transaction.inventory;
 
+import me.josvth.trade.tradeable.ExperienceTradeable;
+import me.josvth.trade.tradeable.ItemTradeable;
+import me.josvth.trade.tradeable.MoneyTradeable;
+import me.josvth.trade.tradeable.Tradeable;
 import me.josvth.trade.transaction.inventory.slot.*;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -95,6 +99,20 @@ public class Layout {
 		}
 
 		return set;
+
+	}
+
+	public <T extends Tradeable> T createTradeable(Class<T> clazz) {
+
+		if (ItemTradeable.class.isAssignableFrom(clazz)) {
+			return (T) new ItemTradeable();
+		} else if (ExperienceTradeable.class.isAssignableFrom(clazz)) {
+			return (T) new ExperienceTradeable();
+		} else if (MoneyTradeable.class.isAssignableFrom(clazz)) {
+			return (T) new MoneyTradeable();
+		}
+
+		throw new IllegalArgumentException("Class is not supported.");
 
 	}
 }

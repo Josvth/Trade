@@ -1,4 +1,4 @@
-package me.josvth.trade.transaction.inventory;
+package me.josvth.trade.util;
 
 import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.bukkitformatlibrary.managers.FormatManager;

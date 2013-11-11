@@ -1,4 +1,4 @@
-package me.josvth.trade.goods;
+package me.josvth.trade.tradeable;
 
 import me.josvth.trade.transaction.Trader;
 import org.bukkit.Material;

@@ -1,14 +1,13 @@
 package me.josvth.trade.transaction.inventory.slot;
 
-import me.josvth.trade.goods.ExperienceTradeable;
-import me.josvth.trade.goods.MoneyTradeable;
-import me.josvth.trade.goods.Tradeable;
+import me.josvth.trade.tradeable.ExperienceTradeable;
+import me.josvth.trade.tradeable.MoneyTradeable;
+import me.josvth.trade.tradeable.Tradeable;
 import me.josvth.trade.transaction.OfferList;
-import me.josvth.trade.transaction.inventory.ItemDescription;
+import me.josvth.trade.util.ItemDescription;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
@@ -75,8 +74,6 @@ public class MoneySlot extends Slot {
 			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
 
 		}
-
-		player.sendMessage(offers.toString());
 
 	}
 
