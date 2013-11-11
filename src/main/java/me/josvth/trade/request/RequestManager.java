@@ -2,16 +2,14 @@ package me.josvth.trade.request;
 
 import me.josvth.bukkitformatlibrary.managers.FormatManager;
 import me.josvth.trade.Trade;
+import me.josvth.trade.tasks.RequestTimeOutTask;
 import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.TransactionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class RequestManager {
 
@@ -26,23 +24,30 @@ public class RequestManager {
 
 	private final Set<String> ignoring = new HashSet<String>();
 
-	private final Map<String, Set<Request>> activeRequests = new HashMap<String, Set<Request>>();
+	private final Map<String, List<Request>> activeRequests = new HashMap<String, List<Request>>();
 
 	public RequestManager(Trade plugin, FormatManager formatManager, TransactionManager transactionManager) {
 		this.plugin = plugin;
 		this.formatManager = formatManager;
 		this.transactionManager = transactionManager;
-		this.listener = new RequestListener(this, this.formatManager);
+		this.listener = new RequestListener(this);
 	}
 
 	public void load(ConfigurationSection section) {
-		Bukkit.getPluginManager().registerEvents(listener, plugin);
 		options.load(section);
+	}
+
+	public void initialize() {
+		Bukkit.getPluginManager().registerEvents(listener, plugin);
 	}
 
 	public void unload() {
 		ignoring.clear();
 		activeRequests.clear();
+	}
+
+	public FormatManager getFormatManager() {
+		return formatManager;
 	}
 
 	public RequestOptions getOptions() {
@@ -65,52 +70,61 @@ public class RequestManager {
 	}
 
 	// Restriction handling
-	public RequestRestriction checkRequest(Request request) {
+	public RequestRestriction mayRequest(String player, String by, RequestMethod method) {
 
-		Player requester = request.getRequesterPlayer();
-		Player requested = request.getRequesterPlayer();
+		final Player requesterPlayer = Bukkit.getPlayerExact(player);
+		final Player requestedPlayer = Bukkit.getPlayerExact(by);
 
-		if (requester == null || requested == null)
+		if (requesterPlayer == null || requestedPlayer == null) {
 			return RequestRestriction.OFFLINE;
+		}
 
-		if (hasExclusion(requester, RequestRestriction.PERMISSION))
+		if (!hasExclusion(requesterPlayer, RequestRestriction.PERMISSION) && options.usePermissions()) {
 			return RequestRestriction.PERMISSION;
+		}
 
-		if (isIgnoring(request.getRequested()))
+		if (isIgnoring(player)) {
 			return RequestRestriction.IGNORING;
+		}
 
-		if (transactionManager.isInTransaction(request.getRequested()))
+		if (transactionManager.isInTransaction(by)) {
 			return RequestRestriction.BUSY;
+		}
 
-		if (isRequested(request.getRequester(), request.getRequested()))
+		if (isRequested(player, by)) {
 			return RequestRestriction.PENDING;
+		}
+
+		if (!hasExclusion(requesterPlayer, RequestRestriction.FLOOD) && countRequestsBy(requesterPlayer.getName()) >= options.getMaxRequests()) {
+			return RequestRestriction.FLOOD;
+		}
 
 		RequestRestriction restriction = RequestRestriction.ALLOW;
 
-		if (!requester.getWorld().equals(requested.getWorld()) && !options.allowCrossWorld())
+		if (!requesterPlayer.getWorld().equals(requestedPlayer.getWorld()) && !options.allowCrossWorld())
 			restriction = RequestRestriction.CROSS_WORLD;
-		else if (!requester.getGameMode().equals(requested.getGameMode()) && !options.allowCrossGameMode())
+		else if (!requesterPlayer.getGameMode().equals(requestedPlayer.getGameMode()) && !options.allowCrossGameMode())
 			restriction = RequestRestriction.CROSS_GAME_MODE;
-		else if (!requester.canSee(requested) && !options.mustSee())
+		else if (!requesterPlayer.canSee(requestedPlayer) && !options.mustSee())
 			restriction = RequestRestriction.VISION;
-		else if (requester.getLocation().distance(requested.getPlayer().getLocation()) > options.getMaxDistance())
+		else if (requesterPlayer.getLocation().distance(requestedPlayer.getPlayer().getLocation()) > options.getMaxDistance())
 			restriction = RequestRestriction.DISTANCE;
-		else if (options.getDisabledWorlds() != null && options.getDisabledWorlds().contains(requester.getWorld().getName()))
+		else if (options.getDisabledWorlds() != null && options.getDisabledWorlds().contains(requesterPlayer.getWorld().getName()))
 			restriction = RequestRestriction.WORLD;
 		// TODO ADD REGION CHECK
 
-		if (!mayUseMethod(requester, request.getMethod()))
+		if (!mayUseMethod(requesterPlayer, method))
 			restriction = RequestRestriction.METHOD;
 
-		if (restriction != RequestRestriction.ALLOW && hasExclusion(requested, restriction))
+		if (restriction != RequestRestriction.ALLOW && hasExclusion(requestedPlayer, restriction))
 			return RequestRestriction.ALLOW;
 		else
 			return restriction;
 
 	}
 
-	public boolean mayUseMethod(Player player, RequestMethod method) {
-		if (options.usePermisions())
+	private boolean mayUseMethod(Player player, RequestMethod method) {
+		if (options.usePermissions())
 			return player.hasPermission(method.permission);
 		switch (method) {
 			case COMMAND: return options.allowCommandRequest();
@@ -123,80 +137,130 @@ public class RequestManager {
 	}
 
 	private boolean hasExclusion(Player player, RequestRestriction restriction) {
-		if (!options.usePermisions()) return false;
+		if (!options.usePermissions()) return false;
 		return player.hasPermission(restriction.excludePermission);
 	}
 
-	public boolean hasRequests(String requested) {
-		return isRequested(requested, null);
-	}
+	private boolean isRequested(String player, String by) {
 
-	public boolean isRequested(String requested, String requester) {
+		final List<Request> list = getActiveRequests(player);
 
-		Set<Request> set = getRequestSet(requested);
+		if (list == null) return false;
 
-		if (set == null) return false;
-
-		if (requester == null) return true;
-
-		for (Request request : set)
-			if (request.getRequester().equalsIgnoreCase(requested)) return true;
+		for (Request request : list) {
+			if (request.getRequester().equalsIgnoreCase(by)) {
+				return true;
+			}
+		}
 
 		return false;
 
 	}
 
-	// Current request methods
-	public Request getRequest(String requested, String requester) {
+	private int countRequestsBy(String player) {
+		int amount = 0;
+		for (List<Request> requests : activeRequests.values()) {
+			for (Request request : requests) {
+				if (player.equalsIgnoreCase(request.getRequester())) {
+					amount++;
+				}
+			}
+		}
+		return amount;
+	}
 
-		Set<Request> set = getRequestSet(requested);
+	// Current request methods
+	private Request getRequest(String player, String by) {
+
+		final List<Request> set = getActiveRequests(player);
 
 		if (set == null) return null;
 
-		for (Request request : set)
-			if (request.getRequester().equalsIgnoreCase(requested)) return request;
+		for (Request request : set) {
+			if (request.getRequester().equalsIgnoreCase(by)) {
+				return request;
+			}
+		}
 
 		return null;
 
 	}
 
-	public Set<Request> getRequestSet(String player) {
-		return activeRequests.get(player.toLowerCase());
+	private boolean addRequest(Request request) {
+
+		List<Request> list = getActiveRequests(request.getRequested());
+
+		if (list == null) {
+			list = new LinkedList<Request>();
+			setActiveRequests(request.getRequested(), list);
+		}
+
+		return list.add(request);
+
 	}
 
-	public Set<Request> getOrCreateRequestSet(String player) {
-		Set<Request> set = activeRequests.get(player.toLowerCase());
-		if (set == null)
-			set = activeRequests.put(player, new HashSet<Request>());
-		return set;
-	}
+	public boolean removeRequest(Request request) {
 
-	// Handling request objects
-	public void submit(Request request) {
-		getOrCreateRequestSet(request.getRequested()).add(request);
-		request.setSubmitDate(System.currentTimeMillis());
-	}
+		final List<Request> list = getActiveRequests(request.getRequested());
 
-	public RequestRestriction accept(Request request) {
+		if (list != null) {
 
-		RequestRestriction restriction = checkRequest(request);
+			final boolean removed = list.remove(request);
 
-		if (restriction == RequestRestriction.ALLOW) {
+			if (list.isEmpty()) {
+				setActiveRequests(request.getRequested(), null);
+			}
 
-			handleRequest(request);
-
-			activeRequests.remove(request.getRequested().toLowerCase());
+			return removed;
 
 		}
 
-		return restriction;
+		return false;
 
 	}
 
-	public Transaction handleRequest(Request request) {
-		final Transaction transaction = transactionManager.createTransaction(request.getRequester(), request.getRequested());
-		transaction.start();
-		return transaction;
+	private List<Request> getActiveRequests(String player) {
+		return activeRequests.get(player.toLowerCase());
+	}
+
+	private List<Request> setActiveRequests(String requested, List<Request> list) {
+   		if (list == null) {
+			return activeRequests.remove(requested.toLowerCase());
+		}
+		return activeRequests.put(requested.toLowerCase(), list);
+	}
+
+	public RequestResponse submit(Request request) {
+
+		final RequestRestriction restriction = mayRequest(request.getRequested(), request.getRequester(), request.getMethod());
+
+		if (restriction == RequestRestriction.ALLOW) {
+
+			// We check if there is a counter request
+			final Request counterRequest = getRequest(request.getRequester(), request.getRequested());
+
+			// If so we start a transaction
+			if (counterRequest != null) {
+
+				// We remove the counter request from the active requests
+				removeRequest(counterRequest);
+
+				final Transaction transaction = transactionManager.createTransaction(counterRequest.getRequester(), counterRequest.getRequested());
+
+				return new RequestResponse(restriction, transaction);
+
+			}
+
+			// If not we add this request to the active requests
+			addRequest(request);
+			request.setSubmitDate(System.currentTimeMillis());
+			Bukkit.getScheduler().runTaskLater(plugin, new RequestTimeOutTask(this, request), options.getTimeoutMillis() / 50);
+
+		}
+
+		// In all other cases we return only the restriction
+		return new RequestResponse(restriction, null);
+
 	}
 
 }

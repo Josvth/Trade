@@ -10,14 +10,13 @@ public class SlotUpdateTask implements Runnable {
 	private final TransactionHolder holder;
 	private final Slot[] slot;
 
+	public SlotUpdateTask(TransactionHolder holder, Set<? extends Slot> slots) {
+		this(holder, slots.toArray(new Slot[slots.size()]));
+	}
+
 	public SlotUpdateTask(TransactionHolder holder, Slot... slot) {
 		this.holder = holder;
 		this.slot = slot;
-	}
-
-	public SlotUpdateTask(TransactionHolder holder, Set<? extends Slot> slots) {
-		this.holder = holder;
-		this.slot = slots.toArray(new Slot[slots.size()]);
 	}
 
 	@Override

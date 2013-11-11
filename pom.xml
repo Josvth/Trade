@@ -18,9 +18,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <package.dir>${project.build.directory}</package.dir>
-        <package.name>${project.build.finalName}</package.name>
-        <package.path>${project.build.directory}</package.path>
+        <project.build.number>UNKNOWN</project.build.number>
+        <project.build.version>UNKNOWN</project.build.version>
+        <project.build.name>UNKNOWN</project.build.name>
+        <package.directory>${project.build.directory}</package.directory>   <!-- directory where the build jar will be put by the maven jar plugin -->
     </properties>
 
     <repositories>
@@ -47,7 +48,7 @@
         <dependency>
             <groupId>bukkitformatlibrary</groupId>
             <artifactId>bukkitformatlibrary</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <version>1.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.nunnerycode.bukkit</groupId>
@@ -60,14 +61,15 @@
 
     <build>
 
+        <finalName>${project.artifactId}-${project.version}</finalName>
+
         <resources>
             <resource>
                 <targetPath>.</targetPath>
                 <directory>${basedir}/src/main/resources/</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>config.yml</include>
-                    <include>plugin.yml</include>
+                    <include>**/*</include>
                 </includes>
             </resource>
         </resources>
@@ -97,7 +99,6 @@
                         </manifest>
                     </archive>
                     <outputDirectory>${package.dir}</outputDirectory>
-                    <finalName>${package.name}</finalName>
                 </configuration>
             </plugin>
 
@@ -116,84 +117,31 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>bukkitformatlibrary:bukkitformatlibrary</include>
+                                    <include>net.nunnerycode.bukkit:ExtendibleBukkitConfig</include>
+                                </includes>
+                            </artifactSet>
+                            <createSourcesJar>true</createSourcesJar>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
 
-        <extensions>
-            <!-- Extension required to deploy a snapshot or a release to the CloudBees remote maven repository using Webdav -->
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-webdav</artifactId>
-                <version>1.0-beta-2</version>
-            </extension>
-        </extensions>
-
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>cloudbees-release-repo</id>
-            <name>Cloudbees Release Repo</name>
-            <url>dav:https://repository-josvth.forge.cloudbees.com/release/</url>
-        </repository>
-        <snapshotRepository>
-            <id>cloudbees-snapshot-repo</id>
-            <name>Cloudbees Snapshot Repo</name>
-            <url>dav:https://repository-josvth.forge.cloudbees.com/snapshot/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <profiles>
-        <!--<profile>-->
-        <!--<id>jenkins</id>-->
-        <!--<activation>-->
-        <!--<territory>-->
-        <!--<name>env.BUILD_NUMBER</name>-->
-        <!--</territory>-->
-        <!--</activation>-->
-        <!--<properties>-->
-        <!--<project.build.number>${env.BUILD_NUMBER}</project.build.number>-->
-        <!--<project.build.version>${project.version}-b${project.build.number}</project.build.version>-->
-        <!--<project.build.name>${env.JOB_NAME}</project.build.name>-->
-        <!--</properties>-->
-        <!--</profile>-->
-        <profile>
-            <id>cloudbees-release-repo</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <repositories>
-                <repository>
-                    <id>cloudbees-release-repo</id>
-                    <name>Cloudbees Release Repo</name>
-                    <url>dav:https://repository-josvth.forge.cloudbees.com/release/</url>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </repository>
-            </repositories>
-        </profile>
-        <profile>
-            <id>cloudbees-snapshot-repo</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <repositories>
-                <repository>
-                    <id>cloudbees-snapshot-repo</id>
-                    <name>Cloudbees Snapshot Repo</name>
-                    <url>dav:https://repository-josvth.forge.cloudbees.com/snapshot/</url>
-                    <releases>
-                        <enabled>false</enabled>
-                    </releases>
-                    <snapshots>
-                        <enabled>true</enabled>
-                    </snapshots>
-                </repository>
-            </repositories>
-        </profile>
-    </profiles>
 
 </project>

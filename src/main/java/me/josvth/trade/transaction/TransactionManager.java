@@ -25,10 +25,11 @@ public class TransactionManager {
 	}
 
 	public void load(ConfigurationSection section) {
-
-		Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
-
 		// TODO load transaction configuration
+	}
+
+	public void initialize() {
+		Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
 	}
 
 	public Trade getPlugin() {
@@ -43,9 +44,7 @@ public class TransactionManager {
 		transaction = removeTransaction(playerB);
 		if (transaction != null) transaction.cancel();
 
-		transaction = new Transaction(this, playerA, playerB);
-
-		transaction.setLayout(plugin.getLayoutManager().getLayout(playerA, playerB));
+		transaction = new Transaction(this, plugin.getLayoutManager().getLayout(playerA, playerB),  playerA, playerB);
 
 		return transaction;
 
@@ -72,5 +71,6 @@ public class TransactionManager {
 	private Transaction removeTransaction(String player) {
 		return transactions.remove(player);
 	}
+
 
 }

@@ -1,18 +1,17 @@
 package me.josvth.trade.transaction;
 
-import me.josvth.trade.goods.Tradeable;
+import me.josvth.bukkitformatlibrary.FormattedMessage;
+import me.josvth.bukkitformatlibrary.managers.FormatManager;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.inventory.slot.AcceptSlot;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Trader {
 
 	private final Transaction transaction;
 	private final String name;
+
+	private final FormatManager formatManager;
 
 	private final OfferList offers;
 	private final TransactionHolder holder;
@@ -25,7 +24,10 @@ public class Trader {
 	public Trader(Transaction transaction, String name, int offerSize) {
 		this.transaction = transaction;
 		this.name = name;
-		this.offers = new OfferList(this, offerSize);
+
+		this.formatManager = transaction.getPlugin().getFormatManager();
+
+		this.offers = new OfferList(offerSize);
 		this.holder = new TransactionHolder(transaction.getPlugin(), this, transaction.getLayout());
 	}
 
@@ -58,35 +60,40 @@ public class Trader {
 	}
 
 	public void setAccepted(boolean accepted) {
-		this.accepted = accepted;
-	}
+		// Only do something if status changes
+		if (this.accepted != accepted) {
+			this.accepted = accepted;
 
-	public void accept() {
-		if (!accepted) {
-			accepted = true;
-			// TODO handle accepting
-		}
-	}
+			if (accepted) {
+				formatManager.getMessage("trading.accepted").send(getPlayer());
+				formatManager.getMessage("trading.accepted-other").send(getOther().getPlayer(), "%player%", name);
 
-	public void deny() {
-		if (accepted) {
-			accepted = false;
-			// TODO handle denying
+				// If both have accepted finish the trade
+				if (getOther().hasAccepted()) {
+					final FormattedMessage message = formatManager.getMessage("trading.success");
+					message.send(getPlayer(), "%player%", getOther().getName());
+					message.send(getOther().getPlayer(), "%player%", name);
+					transaction.stop(true);
+				}
+			} else {
+				formatManager.getMessage("trading.denied").send(getPlayer());
+				formatManager.getMessage("trading.denied-other").send(getOther().getPlayer(), "%player%", name);
+			}
+
 		}
-	}
+
+    }
+
 	public boolean isRefused() {
 		return refused;
 	}
 
 	public void setRefused(boolean refused) {
 		this.refused = refused;
-	}
-
-	public void refuse() {
-		if (!refused) {
-			refused = true;
-			transaction.stop();
-			// TODO handle refusal
+		if (refused) {
+			formatManager.getMessage("trading.refused").send(getPlayer());
+			formatManager.getMessage("trading.refused-other").send(getOther().getPlayer(), "%player%", name);
+			transaction.stop(false);
 		}
 	}
 

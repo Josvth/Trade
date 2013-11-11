@@ -41,6 +41,14 @@ public class TransactionHolder implements InventoryHolder {
 		return trader;
 	}
 
+	public Trader getOtherTrader() {
+		return trader.getOther();
+	}
+
+	public TransactionHolder getOtherHolder() {
+		return getOtherTrader().getHolder();
+	}
+
 	public Layout getLayout() {
 		return layout;
 	}
@@ -135,6 +143,7 @@ public class TransactionHolder implements InventoryHolder {
 	public void onClose(InventoryCloseEvent event) {
 
 	}
+
 
 }
 

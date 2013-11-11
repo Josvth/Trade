@@ -1,18 +1,14 @@
 package me.josvth.trade.transaction;
 
-import me.josvth.trade.goods.ItemTradeable;
 import me.josvth.trade.goods.Tradeable;
 
 import java.util.*;
 
 public class OfferList {
 
-	private final Trader trader;
-
 	private final Tradeable[] offers;
 
-	public OfferList(Trader trader, int size) {
-		this.trader = trader;
+	public OfferList(int size) {
 		this.offers = new Tradeable[size];
 	}
 
@@ -103,14 +99,6 @@ public class OfferList {
 
 	}
 
-	public void revert() {
-		for (Tradeable tradeable : offers) {
-			if (tradeable != null ) {
-				tradeable.grant(trader);
-			}
-		}
-	}
-
 //	public <T extends Tradeable> HashMap<Integer, T> getByClass(Class<T> clazz) {
 //
 //		final HashMap<Integer, T> tradeables = new HashMap<Integer, T>();
@@ -160,6 +148,14 @@ public class OfferList {
 			}
 		}
 		return -1;
+	}
+
+	public void grant(Trader trader) {
+		for (Tradeable tradeable : offers) {
+			if (tradeable != null) {
+				tradeable.grant(trader);
+			}
+		}
 	}
 
 }

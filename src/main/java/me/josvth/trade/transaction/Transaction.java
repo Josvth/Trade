@@ -7,24 +7,23 @@ public class Transaction {
 
 	private final TransactionManager manager;
 
-	private Layout layout = null;
+	private final Layout layout;
 
 	private final Trader traderA;
 	private final Trader traderB;
 
 	private TransactionStage stage = TransactionStage.PRE;
 
-	public Transaction(TransactionManager manager, String playerA, String playerB) {
+	public Transaction(TransactionManager manager, Layout layout, String playerA, String playerB) {
+
 		this.manager = manager;
+	   	this.layout = layout;
 
 		traderA = new Trader(this, playerA, layout.getOfferSize());
-		// FOR DEBUGGING PURPOSES
-		//traderB = new Trader(this, playerB, layout.getOfferSize());
-		traderB = traderA;
+		traderB = new Trader(this, playerB, layout.getOfferSize());
 
 		traderA.setOther(traderB);
 		traderB.setOther(traderA);
-
 	}
 
 	public Trade getPlugin() {
@@ -49,10 +48,6 @@ public class Transaction {
 
 	public Layout getLayout() {
 		return layout;
-	}
-
-	public void setLayout(Layout layout) {
-		this.layout = layout;
 	}
 
 	public TransactionStage getStage() {
@@ -94,8 +89,7 @@ public class Transaction {
 
 	}
 
-
-	public void stop() {
+	public void stop(boolean success) {
 
 		if (!isStarted()) {
 			throw new IllegalArgumentException("Cannot stop a non started transaction");
@@ -110,13 +104,18 @@ public class Transaction {
 		traderA.closeInventory();
 		traderB.closeInventory();
 
-		traderA.getOffers().revert();
-		traderB.getOffers().revert();
+		if (success) {
+			traderA.getOffers().grant(traderB);
+			traderB.getOffers().grant(traderA);
+		} else {
+			traderA.getOffers().grant(traderA);
+			traderB.getOffers().grant(traderB);
+		}
 
 	}
 
 	public void cancel() {
-		stop();
+		stop(false);
 	}
 
 }

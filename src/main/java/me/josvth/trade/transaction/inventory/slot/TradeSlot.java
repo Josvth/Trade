@@ -31,6 +31,18 @@ public class TradeSlot extends Slot {
 
 		final Tradeable tradeable = holder.getOffers().get(tradeSlot);
 
+		// We cancel the others accept if they had accepted
+		if (holder.getOtherTrader().hasAccepted()) {
+			holder.getOtherTrader().setAccepted(false);
+
+			// Update slots
+			AcceptSlot.updateAcceptSlots(holder.getOtherHolder(), true);
+			StatusSlot.updateStatusSlots(holder, true);
+
+			// Notify player
+			Trade.getInstance().getFormatManager().getMessage("trading.offer-changed").send(holder.getOtherTrader().getPlayer(), "%player%", holder.getTrader().getName());
+		}
+
 		// If we have a tradeable on this slot we let the tradeable handle the event
 		if (tradeable == null) {
 
@@ -56,7 +68,7 @@ public class TradeSlot extends Slot {
 
 			holder.getOffers().set(tradeSlot, (newItem == null)? null : new ItemTradeable(newItem));
 
-			MirrorSlot.updateMirrors(tradeSlot, holder.getTrader().getOther().getHolder(), true);
+			MirrorSlot.updateMirrors(tradeSlot, holder.getOtherHolder(), true);
 
 		} else {
 
@@ -66,8 +78,8 @@ public class TradeSlot extends Slot {
 				holder.getOffers().set(tradeSlot, null);
 			}
 
-			updateTradeSlots(tradeSlot, holder, true);
-			MirrorSlot.updateMirrors(tradeSlot, holder.getTrader().getOther().getHolder(), true);
+			TradeSlot.updateTradeSlots(tradeSlot, holder, true);
+			MirrorSlot.updateMirrors(tradeSlot, holder.getOtherHolder(), true);
 
 		}
 
@@ -88,7 +100,7 @@ public class TradeSlot extends Slot {
 			holder.getOffers().set(tradeSlot, null);
 		}
 
-		MirrorSlot.updateMirrors(tradeSlot, holder.getTrader().getOther().getHolder(), true);
+		MirrorSlot.updateMirrors(tradeSlot, holder.getOtherHolder(), true);
 
 	}
 

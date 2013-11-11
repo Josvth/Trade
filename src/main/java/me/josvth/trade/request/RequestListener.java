@@ -14,9 +14,9 @@ public class RequestListener implements Listener {
 	private final RequestManager requestManager;
    	private final FormatManager formatManager;
 
-	public RequestListener(RequestManager requestManager, FormatManager formatManager) {
+	public RequestListener(RequestManager requestManager) {
 		this.requestManager = requestManager;
-		this.formatManager = formatManager;
+		this.formatManager = requestManager.getFormatManager();
 	}
 
 	@EventHandler
@@ -59,43 +59,25 @@ public class RequestListener implements Listener {
 
 	private void handleEvent(Cancellable event, Player requester, Player requested, RequestMethod method) {
 
-		// First we check if the requester his answering a request
-		Request request = requestManager.getRequest(requester.getName(), requested.getName());
+		final RequestResponse response = requestManager.submit(new Request(requester.getName(), requested.getName(), method));
 
-		if (request != null) {
+		final RequestRestriction restriction = response.getRequestRestriction();
 
-			if (requestManager.mayUseMethod(requester, method)) {
-				event.setCancelled(true);
+		if (restriction == RequestRestriction.ALLOW) {
+			event.setCancelled(true);
+		}
 
-				RequestRestriction restriction = requestManager.accept(request);
-
-				if (restriction == RequestRestriction.ALLOW) {
-					FormattedMessage message = formatManager.getMessage("trading.started");
-					message.send(requester, "%player%", requested.getName());
-					message.send(requested, "%player%", requester.getName());
-				} else {
-					FormattedMessage message = formatManager.getMessage(restriction.tradeMessagePath);
-					message.send(requester, "%player%", requested.getName());
-					message.send(requested, "%player%", requester.getName());
-				}
-
-			}
-
+		if (response.getTransaction() != null) {
+			response.getTransaction().start();
+			// TODO add messages
 
 		} else {
 
-			request = new Request(requester.getName(), requested.getName(), method);
-
-			RequestRestriction restriction = requestManager.checkRequest(request);
-
-			if (restriction == RequestRestriction.ALLOW) {
-				requestManager.submit(request);
-				event.setCancelled(true);
-			}
-
-			if (restriction != RequestRestriction.METHOD && restriction != RequestRestriction.PERMISSION) {
-				FormattedMessage message = formatManager.getMessage(restriction.requestMessagePath);
-				message.send(requester, "%player%", requested.getName());
+			if (restriction == RequestRestriction.METHOD) {
+				formatManager.getMessage(RequestMethod.COMMAND.messagePath).send(requester);
+			} else {
+				formatManager.getMessage(restriction.requestMessagePath).send(requester, "%player%", requested.getName());
+				formatManager.getMessage("requesting.requested-by").send(requested, "%player%", requester.getName());
 			}
 
 		}

@@ -31,7 +31,7 @@ public class AcceptSlot extends Slot {
 		holder.getTrader().setAccepted(!holder.getTrader().hasAccepted());
 
 		AcceptSlot.updateAcceptSlots(holder, true);
-		StatusSlot.updateStatusSlots(holder, true);
+		StatusSlot.updateStatusSlots(holder.getOtherHolder(), true);
 
 		event.setCancelled(true);
 

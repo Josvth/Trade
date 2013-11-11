@@ -1,11 +1,14 @@
 package me.josvth.trade.transaction.inventory;
 
+import me.josvth.bukkitformatlibrary.FormattedMessage;
+import me.josvth.bukkitformatlibrary.managers.FormatManager;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ItemDescription {
@@ -15,25 +18,23 @@ public class ItemDescription {
 	private byte data = 0;
 	private short damage = 0;
 
-	private String displayName = null;
-	private List<String> lore = null;
-
-	private boolean overrideMeta = true;
+	private FormattedMessage displayName = null;
+	private List<FormattedMessage> lore = null;
 
 	public ItemDescription() {
 
 	}
 
 	public ItemDescription(Material material, int amount) {
-		this(material, amount, (short) 0, (byte) 0, null, null, true);
+		this(material, amount, (short) 0, (byte) 0, null, null);
 	}
 
 	public ItemDescription(Material material, int amount, byte data) {
-		this(material, amount, (short) 0, data, null, null, true);
+		this(material, amount, (short) 0, data, null, null);
 	}
 
-	public ItemDescription(Material material, int amount, short damage, byte data, String displayName, List<String> lore, boolean overrideMeta) {
-	    setMaterial(material);
+	public ItemDescription(Material material, int amount, short damage, byte data, FormattedMessage displayName, List<FormattedMessage> lore) {
+		setMaterial(material);
 		setAmount(amount);
 		setDamage(damage);
 		setData(data);
@@ -41,7 +42,6 @@ public class ItemDescription {
 		setDisplayName(displayName);
 		setLore(lore);
 
-		setOverrideMeta(overrideMeta);
 	}
 
 	public Material getMaterial() {
@@ -86,31 +86,23 @@ public class ItemDescription {
 		this.damage = damage;
 	}
 
-	public String getDisplayName() {
+	public FormattedMessage getDisplayName() {
 		return displayName;
 	}
 
-	public void setDisplayName(String displayName) {
+	public void setDisplayName(FormattedMessage displayName) {
 		this.displayName = displayName;
 	}
 
-	public List<String> getLore() {
+	public List<FormattedMessage> getLore() {
 		return lore;
 	}
 
-	public void setLore(List<String> lore) {
+	public void setLore(List<FormattedMessage> lore) {
 		this.lore = lore;
 	}
 
-	public boolean overrideMeta() {
-		return overrideMeta;
-	}
-
-	public void setOverrideMeta(boolean overrideMeta) {
-		this.overrideMeta = overrideMeta;
-	}
-
-	public ItemStack create() {
+	public ItemStack create(String... arguments) {
 
 		final ItemStack stack = new ItemStack(material, amount, damage, data);
 
@@ -119,11 +111,15 @@ public class ItemDescription {
 			final ItemMeta meta = stack.getItemMeta();
 
 			if (displayName != null) {
-				meta.setDisplayName(displayName);
+				meta.setDisplayName(displayName.get(arguments));
 			}
 
 			if (lore != null) {
-				meta.setLore(meta.getLore());
+				final List<String> loreList = new ArrayList<String>();
+				for (FormattedMessage message : lore) {
+					loreList.add(message.get(arguments));
+				}
+				meta.setLore(loreList);
 			}
 
 			stack.setItemMeta(meta);
@@ -145,9 +141,8 @@ public class ItemDescription {
 			- "This"
 			- "is"
 			- "lore"
-		override-meta: true		(Optional, default: true)
 	*/
-	public static final ItemDescription fromSection(ConfigurationSection section) {
+	public static final ItemDescription fromSection(ConfigurationSection section, FormatManager formatManager) {
 
 		if (section == null) {
 			return null;
@@ -155,10 +150,10 @@ public class ItemDescription {
 
 		final Material material;
 
-		if (section.isInt("id")) {
-			material = Material.getMaterial(section.getInt("id"));
-		} else if (section.isString("id")) {
-			material = Material.getMaterial(section.getString("id"));
+		if (section.isInt("material")) {
+			material = Material.getMaterial(section.getInt("material"));
+		} else if (section.isString("material")) {
+			material = Material.getMaterial(section.getString("material"));
 		} else {
 			return null;
 		}
@@ -167,15 +162,24 @@ public class ItemDescription {
 			return null;
 		}
 
-		final int amount = section.getInt("amount", 0);
-		final short damage = (short) section.getInt("damage", 0);
-		final byte data = (byte) section.getInt("data", 0);
+		List<FormattedMessage> lore = null;
 
-		final String displayName = section.getString("display-name");
-		final List<String> lore = section.getStringList("lore");
-		final boolean overrideMeta = section.getBoolean("override-meta", true);
+		final List<String> loreList = section.getStringList("lore");
 
-		return new ItemDescription(material, amount, damage, data, displayName, lore, overrideMeta);
+		if (!loreList.isEmpty()) {
+			lore = new ArrayList<FormattedMessage>(loreList.size());
+			for (String loreString : loreList) {
+				lore.add(new FormattedMessage(formatManager.preformatMessage(loreString)));
+			}
+		}
+
+		return new ItemDescription(
+				material,
+				section.getInt("amount", 0),
+				(short) section.getInt("damage", 0),
+				(byte) section.getInt("data", 0),
+				new FormattedMessage(formatManager.preformatMessage(section.getString("display-name"))),
+				lore);
 
 	}
 

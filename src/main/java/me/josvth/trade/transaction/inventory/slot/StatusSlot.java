@@ -22,10 +22,10 @@ public class StatusSlot extends Slot{
 
 	@Override
 	public void update(TransactionHolder holder) {
-		if (holder.getTrader().getOther().hasAccepted()) {
-			setSlot(holder, consideringDescription.create());
+		if (holder.getOtherTrader().hasAccepted()) {
+			setSlot(holder, acceptedDescription.create("%player%", holder.getOtherTrader().getName()));
 		} else {
-			setSlot(holder, acceptedDescription.create());
+			setSlot(holder, consideringDescription.create("%player%", holder.getOtherTrader().getName()));
 		}
 	}
 

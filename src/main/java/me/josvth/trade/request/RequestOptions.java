@@ -7,7 +7,7 @@ import java.util.List;
 public class RequestOptions {
 
 	// Player options
-	private boolean usePermissions = true;
+	private boolean usePermissions = false;
 	private boolean allowCrossGameMode = false;
 	private boolean allowCrossWorld = false;
 	private boolean mustSee = false;
@@ -17,6 +17,7 @@ public class RequestOptions {
 
 	// Request method options
 	private long timeoutMillis = 10000;
+	private int maxRequests = 5;
 
 	private boolean allowCommandRequest = true;
 	private boolean allowRightClickRequest = true;
@@ -27,7 +28,7 @@ public class RequestOptions {
 	public void load(ConfigurationSection section) {
 
 		usePermissions = section.getBoolean("use-permissions", usePermissions);
-		allowCrossGameMode = section.getBoolean("allow-cross-gamemode", allowCrossGameMode);
+		allowCrossGameMode = section.getBoolean("allow-cross-game-mode", allowCrossGameMode);
 		allowCrossWorld = section.getBoolean("allow-cross-world", allowCrossWorld);
 		mustSee = section.getBoolean("must-see", mustSee);
 		maxDistance = section.getInt("max-distance", maxDistance);
@@ -35,15 +36,17 @@ public class RequestOptions {
 		disabledRegions = section.getStringList("disabled-regions");
 
 		timeoutMillis = section.getLong("timeout", timeoutMillis);
-		allowCommandRequest = section.getBoolean("requesting.allow.command", allowCommandRequest);
-		allowRightClickRequest = section.getBoolean("requesting.allow.right-click", allowRightClickRequest);
-		allowShiftRightClickRequest = section.getBoolean("requesting.allow.shift-right-click", allowShiftRightClickRequest);
-		allowLeftClickRequest = section.getBoolean("requesting.allow.left-click", allowLeftClickRequest);
-		allowShiftLeftClickRequest = section.getBoolean("requesting.allow.shift-left-click", allowShiftLeftClickRequest);
+		maxRequests = section.getInt("max-requests", maxRequests);
+
+		allowCommandRequest = section.getBoolean("method-allow.command", allowCommandRequest);
+		allowRightClickRequest = section.getBoolean("method-allow.right-click", allowRightClickRequest);
+		allowShiftRightClickRequest = section.getBoolean("method-allow.shift-right-click", allowShiftRightClickRequest);
+		allowLeftClickRequest = section.getBoolean("method-allow.left-click", allowLeftClickRequest);
+		allowShiftLeftClickRequest = section.getBoolean("method-allow.shift-left-click", allowShiftLeftClickRequest);
 
 	}
 
-	public boolean usePermisions() {
+	public boolean usePermissions() {
 		return usePermissions;
 	}
 
@@ -145,5 +148,13 @@ public class RequestOptions {
 
 	public void setAllowShiftLeftClickRequest(boolean allowShiftLeftClickRequest) {
 		this.allowShiftLeftClickRequest = allowShiftLeftClickRequest;
+	}
+
+	public int getMaxRequests() {
+		return maxRequests;
+	}
+
+	public void setMaxRequests(int maxRequests) {
+		this.maxRequests = maxRequests;
 	}
 }

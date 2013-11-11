@@ -1,0 +1,16 @@
+requesting:
+  use-permissions: false
+  allow-cross-game-mode: false
+  allow-cross-world: false
+  must-see: true
+  max-distance: 10
+  disabled-worlds: {}
+  disabled-regions: {}
+  timeout: 10000
+  max-requests: 5
+  method-allow:
+    command: true
+    right-click: true
+    shift-right-click: true
+    left-click: false
+    shift-left-click: false

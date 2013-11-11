@@ -83,7 +83,7 @@ public class ExperienceTradeable extends Tradeable {
 	}
 
 	public static void grant(Trader trader, int levels) {
-		trader.getPlayer().setTotalExperience(trader.getPlayer().getExpToLevel() + levels);
+		trader.getPlayer().setLevel(trader.getPlayer().getLevel() + levels);
 	}
 
 	public int getLevels() {

@@ -1,13 +1,16 @@
 package me.josvth.trade;
 
 import com.conventnunnery.libraries.config.ConventYamlConfiguration;
+import me.josvth.bukkitformatlibrary.FormattedMessage;
+import me.josvth.bukkitformatlibrary.formatter.ColorFormatter;
 import me.josvth.bukkitformatlibrary.managers.YamlFormatManager;
-import me.josvth.trade.request.RequestManager;
+import me.josvth.trade.request.*;
 import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.TransactionManager;
 import me.josvth.trade.transaction.inventory.LayoutManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -37,7 +40,7 @@ public class Trade extends JavaPlugin {
 		instance = this;
 
 		formatManager = new YamlFormatManager();
-		layoutManager = new LayoutManager();
+		layoutManager = new LayoutManager(this, formatManager);
 
 		transactionManager = new TransactionManager(this, formatManager);
 		requestManager = new RequestManager(this, formatManager, transactionManager);
@@ -61,8 +64,12 @@ public class Trade extends JavaPlugin {
 		layoutConfiguration.load();
 
 		// Load managers
-		formatManager.loadFormatters(generalConfiguration.getConfigurationSection("formatters"));
+		if (generalConfiguration.isConfigurationSection("formatters")) {
+			formatManager.loadFormatters(generalConfiguration.getConfigurationSection("formatters"));
+		}
+
 		formatManager.loadMessages(messageConfiguration);
+		formatManager.addFormatter(new ColorFormatter("default"));
 
 		layoutManager.load(layoutConfiguration);
 
@@ -74,7 +81,8 @@ public class Trade extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-
+		transactionManager.initialize();
+		requestManager.initialize();
 	}
 
 	@Override
@@ -110,15 +118,12 @@ public class Trade extends JavaPlugin {
 
 		Player player = (Player) sender;
 
-		if (args[0].equalsIgnoreCase("new")) {
-
-			final Transaction transaction = transactionManager.createTransaction(sender.getName(), sender.getName());
-
-			transaction.start();
-
+		if (args.length < 1) {
+			formatManager.getMessage("command.invalid-usage").send(player, "%usage%", "/trade <sub command> or /trade <player>");
+			return true;
 		}
 
-		if (args[0].equalsIgnoreCase("open")) {
+		if ("open".equalsIgnoreCase(args[0])) {
 
 			Transaction transaction = transactionManager.getTransaction(player.getName());
 
@@ -128,6 +133,52 @@ public class Trade extends JavaPlugin {
 				player.sendMessage("NOT TRADING!");
 			}
 
+			return true;
+
+		}
+
+		if ("request".equalsIgnoreCase(args[0])) {
+
+			if (args.length < 2) {
+				formatManager.getMessage("command.invalid-usage").send(player, "%usage%", "/trade request <player>");
+				return true;
+			}
+
+			final RequestResponse response = requestManager.submit(new Request(player.getName(), args[1], RequestMethod.COMMAND));
+
+			final RequestRestriction restriction = response.getRequestRestriction();
+
+			if (response.getTransaction() != null) {
+				response.getTransaction().start();
+				// TODO add messages
+
+			} else {
+				if (restriction == RequestRestriction.METHOD) {
+					formatManager.getMessage(RequestMethod.COMMAND.messagePath).send(player);
+				} else {
+					formatManager.getMessage(restriction.requestMessagePath).send(player, "%player%", args[1]);
+				}
+			}
+
+			return true;
+
+		}
+
+		// /trade <player>
+		final RequestResponse response = requestManager.submit(new Request(player.getName(), args[0], RequestMethod.COMMAND));
+
+		final RequestRestriction restriction = response.getRequestRestriction();
+
+		if (response.getTransaction() != null) {
+			response.getTransaction().start();
+			// TODO add messages
+
+		} else {
+			if (restriction == RequestRestriction.METHOD) {
+				formatManager.getMessage(RequestMethod.COMMAND.messagePath).send(player);
+			} else {
+				formatManager.getMessage(restriction.requestMessagePath).send(player, "%player%", args[0]);
+			}
 		}
 
 		return true;

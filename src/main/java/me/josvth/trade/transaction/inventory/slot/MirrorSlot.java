@@ -25,7 +25,7 @@ public class MirrorSlot extends Slot {
 
 	@Override
 	public void update(TransactionHolder holder) {
-		Tradeable tradeable = holder.getOffers().get(mirrorSlot);
+		final Tradeable tradeable = holder.getOtherTrader().getOffers().get(mirrorSlot);
 
 		if (tradeable != null) {
 			holder.getInventory().setItem(slot, tradeable.getDisplayItem());

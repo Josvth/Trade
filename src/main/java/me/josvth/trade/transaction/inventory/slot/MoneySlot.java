@@ -52,7 +52,7 @@ public class MoneySlot extends Slot {
 
 			// TODO update specific slots
 			TradeSlot.updateTradeSlots(holder, true);
-			MirrorSlot.updateMirrors(holder.getTrader().getOther().getHolder(), true);
+			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
 
 		} else if (event.isRightClick()) {
 
@@ -72,7 +72,7 @@ public class MoneySlot extends Slot {
 
 			// TODO update specific slots
 			TradeSlot.updateTradeSlots(holder, true);
-			MirrorSlot.updateMirrors(holder.getTrader().getOther().getHolder(), true);
+			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
 
 		}
 

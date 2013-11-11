@@ -1,0 +1,67 @@
+default:
+  size: 18
+  offer-size: 3
+  slots:
+    0:
+      type: trade
+      slot: 0
+    1:
+      type: trade
+      slot: 1
+    2:
+      type: trade
+      slot: 2
+    3:
+      type: accept
+      accept-item:
+        material: 159
+        data: 5
+        display-name: "&2Accept"
+      accepted-item:
+        material: 159
+        data: 3
+        display-name: "&9Click to deny"
+    4:
+      type: refuse
+      refuse-item:
+        material: 159
+        data: 14
+        display-name: "&4Refuse"
+    5:
+      type: status
+      considering-item:
+        material: 159
+        data: 1
+        display-name: "&6%player% is considering"
+      accepted-item:
+        material: 159
+        data: 5
+        display-name: "&2%player% accepted"
+    6:
+      type: mirror
+      slot: 0
+    7:
+      type: mirror
+      slot: 1
+    8:
+      type: mirror
+      slot: 2
+    9:
+      type: experience
+      experience-item:
+        material: 384
+        display-name: "You added %levels% levels."
+        lore:
+          - "Left click to add %small% level(s)"
+          - "Right click to remove %small% level(s)"
+          - "Shift left click to add %large% levels"
+          - "Shift right click to remove %large% levels"
+      small-modifier: 1
+      large-modifier: 5
+    13:
+      type: close
+      close-item:
+        material: 352
+        display-name: "Click to close this inventory."
+
+

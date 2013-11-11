@@ -1,23 +1,20 @@
+commands:
+  invalid-usage: That's not the way you use this command. Try %usage%.
 trading:
   started: "You started trading with %player%!"
-  restriction:
-    allow: "How the hell did you manage to get this message? Please contact me."
-    offline: "You can't request %player% because he or she is offline."
-    busy: "You can't request %player% because he is in trade."
-    ignoring: "You can't request %player% because he's ignoring requests."
-    already-requested: "You can't request %player% again! Please wait before requesting again."
-    flood: "You can't request players that often!"
-    permission: "You don't have the permission to request this way."
-    cross-game-mode: "You can't request someone that is in another game mode."
-    cross-world: "You can't request someone that is in another world."
-    vision: "You can only request players that are in your vision."
-    distance: "%player% is too far away from you to request him."
-    world: "Trading is disabled in this world."
-    region: "You can't trade in this region."
-    method: "You can't request %player% this way."
+  offer-changed: "%player% changed their offer."
+  accepted: "You accepted the trade."
+  accepted-other: "%player% accepted the trade."
+  denied: "You denied the trade."
+  denied-other: "%player% denied the trade."
+  refused: "You refused the trade."
+  refused-other: "%player% refused the trade."
+  success: "You successfully traded with %player%."
 requesting:
+  timeout: "Your request to trade with %player% timed out."
+  requested-by: "You have been requested to trade by %player%."
   restriction:
-    allow: "How the hell did you manage to get this message? Please contact me."
+    allow: You requested %player% to trade.
     offline: "You can't request %player% because he or she is offline."
     busy: "You can't request %player% because he is in trade."
     ignoring: "You can't request %player% because he's ignoring requests."
@@ -30,4 +27,6 @@ requesting:
     distance: "%player% is too far away from you to request him."
     world: "Trading is disabled in this world."
     region: "You can't trade in this region."
-    method: "You can't request %player% this way."
+    method:
+     command: "You are not allowed to use this command."
+

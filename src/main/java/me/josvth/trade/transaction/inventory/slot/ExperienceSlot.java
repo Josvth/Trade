@@ -56,7 +56,7 @@ public class ExperienceSlot extends Slot {
 
 			// TODO update specific slots
 			TradeSlot.updateTradeSlots(holder, true);
-			MirrorSlot.updateMirrors(holder.getTrader().getOther().getHolder(), true);
+			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
 
 		} else if (event.isRightClick()) {
 
@@ -75,7 +75,7 @@ public class ExperienceSlot extends Slot {
 
 			// TODO update specific slots
 			TradeSlot.updateTradeSlots(holder, true);
-			MirrorSlot.updateMirrors(holder.getTrader().getOther().getHolder(), true);
+			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
 
 		}
 
@@ -85,6 +85,6 @@ public class ExperienceSlot extends Slot {
 
 	@Override
 	public void update(TransactionHolder holder) {
-		setSlot(holder, experienceDescription.create());
+		setSlot(holder, experienceDescription.create("%levels%", "unknown", "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier)));
 	}
 }
