@@ -151,4 +151,16 @@
 
     </build>
 
+    <distributionManagement>
+        <repository>
+            <id>cloudbees-release-repo</id>
+            <name>Cloudbees Release Repo</name>
+            <url>http://repository-josvthfoss.forge.cloudbees.com/release/</url>
+        </repository>
+        <snapshotRepository>
+            <id>cloudbees-snapshot-repo</id>
+            <name>Cloudbees Snapshot Repo</name>
+            <url>http://repository-josvthfoss.forge.cloudbees.com/snapshot/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
