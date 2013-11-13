@@ -1,9 +1,7 @@
 package me.josvth.trade.transaction.inventory;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.offer.ItemOffer;
-import me.josvth.trade.offer.Offer;
-import me.josvth.trade.offer.OfferList;
+import me.josvth.trade.offer.*;
 import me.josvth.trade.transaction.Trader;
 
 import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
@@ -88,14 +86,15 @@ public class TransactionHolder implements InventoryHolder {
 
 				final Iterator<Map.Entry<Integer, ItemOffer>> iterator = getOffers().getOfClass(ItemOffer.class).entrySet().iterator();
 
-				final ItemOffer itemTradeable = new ItemOffer(event.getCurrentItem());
-
-				final HashMap<Integer, Offer> remaining = trader.getOffers().add(itemTradeable); // TODO Clone item here?
-
-				if (remaining.get(0) != null)
-					event.setCurrentItem(remaining.get(0).getDisplayItem());
-				else
-					event.setCurrentItem(null);
+                // TODO make this not use getOffers().add()
+//				final ItemOffer itemTradeable = new ItemOffer(event.getCurrentItem());
+//
+//				final HashMap<Integer, Offer> remaining = trader.getOffers().add(itemTradeable); // TODO Clone item here?
+//
+//				if (remaining.get(0) != null)
+//					event.setCurrentItem(remaining.get(0).getDisplayItem());
+//				else
+//					event.setCurrentItem(null);
 
 				// TODO Do this in the offer list?
 				TradeSlot.updateTradeSlots(this, true);
@@ -144,6 +143,8 @@ public class TransactionHolder implements InventoryHolder {
 
 	}
 
-
+    public <T extends Offer> T createOffer(Class<T> clazz, int offerID) {
+        return layout.createOffer(clazz, getOffers(), offerID);
+    }
 }
 

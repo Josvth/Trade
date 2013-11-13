@@ -99,17 +99,17 @@ public class Layout {
 
 	}
 
-	public <T extends Offer> T createTradeable(Class<T> clazz) {
+    public <T extends Offer> T createOffer(Class<T> clazz, OfferList offerList, int offerIndex) {
 
-		if (ItemOffer.class.isAssignableFrom(clazz)) {
-			return (T) new ItemOffer();
-		} else if (ExperienceOffer.class.isAssignableFrom(clazz)) {
-			return (T) new ExperienceOffer();
-		} else if (MoneyOffer.class.isAssignableFrom(clazz)) {
-			return (T) new MoneyOffer();
-		}
+        if (ItemOffer.class.isAssignableFrom(clazz)) {
+            return (T) new ItemOffer(offerList, offerIndex);
+        } else if (ExperienceOffer.class.isAssignableFrom(clazz)) {
+            return (T) new ExperienceOffer(offerList, offerIndex);
+        } else if (MoneyOffer.class.isAssignableFrom(clazz)) {
+            return (T) new MoneyOffer(offerList, offerIndex);
+        }
 
-		throw new IllegalArgumentException("Class is not supported.");
+        throw new IllegalArgumentException("Class is not supported.");
 
-	}
+    }
 }
