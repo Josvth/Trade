@@ -34,21 +34,28 @@ public class MirrorSlot extends Slot {
 
 	}
 
-	public static void updateMirrors(int tradeSlot, TransactionHolder holder, boolean nextTick) {
+	public static void updateMirrors(TransactionHolder holder, boolean nextTick, int... offerIndex) {
 
 		final Set<MirrorSlot> slots = holder.getLayout().getSlotsOfType(MirrorSlot.class);
 
 		final Iterator<MirrorSlot> iterator = slots.iterator();
 
 		while (iterator.hasNext()) {
-			final MirrorSlot mirrorSlot = iterator.next();
-			if (mirrorSlot.getMirrorSlot() == tradeSlot) {
-				if (!nextTick) {
-					mirrorSlot.update(holder);
-				}
-			} else {
-				iterator.remove();
-			}
+			final MirrorSlot slot = iterator.next();
+
+            boolean notUpdated = true;
+            for (int i = 0; i < offerIndex.length && notUpdated; i++) {
+                if (slot.getMirrorSlot() == offerIndex[i]) {
+                    if (!nextTick) {
+                        slot.update(holder);
+                    }
+                    notUpdated = false;
+                }
+            }
+
+            if (notUpdated) {
+                iterator.remove();
+            }
 		}
 
 		if (nextTick && !slots.isEmpty()) {

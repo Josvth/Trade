@@ -47,55 +47,27 @@ public class ExperienceOffer extends Offer {
 		this.otherItemDescription = otherItemDescription;
 	}
 
-	@Override
-	public <T extends Offer> T add(T tradeable) {
+    public int add(int amount) {
+        final int remainder = levels + amount - 64; // TODO Remove hard coded 64
+        if (remainder > 0) {
+            levels = 64;
+            return remainder;
+        } else {
+            levels = levels + amount;
+            return 0;
+        }
+    }
 
-		if (!(tradeable instanceof ExperienceOffer)) {
-			return tradeable;
-		}
-
-		ExperienceOffer remaining = ((ExperienceOffer) tradeable).clone();
-
-		int newLevels = levels + remaining.getLevels();
-
-		final int overflow = newLevels - 64;
-
-		if (overflow > 0) {
-			newLevels -= overflow;
-			levels = newLevels;
-			remaining.setLevels(overflow);
-			return (T) remaining;
-		} else {
-			setLevels(newLevels);
-			return null;
-		}
-
-	}
-
-	@Override
-	public <T extends Offer> T remove(T tradeable) {
-
-		if (!(tradeable instanceof ExperienceOffer)) {
-			return tradeable;
-		}
-
-		ExperienceOffer remaining = ((ExperienceOffer) tradeable).clone();
-
-		if (remaining.getLevels() > 0) {
-
-			levels -= remaining.getLevels();
-
-			if (levels < 0) {
-				remaining.setLevels(-1 * levels);
-				levels = 0;
-				return (T) remaining;
-			}
-
-		}
-
-		return null;
-
-	}
+    public int remove(int amount) {
+        final int remainder = levels - amount;
+        if (remainder > 0) {
+            levels = remainder;
+            return 0;
+        } else {
+            levels = 0;
+            return -1 * remainder;
+        }
+    }
 
 	public int getLevels() {
 		return levels;
@@ -142,4 +114,6 @@ public class ExperienceOffer extends Offer {
 	public String toString() {
 		return "EXP: " + levels;
 	}
+
+
 }

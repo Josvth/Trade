@@ -31,49 +31,49 @@ public class MoneySlot extends Slot {
 		// We always cancel the event.
 		event.setCancelled(true);
 
-		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-
-		final Player player = (Player) event.getWhoClicked();
-
-		final OfferList offers = holder.getOffers();
-
-		if (event.isLeftClick()) {
-
-			final double moneyToAdd = event.isShiftClick()? largeModifier : smallModifier;
-
-			// TODO add balance check
-
-			// TODO remove balance
-
-			final Map<Integer, Offer> remainders = offers.add(new MoneyOffer(moneyToAdd));
-
-			// TODO handle remainders
-
-			// TODO update specific slots
-			TradeSlot.updateTradeSlots(holder, true);
-			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
-
-		} else if (event.isRightClick()) {
-
-			final double moneyToRemove = event.isShiftClick()? largeModifier : smallModifier;
-
-			final Map<Integer, Offer> remainders = offers.remove(new MoneyOffer(moneyToRemove));
-
-			final ExperienceOffer remaining = (ExperienceOffer) remainders.get(0);
-
-			// TODO Regrant money
-			if (remaining != null) {
-				player.sendMessage("TEST MESSAGE: Removed " + (moneyToRemove - remaining.getLevels()) + " levels.");
-				//player.setLevel(player.getLevel() + moneyToRemove - remaining.getLevels());
-			} else {
-				//player.setLevel(player.getLevel() + moneyToRemove);
-			}
-
-			// TODO update specific slots
-			TradeSlot.updateTradeSlots(holder, true);
-			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
-
-		}
+//		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+//
+//		final Player player = (Player) event.getWhoClicked();
+//
+//		final OfferList offers = holder.getOffers();
+//
+//		if (event.isLeftClick()) {
+//
+//			final double moneyToAdd = event.isShiftClick()? largeModifier : smallModifier;
+//
+//			// TODO add balance check
+//
+//			// TODO remove balance
+//
+//			final Map<Integer, Offer> remainders = offers.add(new MoneyOffer(moneyToAdd));
+//
+//			// TODO handle remainders
+//
+//			// TODO update specific slots
+//			TradeSlot.updateTradeSlots(holder, true);
+//			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
+//
+//		} else if (event.isRightClick()) {
+//
+//			final double moneyToRemove = event.isShiftClick()? largeModifier : smallModifier;
+//
+//			final Map<Integer, Offer> remainders = offers.remove(new MoneyOffer(moneyToRemove));
+//
+//			final ExperienceOffer remaining = (ExperienceOffer) remainders.get(0);
+//
+//			// TODO Regrant money
+//			if (remaining != null) {
+//				player.sendMessage("TEST MESSAGE: Removed " + (moneyToRemove - remaining.getLevels()) + " levels.");
+//				//player.setLevel(player.getLevel() + moneyToRemove - remaining.getLevels());
+//			} else {
+//				//player.setLevel(player.getLevel() + moneyToRemove);
+//			}
+//
+//			// TODO update specific slots
+//			TradeSlot.updateTradeSlots(holder, true);
+//			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
+//
+//		}
 
 	}
 

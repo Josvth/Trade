@@ -7,8 +7,8 @@ import java.util.Set;
 
 public class SlotUpdateTask implements Runnable {
 
-	private final TransactionHolder holder;
-	private final Slot[] slot;
+	protected final TransactionHolder holder;
+    protected final Slot[] slot;
 
 	public SlotUpdateTask(TransactionHolder holder, Set<? extends Slot> slots) {
 		this(holder, slots.toArray(new Slot[slots.size()]));

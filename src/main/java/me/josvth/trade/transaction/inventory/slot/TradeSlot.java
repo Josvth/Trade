@@ -16,11 +16,11 @@ import java.util.Set;
 
 public class TradeSlot extends Slot {
 
-	private final int tradeSlot;
+	private final int offerIndex;
 
-	public TradeSlot(int slot, int tradeSlot) {
+	public TradeSlot(int slot, int offerIndex) {
 		super(slot);
-		this.tradeSlot = tradeSlot;
+		this.offerIndex = offerIndex;
 	}
 
 	// Event handling
@@ -29,7 +29,7 @@ public class TradeSlot extends Slot {
 
 		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-		final Offer offer = holder.getOffers().get(tradeSlot);
+		final Offer offer = holder.getOffers().get(offerIndex);
 
 		// We cancel the others accept if they had accepted
 		if (holder.getOtherTrader().hasAccepted()) {
@@ -66,27 +66,27 @@ public class TradeSlot extends Slot {
 					throw new IllegalStateException("Not handled action: " + event.getAction().name());
 			}
 
-			holder.getOffers().set(tradeSlot, (newItem == null)? null : new ItemOffer(newItem));
+			holder.getOffers().set(offerIndex, (newItem == null)? null : createItemOffer(holder, newItem));
 
-			MirrorSlot.updateMirrors(tradeSlot, holder.getOtherHolder(), true);
+			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
 
 		} else {
 
 			offer.onClick(event);
 
 			if (offer.isWorthless()) {
-				holder.getOffers().set(tradeSlot, null);
+				holder.getOffers().set(offerIndex, null);
 			}
 
-			TradeSlot.updateTradeSlots(tradeSlot, holder, true);
-			MirrorSlot.updateMirrors(tradeSlot, holder.getOtherHolder(), true);
+			TradeSlot.updateTradeSlots(holder, true);
+			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
 
 		}
 
 	}
 
 	public boolean isEmpty(TransactionHolder holder) {
-		return holder.getOffers().get(tradeSlot) == null;
+		return holder.getOffers().get(offerIndex) == null;
 	}
 
 	@Override
@@ -95,19 +95,19 @@ public class TradeSlot extends Slot {
 		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
 		if (event.getNewItems().containsKey(slot)) {
-			holder.getOffers().set(tradeSlot, new ItemOffer(event.getNewItems().get(slot)));
+			holder.getOffers().set(offerIndex, createItemOffer(holder, event.getNewItems().get(0)));
 		} else {
-			holder.getOffers().set(tradeSlot, null);
+			holder.getOffers().set(offerIndex, null);
 		}
 
-		MirrorSlot.updateMirrors(tradeSlot, holder.getOtherHolder(), true);
+		MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
 
 	}
 
 	@Override
 	public void update(TransactionHolder holder) {
 
-		final Offer offer = holder.getOffers().get(tradeSlot);
+		final Offer offer = holder.getOffers().get(offerIndex);
 
 		if (offer != null) {
 			holder.getInventory().setItem(slot, offer.getDisplayItem());
@@ -117,25 +117,40 @@ public class TradeSlot extends Slot {
 
 	}
 
-	public int getTradeSlot() {
-		return tradeSlot;
+	public int getOfferIndex() {
+		return offerIndex;
 	}
 
-	public static void updateTradeSlots(int tradeSlot, TransactionHolder holder, boolean nextTick) {
+    private ItemOffer createItemOffer(TransactionHolder holder, ItemStack itemStack) {
+        final ItemOffer offer = holder.getLayout().createOffer(ItemOffer.class, holder.getOffers(), offerIndex);
+        offer.setItem(itemStack);
+        return offer;
+    }
+
+	public static void updateTradeSlots(TransactionHolder holder, boolean nextTick, int... offerIndex) {
 
 		final Set<TradeSlot> slots = holder.getLayout().getSlotsOfType(TradeSlot.class);
 
 		final Iterator<TradeSlot> iterator = slots.iterator();
 
 		while (iterator.hasNext()) {
-			final TradeSlot slot = iterator.next();
-			if (slot.getTradeSlot() == tradeSlot) {
-				if (!nextTick) {
-					slot.update(holder);
-				}
-			} else {
-				iterator.remove();
-			}
+
+            final TradeSlot slot = iterator.next();
+
+            boolean notUpdated = true;
+            for (int i = 0; i < offerIndex.length && notUpdated; i++) {
+                if (slot.getOfferIndex() == offerIndex[i]) {
+                    if (!nextTick) {
+                        slot.update(holder);
+                    }
+                    notUpdated = false;
+                }
+            }
+
+            if (notUpdated) {
+                iterator.remove();
+            }
+
 		}
 
 		if (nextTick && !slots.isEmpty()) {

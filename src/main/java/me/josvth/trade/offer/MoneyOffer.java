@@ -19,41 +19,6 @@ public class MoneyOffer extends Offer {
 	}
 
 	@Override
-	public <T extends Offer> T add(T tradeable) {
-
-		if (!(tradeable instanceof MoneyOffer))
-			return tradeable;
-
-		MoneyOffer remaining = ((MoneyOffer) tradeable).clone();
-
-		amount += remaining.getAmount();
-
-		return null;
-
-	}
-
-	@Override
-	public <T extends Offer> T remove(T tradeable) {
-
-		if (!(tradeable instanceof MoneyOffer)) {
-			return tradeable;
-		}
-
-		MoneyOffer remaining = ((MoneyOffer) tradeable).clone();
-
-		amount -= remaining.getAmount();
-
-		if (amount < 0) {
-			amount = 0.0;
-			remaining.setAmount(-1 * amount);
-			return (T) remaining;
-		} else {
-			return null;
-		}
-
-	}
-
-	@Override
 	public double getAmount() {
 		return amount;
 	}

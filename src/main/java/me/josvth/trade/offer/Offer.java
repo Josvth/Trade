@@ -15,14 +15,6 @@ public abstract class Offer {
 		this.offerID = offerID;
 	}
 
-	public <T extends Offer> T add(T tradeable) {
-		return tradeable;
-	}
-
-	public <T extends Offer> T remove(T tradeable) {
-		return tradeable;
-	}
-
 	public abstract ItemStack getDisplayItem();
 
 	public ItemStack getOtherDisplayItem() {

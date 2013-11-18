@@ -51,34 +51,9 @@ public class ItemOffer extends Offer {
 		return item;
 	}
 
-	@Override
-	public <T extends Offer> T add(T tradeable) {
-
-		if (!(tradeable instanceof ItemOffer))
-			return tradeable;
-
-		ItemOffer remaining = ((ItemOffer) tradeable).clone();
-
-		if (!getItem().isSimilar(remaining.getItem())) {
-			return tradeable;
-		}
-
-		final int remainingAmount = getItem().getMaxStackSize() - getItem().getAmount() - remaining.getItem().getAmount();
-
-		if (remainingAmount >= 0) {
-			item.setAmount(item.getAmount() + remaining.getItem().getAmount());
-			return null;
-		} else {
-			remaining.getItem().setAmount( -1 * remainingAmount);
-			return (T) remaining;
-		}
-
-	}
-
-	@Override
-	public <T extends Offer> T remove(T tradeable) {
-		return tradeable;
-	}
+    public void setItem(ItemStack item) {
+        this.item = item;
+    }
 
 	public ItemOffer clone() {
 		return new ItemOffer(list, offerID, item);
@@ -124,5 +99,6 @@ public class ItemOffer extends Offer {
 	public void onDrag(int slot, InventoryDragEvent event) {
 		item = event.getNewItems().get(slot);
 	}
+
 
 }

@@ -21,100 +21,6 @@ public class OfferList {
 		offers[slot] = offer;
 	}
 
-	public HashMap<Integer, Offer> add(Offer... offer) {
-
-		final HashMap<Integer, Offer> remainders = new HashMap<Integer, Offer>();
-
-		for (int tradeableIndex = 0; tradeableIndex < offer.length; tradeableIndex++) {
-
-			Offer remaining = offer[tradeableIndex];
-
-			int firstEmpty = -1;
-
-			int oi = 0;
-
-			while (oi < offers.length && remaining != null) {
-
-				if (offers[oi] != null) {
-					remaining = offers[oi].add(remaining);
-				} else if (firstEmpty == -1) {
-					firstEmpty = oi;
-				}
-
-				oi++;
-
-			}
-
-			if (remaining != null) {	// Check if we still have remaining things to add
-
-				if (firstEmpty != -1) {
-					offers[firstEmpty] = remaining;
-				} else {
-					remainders.put(tradeableIndex, remaining);
-				}
-
-			}
-
-		}
-
-		return remainders;
-
-	}
-
-	public HashMap<Integer, Offer> remove(Offer... tradeable) {
-
-		// TODO Make this deal with lowest stack size first
-
-		final HashMap<Integer, Offer> remainders = new HashMap<Integer, Offer>();
-
-		for (int tradeableIndex = 0; tradeableIndex < tradeable.length; tradeableIndex++) {
-
-			Offer remaining = tradeable[tradeableIndex];
-
-			int offerIndex = 0;
-
-			while (offerIndex < offers.length && remaining != null) {
-
-				final Offer offer = offers[offerIndex];
-
-				if (offer != null) {
-					remaining = offer.remove(remaining);
-
-					if (offer.isWorthless()) {
-						offers[offerIndex] = null;
-					}
-
-				}
-
-				offerIndex++;
-
-			}
-
-			if (remaining != null) {
-				remainders.put(tradeableIndex, remaining);
-			}
-
-		}
-
-		return remainders;
-
-	}
-
-//	public <T extends Offer> HashMap<Integer, T> getByClass(Class<T> clazz) {
-//
-//		final HashMap<Integer, T> tradeables = new HashMap<Integer, T>();
-//
-//		for (int i = 0; i < offers.length; i++) {
-//			Offer offer = offers[i];
-//			if (clazz.isInstance(offer)) {
-//				tradeables.put(i, (T) offer);
-//			}
-//		}
-//
-//		return tradeables;
-//
-//	}
-
 	@Override
 	public String toString() {
 
@@ -128,9 +34,9 @@ public class OfferList {
 
 	}
 
-	public <T extends Offer> HashMap<Integer, T> getOfClass(Class<T> clazz) {
+	public <T extends Offer> TreeMap<Integer, T> getOfClass(Class<T> clazz) {
 
-		final HashMap<Integer, T> found = new HashMap<Integer, T>();
+		final TreeMap<Integer, T> found = new TreeMap<Integer, T>();
 
 		for (int i = 0; i < offers.length; i++) {
 			if (clazz.isInstance(offers[i])) {
