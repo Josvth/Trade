@@ -29,7 +29,7 @@ public class MoneyOffer extends Offer {
 
 	@Override
 	protected MoneyOffer clone() {
-		return new MoneyOffer(list, offerID, amount);
+		return new MoneyOffer(list, offerIndex, amount);
 	}
 
 	@Override

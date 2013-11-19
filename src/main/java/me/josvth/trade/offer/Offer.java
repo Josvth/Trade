@@ -8,11 +8,11 @@ import org.bukkit.inventory.ItemStack;
 public abstract class Offer {
 
 	protected final OfferList list;
-   	protected final int offerID;
+   	protected final int offerIndex;
 
-	public Offer(OfferList list, int offerID) {
+	public Offer(OfferList list, int offerIndex) {
 		this.list = list;
-		this.offerID = offerID;
+		this.offerIndex = offerIndex;
 	}
 
 	public abstract ItemStack getDisplayItem();

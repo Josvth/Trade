@@ -102,7 +102,7 @@ public class ExperienceOffer extends Offer {
 	}
 
 	public ExperienceOffer clone() {
-		return new ExperienceOffer(list, offerID, levels, itemDescription, otherItemDescription);
+		return new ExperienceOffer(list, offerIndex, levels, itemDescription, otherItemDescription);
 	}
 
 	@Override

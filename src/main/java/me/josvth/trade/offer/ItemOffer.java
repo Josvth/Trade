@@ -56,7 +56,7 @@ public class ItemOffer extends Offer {
     }
 
 	public ItemOffer clone() {
-		return new ItemOffer(list, offerID, item);
+		return new ItemOffer(list, offerIndex, item);
 	}
 
 	// Event handling
