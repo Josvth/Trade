@@ -18,6 +18,8 @@ public class TransactionManager {
 	private final FormatManager formatManager;
 	private final TransactionListener listener;
 
+	private TransactionOptions options = new TransactionOptions();
+
 	private Map<String, Transaction> transactions = new HashMap<String, Transaction>();
 
 	public TransactionManager(Trade plugin, FormatManager formatManager) {
@@ -31,7 +33,7 @@ public class TransactionManager {
 	}
 
 	public void load(ConfigurationSection section) {
-		// TODO load transaction configuration
+		options.load(section);
 	}
 
 	public void unload() {
@@ -46,6 +48,10 @@ public class TransactionManager {
 
 	public Trade getPlugin() {
 		return plugin;
+	}
+
+	public TransactionOptions getOptions() {
+		return options;
 	}
 
 	public Transaction createTransaction(String playerA, String playerB) {
@@ -83,5 +89,6 @@ public class TransactionManager {
 	private Transaction removeTransaction(String player) {
 		return transactions.remove(player);
 	}
+
 
 }

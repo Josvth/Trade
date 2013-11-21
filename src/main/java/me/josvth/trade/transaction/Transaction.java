@@ -26,6 +26,10 @@ public class Transaction {
 		traderB.setOther(traderA);
 	}
 
+	public TransactionManager getManager() {
+		return manager;
+	}
+
 	public Trade getPlugin() {
 		return manager.getPlugin();
 	}

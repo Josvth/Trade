@@ -4,6 +4,8 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.offer.*;
 import me.josvth.trade.transaction.Trader;
 
+import me.josvth.trade.transaction.Transaction;
+import me.josvth.trade.transaction.TransactionOptions;
 import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
 import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.inventory.slot.TradeSlot;
@@ -49,6 +51,10 @@ public class TransactionHolder implements InventoryHolder {
 
 	public Layout getLayout() {
 		return layout;
+	}
+
+	public Transaction getTransaction() {
+		return trader.getTransaction();
 	}
 
 	public OfferList getOffers() {
@@ -140,7 +146,11 @@ public class TransactionHolder implements InventoryHolder {
 	}
 
 	public void onClose(InventoryCloseEvent event) {
-
+		if (getTransaction().getManager().getOptions().allowInventoryClosing()) {
+        	plugin.getFormatManager().getMessage("trading.closed-inventory");
+        } else {
+			trader.setRefused(true);
+		}
 	}
 
     public <T extends Offer> T createOffer(Class<T> clazz, int offerID) {

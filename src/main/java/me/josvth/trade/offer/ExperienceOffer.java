@@ -1,6 +1,7 @@
 package me.josvth.trade.offer;
 
 import me.josvth.trade.transaction.Trader;
+import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -81,8 +82,8 @@ public class ExperienceOffer extends Offer {
     }
 
     @Override
-    public ItemStack getMirrorItem() {
-        return ItemStackUtils.argument(experienceItemMirror, "%player%", "null", "%levels%", String.valueOf(levels));
+    public ItemStack getMirrorItem(TransactionHolder holder) {
+        return ItemStackUtils.argument(experienceItemMirror, "%player%", holder.getTrader().getName(), "%levels%", String.valueOf(levels));
     }
 
     @Override
