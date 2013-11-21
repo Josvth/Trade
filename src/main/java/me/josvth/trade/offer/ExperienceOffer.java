@@ -1,6 +1,5 @@
 package me.josvth.trade.offer;
 
-import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Material;
@@ -11,39 +10,40 @@ import java.util.Arrays;
 
 public class ExperienceOffer extends Offer {
 
-	private static final ItemStack DEFAULT_ITEM_STACK = ItemStackUtils.setMeta(
+    private static final ItemStack DEFAULT_ITEM_STACK = ItemStackUtils.setMeta(
             new ItemStack(Material.EXP_BOTTLE),
             "You added %levels% levels.",
-			"Left click to add %small% level(s)",
-			"Right click to remove %small% level(s)",
-			"Shift left click to add %large% levels",
-			"Shift right click to remove %large% levels");
+            Arrays.asList(new String[] {
+                    "Left click to add %small% level(s)",
+                    "Right click to remove %small% level(s)",
+                    "Shift left click to add %large% levels",
+                    "Shift right click to remove %large% levels"})
+    );
 
-	private static final ItemDescription DEFAULT_OTHER_ITEM_DESCRIPTION  = new ItemDescription(
-			Material.EXP_BOTTLE, 0, (short)0, (byte)0,
-			new FormattedMessage("You added %levels% levels."),
-			null
-	);
+    private static final ItemStack DEFAULT_ITEM_STACK_MIRROR = ItemStackUtils.setMeta(
+            new ItemStack(Material.EXP_BOTTLE),
+            "%player% added %levels% levels.",
+            null);
 
-	private int levels = 0;
+    private int levels = 0;
 
-	private final ItemDescription itemDescription;
-	private final ItemDescription otherItemDescription;
+    private final ItemStack experienceItem;
+    private final ItemStack experienceItemMirror;
 
-	public ExperienceOffer(OfferList list, int offerID) {
-		this(list, offerID, 0, DEFAULT_ITEM_STACK, DEFAULT_OTHER_ITEM_DESCRIPTION);
-	}
+    public ExperienceOffer(OfferList list, int offerID) {
+        this(list, offerID, 0, DEFAULT_ITEM_STACK, DEFAULT_ITEM_STACK_MIRROR);
+    }
 
-	public ExperienceOffer(OfferList list, int offerID, int levels) {
-		this(list, offerID, levels, DEFAULT_ITEM_STACK, DEFAULT_OTHER_ITEM_DESCRIPTION);
-	}
+    public ExperienceOffer(OfferList list, int offerID, int levels) {
+        this(list, offerID, levels, DEFAULT_ITEM_STACK, DEFAULT_ITEM_STACK_MIRROR);
+    }
 
-	public ExperienceOffer(OfferList list, int offerID, int levels, ItemDescription itemDescription, ItemDescription otherItemDescription) {
-		super(list, offerID);
-		this.levels = levels;
-		this.itemDescription = itemDescription;
-		this.otherItemDescription = otherItemDescription;
-	}
+    public ExperienceOffer(OfferList list, int offerID, int levels, ItemStack experienceItem, ItemStack experienceItemMirror) {
+        super(list, offerID);
+        this.levels = levels;
+        this.experienceItem = experienceItem;
+        this.experienceItemMirror = experienceItemMirror;
+    }
 
     public int add(int amount) {
         final int remainder = levels + amount - 64; // TODO Remove hard coded 64
@@ -67,51 +67,51 @@ public class ExperienceOffer extends Offer {
         }
     }
 
-	public int getLevels() {
-		return levels;
-	}
+    public int getLevels() {
+        return levels;
+    }
 
-	public void setLevels(int levels) {
-		this.levels = levels;
-	}
+    public void setLevels(int levels) {
+        this.levels = levels;
+    }
 
-	@Override
-	public ItemStack getDisplayItem() {
-		return itemDescription.create("%levels%", String.valueOf(levels));
-	}
+    @Override
+    public ItemStack getDisplayItem() {
+        return ItemStackUtils.argument(experienceItem, "%levels%", String.valueOf(levels));
+    }
 
-	@Override
-	public ItemStack getOtherDisplayItem() {
-		return otherItemDescription.create("%levels%", String.valueOf(levels));
-	}
+    @Override
+    public ItemStack getMirrorItem() {
+        return ItemStackUtils.argument(experienceItemMirror, "%player%", "null", "%levels%", String.valueOf(levels));
+    }
 
-	@Override
-	public boolean isWorthless() {
-		return levels <= 0;
-	}
+    @Override
+    public boolean isWorthless() {
+        return levels <= 0;
+    }
 
-	@Override
-	public void grant(Trader trader) {
-		grant(trader, levels);
-	}
+    @Override
+    public void grant(Trader trader) {
+        grant(trader, levels);
+    }
 
-	public static void grant(Trader trader, int levels) {
-		trader.getPlayer().setLevel(trader.getPlayer().getLevel() + levels);
-	}
+    public static void grant(Trader trader, int levels) {
+        trader.getPlayer().setLevel(trader.getPlayer().getLevel() + levels);
+    }
 
-	public ExperienceOffer clone() {
-		return new ExperienceOffer(list, offerIndex, levels, itemDescription, otherItemDescription);
-	}
+    public ExperienceOffer clone() {
+        return new ExperienceOffer(list, offerIndex, levels, experienceItem, experienceItemMirror);
+    }
 
-	@Override
-	public void onClick(InventoryClickEvent event) {
+    @Override
+    public void onClick(InventoryClickEvent event) {
 
-	}
+    }
 
-	@Override
-	public String toString() {
-		return "EXP: " + levels;
-	}
+    @Override
+    public String toString() {
+        return "EXP: " + levels;
+    }
 
 
 }

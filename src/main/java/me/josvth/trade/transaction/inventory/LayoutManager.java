@@ -4,6 +4,7 @@ import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.bukkitformatlibrary.managers.FormatManager;
 import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.inventory.slot.*;
+import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
@@ -26,13 +27,13 @@ public class LayoutManager {
 //
 //		slots[3] = new AcceptSlot(
 //				3,
-//				new ItemDescription(Material.STAINED_CLAY, 0, (short) 0, (byte) 5, "§2Click to accept!", null, false),
-//				new ItemDescription(Material.STAINED_CLAY, 0, (short) 0, (byte) 3, "§9You accepted the trade.", null, false));
-//		slots[4] = new RefuseSlot(4, new ItemDescription(Material.STAINED_CLAY, 0, (short) 0, (byte) 6, "§4Click to refuse the trade!", null, false));
+//				new ItemStackUtils(Material.STAINED_CLAY, 0, (short) 0, (byte) 5, "§2Click to accept!", null, false),
+//				new ItemStackUtils(Material.STAINED_CLAY, 0, (short) 0, (byte) 3, "§9You accepted the trade.", null, false));
+//		slots[4] = new RefuseSlot(4, new ItemStackUtils(Material.STAINED_CLAY, 0, (short) 0, (byte) 6, "§4Click to refuse the trade!", null, false));
 //		slots[5] = new StatusSlot(
 //				5,
-//				new ItemDescription(Material.STAINED_CLAY, 0, (short) 0, (byte) 4, "§9The other player is considering the trade.", null, false),
-//				new ItemDescription(Material.STAINED_CLAY, 0, (short) 0, (byte) 5, "§2The other player accepted the trade.", null, false));
+//				new ItemStackUtils(Material.STAINED_CLAY, 0, (short) 0, (byte) 4, "§9The other player is considering the trade.", null, false),
+//				new ItemStackUtils(Material.STAINED_CLAY, 0, (short) 0, (byte) 5, "§2The other player accepted the trade.", null, false));
 //
 //		slots[6] = new MirrorSlot(6,0);
 //		slots[7] = new MirrorSlot(7,1);
@@ -40,10 +41,10 @@ public class LayoutManager {
 //
 //		slots[9] = new TradeSlot(9,0);
 //
-//		//slots[11] = new MoneySlot(11, new ItemDescription(Material.GOLD_INGOT, 0), 1, 5);
+//		//slots[11] = new MoneySlot(11, new ItemStackUtils(Material.GOLD_INGOT, 0), 1, 5);
 //		slots[12] = new ExperienceSlot(
 //				12,
-//				new ItemDescription(
+//				new ItemStackUtils(
 //						Material.EXP_BOTTLE,
 //						0,
 //						(short) 0,
@@ -53,7 +54,7 @@ public class LayoutManager {
 //						false),
 //				1,
 //				5);
-//		slots[13] = new CloseSlot(13, new ItemDescription(Material.BONE, 0));
+//		slots[13] = new CloseSlot(13, new ItemStackUtils(Material.BONE, 0));
 //
 //		DEFAULT_LAYOUT = new Layout("default", 2, 3);
 //		DEFAULT_LAYOUT.setSlots(slots);
@@ -116,24 +117,24 @@ public class LayoutManager {
 				if ("accept".equalsIgnoreCase(type)) {
 					slot = new AcceptSlot(
 							slotID,
-							ItemDescription.fromSection(slotSection.getConfigurationSection("accept-item"), formatManager),
-							ItemDescription.fromSection(slotSection.getConfigurationSection("accepted-item"), formatManager)
+							ItemStackUtils.fromSection(slotSection.getConfigurationSection("accept-item"), formatManager),
+							ItemStackUtils.fromSection(slotSection.getConfigurationSection("accepted-item"), formatManager)
 						);
 				} else if ("refuse".equalsIgnoreCase(type)) {
 					slot = new RefuseSlot(
 							slotID,
-							ItemDescription.fromSection(slotSection.getConfigurationSection("refuse-item"), formatManager)
+							ItemStackUtils.fromSection(slotSection.getConfigurationSection("refuse-item"), formatManager)
 					);
 				} else if ("close".equalsIgnoreCase(type)) {
 					slot = new CloseSlot(
 							slotID,
-							ItemDescription.fromSection(slotSection.getConfigurationSection("close-item"), formatManager)
+							ItemStackUtils.fromSection(slotSection.getConfigurationSection("close-item"), formatManager)
 					);
 				} else if ("status".equalsIgnoreCase(type)) {
 					slot = new StatusSlot(
 							slotID,
-							ItemDescription.fromSection(slotSection.getConfigurationSection("considering-item"), formatManager),
-							ItemDescription.fromSection(slotSection.getConfigurationSection("accepted-item"), formatManager)
+							ItemStackUtils.fromSection(slotSection.getConfigurationSection("considering-item"), formatManager),
+							ItemStackUtils.fromSection(slotSection.getConfigurationSection("accepted-item"), formatManager)
 					);
 				} else if ("trade".equalsIgnoreCase(type)) {
 					slot = new TradeSlot(
@@ -148,14 +149,14 @@ public class LayoutManager {
 				} else if ("money".equalsIgnoreCase(type)) {
 					slot = new MoneySlot(
 							slotID,
-							ItemDescription.fromSection(slotSection.getConfigurationSection("money-item"), formatManager),
+							ItemStackUtils.fromSection(slotSection.getConfigurationSection("money-item"), formatManager),
 							slotSection.getInt("small-modifier", 5),
 							slotSection.getInt("large-modifier", 10)
 					);
 				} else if ("experience".equalsIgnoreCase(type)) {
 					slot = new ExperienceSlot(
 							slotID,
-							ItemDescription.fromSection(slotSection.getConfigurationSection("experience-item"), formatManager),
+							ItemStackUtils.fromSection(slotSection.getConfigurationSection("experience-item"), formatManager),
 							slotSection.getInt("small-modifier", 1),
 							slotSection.getInt("large-modifier", 5),
 							new FormattedMessage(formatManager.preformatMessage(slotSection.getString("messages.add", "messages.add"))),

@@ -2,17 +2,18 @@ package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class MoneySlot extends Slot {
 
-	private final ItemDescription moneyDescription;
+	private final ItemStack moneyItem;
 
 	private final double smallModifier;
 	private final double largeModifier;
 
-	public MoneySlot(int slot, ItemDescription moneyDescription, double smallModifier, double largeModifier) {
+	public MoneySlot(int slot, ItemStack moneyItem, double smallModifier, double largeModifier) {
 		super(slot);
-		this.moneyDescription = moneyDescription;
+		this.moneyItem = moneyItem;
 		this.smallModifier = smallModifier;
 		this.largeModifier = largeModifier;
 	}
@@ -71,7 +72,7 @@ public class MoneySlot extends Slot {
 
 	@Override
 	public void update(TransactionHolder holder) {
-		setSlot(holder, moneyDescription.create());
+		setSlot(holder, moneyItem);
 	}
 
 }

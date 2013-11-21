@@ -17,7 +17,7 @@ public abstract class Offer {
 
 	public abstract ItemStack getDisplayItem();
 
-	public ItemStack getOtherDisplayItem() {
+	public ItemStack getMirrorItem() {
 		return getDisplayItem();
 	}
 

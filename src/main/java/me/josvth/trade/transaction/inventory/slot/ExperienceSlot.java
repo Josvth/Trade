@@ -6,15 +6,17 @@ import me.josvth.trade.offer.ExperienceOffer;
 import me.josvth.trade.tasks.ExperienceSlotUpdateTask;
 import me.josvth.trade.offer.OfferList;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
+import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
 public class ExperienceSlot extends Slot {
 
-	private final ItemDescription experienceDescription;
+	private final ItemStack experienceItem;
 
 	private final int smallModifier;
 	private final int largeModifier;
@@ -23,9 +25,9 @@ public class ExperienceSlot extends Slot {
 	private final FormattedMessage removeMessage;
 	private final FormattedMessage insufficientMessage;
 
-	public ExperienceSlot(int slot, ItemDescription experienceDescription, int smallModifier, int largeModifier, FormattedMessage addMessage, FormattedMessage removeMessage, FormattedMessage insufficientMessage) {
+	public ExperienceSlot(int slot, ItemStack experienceItem, int smallModifier, int largeModifier, FormattedMessage addMessage, FormattedMessage removeMessage, FormattedMessage insufficientMessage) {
 		super(slot);
-		this.experienceDescription = experienceDescription;
+		this.experienceItem = experienceItem;
 		this.smallModifier = smallModifier;
 		this.largeModifier = largeModifier;
 		this.addMessage = addMessage;
@@ -78,7 +80,7 @@ public class ExperienceSlot extends Slot {
 	}
 
     public void update(TransactionHolder holder, int levels) {
-        setSlot(holder, experienceDescription.create("%levels%", String.valueOf(levels), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier)));
+        setSlot(holder, ItemStackUtils.argument(experienceItem, "%levels%", String.valueOf(levels), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier)));
     }
 
     private static int addExperience(TransactionHolder holder, int levels) {
