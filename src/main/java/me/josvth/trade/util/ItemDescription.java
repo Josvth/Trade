@@ -41,7 +41,6 @@ public class ItemDescription {
 
 		setDisplayName(displayName);
 		setLore(lore);
-
 	}
 
 	public Material getMaterial() {
@@ -182,5 +181,24 @@ public class ItemDescription {
 				lore);
 
 	}
+
+    public static final ItemDescription fromItemStack(ItemStack itemStack) {
+
+        if (itemStack == null) {
+            return null;
+        }
+
+        final String displayName;
+        final ArrayList<FormattedMessage> message;
+
+        if (itemStack.hasItemMeta()) {
+           final ItemMeta meta = itemStack.getItemMeta();
+           displayName = meta.getDisplayName();
+           meta.
+        } else {
+            displayName = null;
+            message = null;
+        }
+    }
 
 }

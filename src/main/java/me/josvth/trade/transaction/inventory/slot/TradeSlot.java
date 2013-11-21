@@ -27,7 +27,7 @@ public class TradeSlot extends Slot {
 	@Override
 	public void onClick(InventoryClickEvent event) {
 
-		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
 		final Offer offer = holder.getOffers().get(offerIndex);
 
@@ -73,13 +73,6 @@ public class TradeSlot extends Slot {
 		} else {
 
 			offer.onClick(event);
-
-			if (offer.isWorthless()) {
-				holder.getOffers().set(offerIndex, null);
-			}
-
-			TradeSlot.updateTradeSlots(holder, true);
-			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
 
 		}
 

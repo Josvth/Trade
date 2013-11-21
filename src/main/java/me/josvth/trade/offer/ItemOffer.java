@@ -2,6 +2,8 @@ package me.josvth.trade.offer;
 
 import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.Trader;
+import me.josvth.trade.transaction.inventory.TransactionHolder;
+import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -11,8 +13,8 @@ public class ItemOffer extends Offer {
 
 	private ItemStack item = null;
 
-	public ItemOffer(OfferList list, int id) {
-		this(list, id, null);
+	public ItemOffer(OfferList list, int offerIndex) {
+		this(list, offerIndex, null);
 	}
 
 	public ItemOffer(OfferList list, int id, ItemStack item) {
@@ -62,12 +64,15 @@ public class ItemOffer extends Offer {
 	// Event handling
 	@Override
 	public void onClick(InventoryClickEvent event) {
-		// TODO should I do this "predicting what's going to happen" or should I use the update system to update tradeables?
+
+        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+
 		switch (event.getAction()) {
 			case PICKUP_ALL:
 			case MOVE_TO_OTHER_INVENTORY:
 			case HOTBAR_MOVE_AND_READD:
 				item = null;
+                holder.getOffers().set(offerIndex, null);
 				break;
 			case PICKUP_SOME:
 				throw new IllegalStateException("PICKUP_SOME");
@@ -88,17 +93,21 @@ public class ItemOffer extends Offer {
 				break;
 			case SWAP_WITH_CURSOR:
 				item = event.getCursor().clone(); // We clone here to make sure that our offer item is not bound to the inventory one
-				break;
+                break;
 			default:
 				throw new IllegalStateException("UNHANDLED ACTION: " + event.getAction().name());
 		}
 
+        // We only update the mirror because we assume the current view is showing the correct item stack
+        MirrorSlot.updateMirrors(((TransactionHolder)event.getInventory().getHolder()).getOtherHolder(), true, offerIndex);
 	}
 
 	@Override
 	public void onDrag(int slot, InventoryDragEvent event) {
 		item = event.getNewItems().get(slot);
-	}
 
+        // We only update the mirror because we assume the current view is showing the correct item stack
+        MirrorSlot.updateMirrors(((TransactionHolder)event.getInventory().getHolder()).getOtherHolder(), true, offerIndex);
+	}
 
 }
