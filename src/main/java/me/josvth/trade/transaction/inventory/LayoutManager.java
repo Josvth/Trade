@@ -4,7 +4,6 @@ import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.bukkitformatlibrary.managers.FormatManager;
 import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.inventory.slot.*;
-import me.josvth.trade.util.ItemDescription;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;

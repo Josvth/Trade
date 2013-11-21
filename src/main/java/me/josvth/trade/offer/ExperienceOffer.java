@@ -2,7 +2,7 @@ package me.josvth.trade.offer;
 
 import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.trade.transaction.Trader;
-import me.josvth.trade.util.ItemDescription;
+import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -11,15 +11,13 @@ import java.util.Arrays;
 
 public class ExperienceOffer extends Offer {
 
-	private static final ItemDescription DEFAULT_ITEM_DESCRIPTION = new ItemDescription(
-			Material.EXP_BOTTLE, 0, (short)0, (byte)0,
-			new FormattedMessage("You added %levels% levels."),
-			Arrays.asList(new FormattedMessage[]{
-					new FormattedMessage("Left click to add %small% level(s)"),
-					new FormattedMessage("Right click to remove %small% level(s)"),
-					new FormattedMessage("Shift left click to add %large% levels"),
-					new FormattedMessage("Shift right click to remove %large% levels")})
-	);
+	private static final ItemStack DEFAULT_ITEM_STACK = ItemStackUtils.setMeta(
+            new ItemStack(Material.EXP_BOTTLE),
+            "You added %levels% levels.",
+			"Left click to add %small% level(s)",
+			"Right click to remove %small% level(s)",
+			"Shift left click to add %large% levels",
+			"Shift right click to remove %large% levels");
 
 	private static final ItemDescription DEFAULT_OTHER_ITEM_DESCRIPTION  = new ItemDescription(
 			Material.EXP_BOTTLE, 0, (short)0, (byte)0,
@@ -33,11 +31,11 @@ public class ExperienceOffer extends Offer {
 	private final ItemDescription otherItemDescription;
 
 	public ExperienceOffer(OfferList list, int offerID) {
-		this(list, offerID, 0, DEFAULT_ITEM_DESCRIPTION, DEFAULT_OTHER_ITEM_DESCRIPTION);
+		this(list, offerID, 0, DEFAULT_ITEM_STACK, DEFAULT_OTHER_ITEM_DESCRIPTION);
 	}
 
 	public ExperienceOffer(OfferList list, int offerID, int levels) {
-		this(list, offerID, levels, DEFAULT_ITEM_DESCRIPTION, DEFAULT_OTHER_ITEM_DESCRIPTION);
+		this(list, offerID, levels, DEFAULT_ITEM_STACK, DEFAULT_OTHER_ITEM_DESCRIPTION);
 	}
 
 	public ExperienceOffer(OfferList list, int offerID, int levels, ItemDescription itemDescription, ItemDescription otherItemDescription) {

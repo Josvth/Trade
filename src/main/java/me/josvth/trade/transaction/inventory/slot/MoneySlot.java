@@ -1,15 +1,7 @@
 package me.josvth.trade.transaction.inventory.slot;
 
-import me.josvth.trade.offer.ExperienceOffer;
-import me.josvth.trade.offer.MoneyOffer;
-import me.josvth.trade.offer.Offer;
-import me.josvth.trade.offer.OfferList;
-import me.josvth.trade.util.ItemDescription;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-
-import java.util.Map;
 
 public class MoneySlot extends Slot {
 
