@@ -11,20 +11,20 @@ import java.util.Set;
 
 public class MirrorSlot extends Slot {
 
-	private final int mirrorSlot;
+	private final int offerIndex;
 
-	public MirrorSlot(int slot, int mirrorSlot) {
+	public MirrorSlot(int slot, int offerIndex) {
    		super(slot);
-		this.mirrorSlot = mirrorSlot;
+		this.offerIndex = offerIndex;
 	}
 
-	public int getMirrorSlot() {
-		return mirrorSlot;
+	public int getOfferIndex() {
+		return offerIndex;
 	}
 
 	@Override
 	public void update(TransactionHolder holder) {
-		final Offer offer = holder.getOtherTrader().getOffers().get(mirrorSlot);
+		final Offer offer = holder.getOtherHolder().getOffers().get(offerIndex);
 
 		if (offer != null) {
 			holder.getInventory().setItem(slot, offer.getMirrorItem(holder));
@@ -45,7 +45,7 @@ public class MirrorSlot extends Slot {
 
             boolean notUpdated = true;
             for (int i = 0; i < offerIndex.length && notUpdated; i++) {
-                if (slot.getMirrorSlot() == offerIndex[i]) {
+                if (slot.getOfferIndex() == offerIndex[i]) {
                     if (!nextTick) {
                         slot.update(holder);
                     }

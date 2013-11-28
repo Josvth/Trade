@@ -5,6 +5,7 @@ import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
@@ -74,8 +75,6 @@ public class ItemOffer extends Offer {
 				item = null;
                 holder.getOffers().set(offerIndex, null);
 				break;
-			case PICKUP_SOME:
-				throw new IllegalStateException("PICKUP_SOME");
 			case PICKUP_HALF:
 				item.setAmount(item.getAmount() / 2);
 				break;
@@ -85,9 +84,6 @@ public class ItemOffer extends Offer {
 			case PLACE_ALL:
 				item.setAmount(item.getAmount() + event.getCursor().getAmount());
 				break;
-			case PLACE_SOME:
-				item.setAmount(item.getMaxStackSize());
-				throw new IllegalStateException("PLACE_SOME");
 			case PLACE_ONE:
 				item.setAmount(item.getAmount() + 1);
 				break;
@@ -103,11 +99,18 @@ public class ItemOffer extends Offer {
 	}
 
 	@Override
+	public boolean isDraggable() {
+		return true;
+	}
+
+	@Override
 	public void onDrag(int slot, InventoryDragEvent event) {
-		item = event.getNewItems().get(slot);
+
+		item = event.getNewItems().get(slot).clone();
 
         // We only update the mirror because we assume the current view is showing the correct item stack
         MirrorSlot.updateMirrors(((TransactionHolder)event.getInventory().getHolder()).getOtherHolder(), true, offerIndex);
+
 	}
 
 }

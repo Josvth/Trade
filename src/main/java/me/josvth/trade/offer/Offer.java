@@ -41,6 +41,10 @@ public abstract class Offer {
 
 	}
 
+	public boolean isDraggable() {
+		return false;
+	}
+
 	public void onDrag(int slot, InventoryDragEvent event) {
 
 	}

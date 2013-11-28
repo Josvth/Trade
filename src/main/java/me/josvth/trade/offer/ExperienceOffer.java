@@ -3,6 +3,7 @@ package me.josvth.trade.offer;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.util.ItemStackUtils;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -11,37 +12,20 @@ import java.util.Arrays;
 
 public class ExperienceOffer extends Offer {
 
-    private static final ItemStack DEFAULT_ITEM_STACK = ItemStackUtils.setMeta(
-            new ItemStack(Material.EXP_BOTTLE),
-            "You added %levels% levels.",
-            Arrays.asList(new String[] {
-                    "Left click to add %small% level(s)",
-                    "Right click to remove %small% level(s)",
-                    "Shift left click to add %large% levels",
-                    "Shift right click to remove %large% levels"})
-    );
-
-    private static final ItemStack DEFAULT_ITEM_STACK_MIRROR = ItemStackUtils.setMeta(
-            new ItemStack(Material.EXP_BOTTLE),
-            "%player% added %levels% levels.",
-            null);
-
     private int levels = 0;
 
     private final ItemStack experienceItem;
     private final ItemStack experienceItemMirror;
 
-    public ExperienceOffer(OfferList list, int offerID) {
-        this(list, offerID, 0, DEFAULT_ITEM_STACK, DEFAULT_ITEM_STACK_MIRROR);
-    }
+	private final int smallModifier;
+	private final int largeModifier;
 
-    public ExperienceOffer(OfferList list, int offerID, int levels) {
-        this(list, offerID, levels, DEFAULT_ITEM_STACK, DEFAULT_ITEM_STACK_MIRROR);
-    }
-
-    public ExperienceOffer(OfferList list, int offerID, int levels, ItemStack experienceItem, ItemStack experienceItemMirror) {
+    public ExperienceOffer(OfferList list, int offerID, int smallModifier, int largeModifier, ItemStack experienceItem, ItemStack experienceItemMirror) {
         super(list, offerID);
-        this.levels = levels;
+		Validate.notNull(experienceItem, "Experience Item can't be null.");
+		Validate.notNull(experienceItemMirror, "Experience Item Mirror can't be null.");
+		this.smallModifier = smallModifier;
+		this.largeModifier = largeModifier;
         this.experienceItem = experienceItem;
         this.experienceItemMirror = experienceItemMirror;
     }
@@ -78,12 +62,16 @@ public class ExperienceOffer extends Offer {
 
     @Override
     public ItemStack getDisplayItem() {
-        return ItemStackUtils.argument(experienceItem, "%levels%", String.valueOf(levels));
+		final ItemStack itemStack = experienceItem.clone();
+		itemStack.setAmount(levels);
+        return ItemStackUtils.argument(itemStack, "%levels%", String.valueOf(levels), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier));
     }
 
     @Override
     public ItemStack getMirrorItem(TransactionHolder holder) {
-        return ItemStackUtils.argument(experienceItemMirror, "%player%", holder.getTrader().getName(), "%levels%", String.valueOf(levels));
+		final ItemStack itemStack = experienceItemMirror.clone();
+		itemStack.setAmount(levels);
+		return ItemStackUtils.argument(itemStack, "%player%", holder.getOtherTrader().getName(), "%levels%", String.valueOf(levels));
     }
 
     @Override
@@ -100,10 +88,6 @@ public class ExperienceOffer extends Offer {
         trader.getPlayer().setLevel(trader.getPlayer().getLevel() + levels);
     }
 
-    public ExperienceOffer clone() {
-        return new ExperienceOffer(list, offerIndex, levels, experienceItem, experienceItemMirror);
-    }
-
     @Override
     public void onClick(InventoryClickEvent event) {
 
@@ -113,6 +97,5 @@ public class ExperienceOffer extends Offer {
     public String toString() {
         return "EXP: " + levels;
     }
-
 
 }

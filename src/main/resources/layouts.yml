@@ -56,12 +56,12 @@ default:
           - "Right click to remove %small% level(s)"
           - "Shift left click to add %large% levels"
           - "Shift right click to remove %large% levels"
-    small-modifier: 1
-    large-modifier: 5
-    messages:
-      add: "Added %levels% levels to the trade."
-      remove: "Removed %levels% levels from the trade."
-      insufficient: "You don't have %levels% levels!"
+      small-modifier: 1
+      large-modifier: 5
+      messages:
+        add: "Added %levels% levels to the trade."
+        remove: "Removed %levels% levels from the trade."
+        insufficient: "You don't have %levels% levels!"
     13:
       type: close
       close-item:

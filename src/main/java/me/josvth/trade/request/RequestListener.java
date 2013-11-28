@@ -74,10 +74,12 @@ public class RequestListener implements Listener {
 		} else {
 
 			if (restriction == RequestRestriction.METHOD) {
-				formatManager.getMessage(RequestMethod.COMMAND.messagePath).send(requester);
+				formatManager.getMessage(method.messagePath).send(requester);
 			} else {
 				formatManager.getMessage(restriction.requestMessagePath).send(requester, "%player%", requested.getName());
-				formatManager.getMessage("requesting.requested-by").send(requested, "%player%", requester.getName());
+				if (restriction == RequestRestriction.ALLOW) {
+					formatManager.getMessage("requesting.requested-by").send(requested, "%player%", requester.getName());
+				}
 			}
 
 		}

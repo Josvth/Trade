@@ -33,4 +33,7 @@ requesting:
     region: "You can't trade in this region."
     method:
      command: "You are not allowed to use this command."
-
+     right-click: "THIS IS A TEST MESSAGE. RIGHT_CLICK"
+     shift-right-click: "THIS IS A TEST MESSAGE. SHIFT_RIGHT_CLICK"
+     left-click: "THIS IS A TEST MESSAGE. LEFT_CLICK"
+     shift-left-click: "THIS IS A TEST MESSAGE. SHIFT_LEFT_CLICK"
