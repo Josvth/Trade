@@ -23,13 +23,21 @@ public class TradeSlot extends Slot {
 		this.offerIndex = offerIndex;
 	}
 
+	public Offer getContents(TransactionHolder holder) {
+		return holder.getOffers().get(offerIndex);
+	}
+
+	public int getOfferIndex() {
+		return offerIndex;
+	}
+
 	// Event handling
 	@Override
 	public void onClick(InventoryClickEvent event) {
 
         final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-		final Offer offer = holder.getOffers().get(offerIndex);
+		final Offer offer = getContents(holder);
 
 		// We cancel the others accept if they had accepted
 		if (holder.getOtherTrader().hasAccepted()) {
@@ -50,14 +58,10 @@ public class TradeSlot extends Slot {
 
 			ItemStack newItem = null;
 
-			((Player) event.getWhoClicked()).sendMessage(event.getAction().name());
-
 			switch (event.getAction()) {
 				case PLACE_ALL:
 					newItem = event.getCursor().clone();
 					break;
-				case PLACE_SOME:
-					throw new IllegalStateException("PLACE_SOME");
 				case PLACE_ONE:
 					newItem = event.getCursor().clone();
 					newItem.setAmount(1);
@@ -78,29 +82,29 @@ public class TradeSlot extends Slot {
 
 	}
 
-	public boolean isEmpty(TransactionHolder holder) {
-		return holder.getOffers().get(offerIndex) == null;
-	}
-
 	@Override
 	public void onDrag(InventoryDragEvent event) {
 
 		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-		if (event.getNewItems().containsKey(slot)) {
-			holder.getOffers().set(offerIndex, createItemOffer(holder, event.getNewItems().get(0)));
-		} else {
-			holder.getOffers().set(offerIndex, null);
-		}
+		final Offer offer = getContents(holder);
 
-		MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
+		if (offer != null) {
+			offer.onDrag(slot, event);
+		} else if (event.getNewItems().containsKey(slot)) {
+
+			holder.getOffers().set(offerIndex, createItemOffer(holder, event.getNewItems().get(slot).clone()));
+
+			MirrorSlot.updateMirrors(holder.getOtherHolder(), true, offerIndex);
+
+		}
 
 	}
 
 	@Override
 	public void update(TransactionHolder holder) {
 
-		final Offer offer = holder.getOffers().get(offerIndex);
+		final Offer offer = getContents(holder);
 
 		if (offer != null) {
 			holder.getInventory().setItem(slot, offer.getDisplayItem());
@@ -110,9 +114,7 @@ public class TradeSlot extends Slot {
 
 	}
 
-	public int getOfferIndex() {
-		return offerIndex;
-	}
+
 
     private ItemOffer createItemOffer(TransactionHolder holder, ItemStack itemStack) {
         final ItemOffer offer = holder.getLayout().createOffer(ItemOffer.class, holder.getOffers(), offerIndex);
@@ -165,5 +167,6 @@ public class TradeSlot extends Slot {
 		}
 
 	}
+
 
 }

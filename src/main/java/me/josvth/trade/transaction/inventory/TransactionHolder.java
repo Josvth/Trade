@@ -4,10 +4,14 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.offer.*;
 import me.josvth.trade.transaction.Trader;
 
+import me.josvth.trade.transaction.Transaction;
+import me.josvth.trade.transaction.TransactionOptions;
+import me.josvth.trade.transaction.TransactionStage;
 import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
 import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.inventory.slot.TradeSlot;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -39,16 +43,22 @@ public class TransactionHolder implements InventoryHolder {
 		return trader;
 	}
 
+	//TODO THIS METHOD IS USE A LOT!
 	public Trader getOtherTrader() {
 		return trader.getOther();
 	}
 
+	//TODO THIS METHOD IS USE A LOT!
 	public TransactionHolder getOtherHolder() {
 		return getOtherTrader().getHolder();
 	}
 
 	public Layout getLayout() {
 		return layout;
+	}
+
+	public Transaction getTransaction() {
+		return trader.getTransaction();
 	}
 
 	public OfferList getOffers() {
@@ -86,7 +96,7 @@ public class TransactionHolder implements InventoryHolder {
 
 				final Iterator<Map.Entry<Integer, ItemOffer>> iterator = getOffers().getOfClass(ItemOffer.class).entrySet().iterator();
 
-                // TODO make this not use getOffers().add()
+				// TODO make this not use getOffers().add()
 //				final ItemOffer itemTradeable = new ItemOffer(event.getCurrentItem());
 //
 //				final HashMap<Integer, Offer> remaining = trader.getOffers().add(itemTradeable); // TODO Clone item here?
@@ -124,11 +134,29 @@ public class TransactionHolder implements InventoryHolder {
 
 		if (event.getInventory().getHolder() instanceof TransactionHolder) {
 
-			for (int slot : event.getInventorySlots() ) {
-				if (slot >= layout.getSlots().length || layout.getSlots()[slot] == null || !(layout.getSlots()[slot] instanceof TradeSlot) || !((TradeSlot) layout.getSlots()[slot]).isEmpty(this)) {
+			for (int slotIndex : event.getInventorySlots() ) {
+				// Cancel if we are dragging outside the inventory.
+				if (slotIndex >= layout.getSlots().length) {
 					event.setCancelled(true);
 					return;
 				}
+
+				final Slot slot = layout.getSlots()[slotIndex];
+
+				// Cancel if the slot is empty or not a trade slot
+				if (slot == null || !(slot instanceof TradeSlot)) {
+					event.setCancelled(true);
+					return;
+				}
+
+				final Offer offer = ((TradeSlot) slot).getContents(this);
+
+				// Return if this offer does not support drag events
+				if (offer != null && !offer.isDraggable()) {
+					event.setCancelled(true);
+					return;
+				}
+
 			}
 
 			for (int s : event.getInventorySlots()) {
@@ -140,11 +168,14 @@ public class TransactionHolder implements InventoryHolder {
 	}
 
 	public void onClose(InventoryCloseEvent event) {
-
+		if (getTransaction().getStage() == TransactionStage.IN_PROGRESS) {
+			if (getTransaction().getManager().getOptions().allowInventoryClosing()) {
+				plugin.getFormatManager().getMessage("trading.closed-inventory").send((CommandSender) event.getPlayer());
+			} else {
+				trader.setRefused(true);
+			}
+		}
 	}
 
-    public <T extends Offer> T createOffer(Class<T> clazz, int offerID) {
-        return layout.createOffer(clazz, getOffers(), offerID);
-    }
 }
 

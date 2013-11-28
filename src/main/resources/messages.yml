@@ -12,6 +12,7 @@ trading:
   success: "You successfully traded with %player%."
   disconnect: "Your trade was cancelled because you disconnected."
   disconnect-other: "Your trade was cancelled because %player% disconnected."
+  closed-inventory: "You closed your trading inventory. Type /trade open to reopen it."
   reload: "Your trade was cancelled because of a reload."
 requesting:
   timeout: "Your request to trade with %player% timed out."
@@ -32,4 +33,7 @@ requesting:
     region: "You can't trade in this region."
     method:
      command: "You are not allowed to use this command."
-
+     right-click: "THIS IS A TEST MESSAGE. RIGHT_CLICK"
+     shift-right-click: "THIS IS A TEST MESSAGE. SHIFT_RIGHT_CLICK"
+     left-click: "THIS IS A TEST MESSAGE. LEFT_CLICK"
+     shift-left-click: "THIS IS A TEST MESSAGE. SHIFT_LEFT_CLICK"

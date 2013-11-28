@@ -2,12 +2,13 @@ package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class CloseSlot extends Slot {
 
-	private final ItemDescription closeDescription;
+	private final ItemStack closeDescription;
 
-	public CloseSlot(int slot, ItemDescription closeDescription) {
+	public CloseSlot(int slot, ItemStack closeDescription) {
 		super(slot);
 		this.closeDescription = closeDescription;
 	}
@@ -25,7 +26,7 @@ public class CloseSlot extends Slot {
 
 	@Override
 	public void update(TransactionHolder holder) {
-		setSlot(holder, closeDescription.create());
+		setSlot(holder, closeDescription);
 	}
 
 }

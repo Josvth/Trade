@@ -1,6 +1,7 @@
 package me.josvth.trade.offer;
 
 import me.josvth.trade.transaction.Trader;
+import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
@@ -17,7 +18,7 @@ public abstract class Offer {
 
 	public abstract ItemStack getDisplayItem();
 
-	public ItemStack getOtherDisplayItem() {
+	public ItemStack getMirrorItem(TransactionHolder holder) {
 		return getDisplayItem();
 	}
 
@@ -38,6 +39,10 @@ public abstract class Offer {
 	// Event handling
 	public void onClick(InventoryClickEvent event) {
 
+	}
+
+	public boolean isDraggable() {
+		return false;
 	}
 
 	public void onDrag(int slot, InventoryDragEvent event) {

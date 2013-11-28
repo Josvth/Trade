@@ -26,6 +26,10 @@ public class Transaction {
 		traderB.setOther(traderA);
 	}
 
+	public TransactionManager getManager() {
+		return manager;
+	}
+
 	public Trade getPlugin() {
 		return manager.getPlugin();
 	}
@@ -99,11 +103,6 @@ public class Transaction {
 			throw new IllegalArgumentException("Cannot stop an ended transaction");
 		}
 
-		manager.removeTransaction(this);
-
-		traderA.closeInventory();
-		traderB.closeInventory();
-
 		if (success) {
 			traderA.getOffers().grant(traderB);
 			traderB.getOffers().grant(traderA);
@@ -111,6 +110,13 @@ public class Transaction {
 			traderA.getOffers().grant(traderA);
 			traderB.getOffers().grant(traderB);
 		}
+
+		stage = TransactionStage.POST;
+
+		manager.removeTransaction(this);
+
+		traderA.closeInventory();
+		traderB.closeInventory();
 
 	}
 
