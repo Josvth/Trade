@@ -20,7 +20,8 @@ public class ItemStackUtils {
                 for (String string : meta.getLore()) {
                     lore.add(new FormattedMessage(string).get(arguments));
                 }
-                meta.setLore(lore);
+                met
+                a.setLore(lore);
             }
             itemStack.setItemMeta(meta);
         }
