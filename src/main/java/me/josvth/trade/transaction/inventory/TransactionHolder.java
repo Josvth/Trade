@@ -29,14 +29,11 @@ public class TransactionHolder implements InventoryHolder {
 
 	private final Trader trader;
 
-	private final Layout layout;
-
 	private Inventory inventory;
 
-	public TransactionHolder(Trade trade, Trader trader, Layout layout) {
+	public TransactionHolder(Trade trade, Trader trader) {
 		this.plugin = trade;
 		this.trader = trader;
-		this.layout = layout;
 	}
 
 	public Trader getTrader() {
@@ -54,7 +51,7 @@ public class TransactionHolder implements InventoryHolder {
 	}
 
 	public Layout getLayout() {
-		return layout;
+		return trader.getLayout();
 	}
 
 	public Transaction getTransaction() {
@@ -69,9 +66,9 @@ public class TransactionHolder implements InventoryHolder {
 	public Inventory getInventory() {
 
 		if (inventory == null) {
-			inventory = Bukkit.createInventory(this, layout.getInventorySize(), layout.generateTitle(this));
+			inventory = Bukkit.createInventory(this, getLayout().getInventorySize(), getLayout().generateTitle(this));
 
-			for (Slot slot : this.layout.getSlots()) {
+			for (Slot slot : getLayout().getSlots()) {
 				if (slot != null) slot.update(this);
 			}
 		}
@@ -90,7 +87,7 @@ public class TransactionHolder implements InventoryHolder {
 			return;
 		}
 
-		if (event.getRawSlot() >= layout.getInventorySize()) { // Player is clicking lower inventory of InventoryView
+		if (event.getRawSlot() >= getLayout().getInventorySize()) { // Player is clicking lower inventory of InventoryView
 
 			if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
 
@@ -118,7 +115,7 @@ public class TransactionHolder implements InventoryHolder {
 
 		} else if (event.getRawSlot() != -999) {	// Player is clicking upper inventory of InventoryView (our inventory)
 
-			Slot slot = layout.getSlots()[event.getSlot()];
+			Slot slot = getLayout().getSlots()[event.getSlot()];
 
 			if (slot != null) {
 				slot.onClick(event);
@@ -136,12 +133,12 @@ public class TransactionHolder implements InventoryHolder {
 
 			for (int slotIndex : event.getInventorySlots() ) {
 				// Cancel if we are dragging outside the inventory.
-				if (slotIndex >= layout.getSlots().length) {
+				if (slotIndex >= getLayout().getSlots().length) {
 					event.setCancelled(true);
 					return;
 				}
 
-				final Slot slot = layout.getSlots()[slotIndex];
+				final Slot slot = getLayout().getSlots()[slotIndex];
 
 				// Cancel if the slot is empty or not a trade slot
 				if (slot == null || !(slot instanceof TradeSlot)) {
@@ -160,7 +157,7 @@ public class TransactionHolder implements InventoryHolder {
 			}
 
 			for (int s : event.getInventorySlots()) {
-				final Slot slot = layout.getSlots()[s];
+				final Slot slot = getLayout().getSlots()[s];
 				slot.onDrag(event);
 			}
 

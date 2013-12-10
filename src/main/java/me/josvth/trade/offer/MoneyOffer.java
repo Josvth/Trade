@@ -1,5 +1,6 @@
 package me.josvth.trade.offer;
 
+import me.josvth.trade.offer.description.MoneyOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -14,7 +15,7 @@ public class MoneyOffer extends Offer {
 	}
 
 	public MoneyOffer(OfferList list, int offerID, double amount) {
-		super(list, offerID);
+		super(list, offerID, new MoneyOfferDescription());
 		this.amount = amount;
 	}
 
@@ -30,21 +31,6 @@ public class MoneyOffer extends Offer {
 	@Override
 	protected MoneyOffer clone() {
 		return new MoneyOffer(list, offerIndex, amount);
-	}
-
-	@Override
-	public ItemStack getDisplayItem() {
-
-		final ItemStack item = new ItemStack(Material.GOLD_INGOT, 0);
-
-		final ItemMeta meta = item.getItemMeta();
-
-		meta.setDisplayName(amount + " monies");
-
-		item.setItemMeta(meta);
-
-		return item;
-
 	}
 
 	@Override

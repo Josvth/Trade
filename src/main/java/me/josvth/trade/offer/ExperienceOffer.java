@@ -1,33 +1,17 @@
 package me.josvth.trade.offer;
 
+import me.josvth.trade.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.util.ItemStackUtils;
-import org.apache.commons.lang.Validate;
-import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-
-public class ExperienceOffer extends Offer {
+public class ExperienceOffer extends Offer<ExperienceOfferDescription> {
 
     private int levels = 0;
 
-    private final ItemStack experienceItem;
-    private final ItemStack experienceItemMirror;
-
-	private final int smallModifier;
-	private final int largeModifier;
-
-    public ExperienceOffer(OfferList list, int offerID, int smallModifier, int largeModifier, ItemStack experienceItem, ItemStack experienceItemMirror) {
-        super(list, offerID);
-		Validate.notNull(experienceItem, "Experience Item can't be null.");
-		Validate.notNull(experienceItemMirror, "Experience Item Mirror can't be null.");
-		this.smallModifier = smallModifier;
-		this.largeModifier = largeModifier;
-        this.experienceItem = experienceItem;
-        this.experienceItemMirror = experienceItemMirror;
+    public ExperienceOffer(OfferList list, int offerID) {
+        super(list, offerID, new ExperienceOfferDescription());
     }
 
     public int add(int amount) {
@@ -61,20 +45,6 @@ public class ExperienceOffer extends Offer {
     }
 
     @Override
-    public ItemStack getDisplayItem() {
-		final ItemStack itemStack = experienceItem.clone();
-		itemStack.setAmount(levels);
-        return ItemStackUtils.argument(itemStack, "%levels%", String.valueOf(levels), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier));
-    }
-
-    @Override
-    public ItemStack getMirrorItem(TransactionHolder holder) {
-		final ItemStack itemStack = experienceItemMirror.clone();
-		itemStack.setAmount(levels);
-		return ItemStackUtils.argument(itemStack, "%player%", holder.getOtherTrader().getName(), "%levels%", String.valueOf(levels));
-    }
-
-    @Override
     public boolean isWorthless() {
         return levels <= 0;
     }
@@ -90,6 +60,40 @@ public class ExperienceOffer extends Offer {
 
     @Override
     public void onClick(InventoryClickEvent event) {
+
+		// We always cancel the event.
+		event.setCancelled(true);
+
+		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+
+		final Player player = (Player) event.getWhoClicked();
+
+		if (event.isLeftClick()) {
+
+			final int levelsToAdd = event.isShiftClick()? getDescription().getLargeModifier() : getDescription().getSmallModifier();
+
+			if (player.getLevel() < levelsToAdd) {
+				getDescription().getInsufficientMessage().send(player, "%levels%", String.valueOf(levelsToAdd));
+				return;
+			}
+
+			final int remainder = holder.getOffers().removeExperience(levelsToAdd);
+
+			player.setLevel(player.getLevel() - levelsToAdd);
+
+			getDescription().getAddMessage().send(player, "%levels%", String.valueOf(levelsToAdd - remainder));
+
+		} else if (event.isRightClick()) {
+
+			final int levelsToRemove = event.isShiftClick()? getDescription().getLargeModifier() : getDescription().getSmallModifier();
+
+			final int remainder = holder.getOffers().removeExperience(levelsToRemove);
+
+			player.setLevel(player.getLevel() + levelsToRemove - remainder);
+
+			getDescription().getRemoveMessage().send(player, "%levels%", String.valueOf(levelsToRemove - remainder));
+
+		}
 
     }
 

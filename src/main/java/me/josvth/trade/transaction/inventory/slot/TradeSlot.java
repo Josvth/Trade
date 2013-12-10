@@ -3,6 +3,7 @@ package me.josvth.trade.transaction.inventory.slot;
 import me.josvth.trade.Trade;
 import me.josvth.trade.offer.ItemOffer;
 import me.josvth.trade.offer.Offer;
+import me.josvth.trade.offer.OfferList;
 import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.Bukkit;
@@ -39,18 +40,6 @@ public class TradeSlot extends Slot {
 
 		final Offer offer = getContents(holder);
 
-		// We cancel the others accept if they had accepted
-		if (holder.getOtherTrader().hasAccepted()) {
-			holder.getOtherTrader().setAccepted(false);
-
-			// Update slots
-			AcceptSlot.updateAcceptSlots(holder.getOtherHolder(), true);
-			StatusSlot.updateStatusSlots(holder, true);
-
-			// Notify player
-			Trade.getInstance().getFormatManager().getMessage("trading.offer-changed").send(holder.getOtherTrader().getPlayer(), "%player%", holder.getTrader().getName());
-		}
-
 		// If we have a offer on this slot we let the offer handle the event
 		if (offer == null) {
 
@@ -70,7 +59,7 @@ public class TradeSlot extends Slot {
 					throw new IllegalStateException("Not handled action: " + event.getAction().name());
 			}
 
-			holder.getOffers().set(offerIndex, (newItem == null)? null : createItemOffer(holder, newItem));
+			holder.getOffers().set(offerIndex, (newItem == null)? null : holder.getOffers().createItemOffer(offerIndex, newItem));
 
 			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
 
@@ -93,7 +82,7 @@ public class TradeSlot extends Slot {
 			offer.onDrag(slot, event);
 		} else if (event.getNewItems().containsKey(slot)) {
 
-			holder.getOffers().set(offerIndex, createItemOffer(holder, event.getNewItems().get(slot).clone()));
+			holder.getOffers().set(offerIndex, holder.getOffers().createItemOffer(offerIndex, event.getNewItems().get(slot).clone()));
 
 			MirrorSlot.updateMirrors(holder.getOtherHolder(), true, offerIndex);
 
@@ -116,11 +105,7 @@ public class TradeSlot extends Slot {
 
 
 
-    private ItemOffer createItemOffer(TransactionHolder holder, ItemStack itemStack) {
-        final ItemOffer offer = holder.getLayout().createOffer(ItemOffer.class, holder.getOffers(), offerIndex);
-        offer.setItem(itemStack);
-        return offer;
-    }
+
 
 	public static void updateTradeSlots(TransactionHolder holder, boolean nextTick, int... offerIndex) {
 

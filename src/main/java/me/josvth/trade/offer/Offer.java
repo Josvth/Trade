@@ -1,26 +1,36 @@
 package me.josvth.trade.offer;
 
+import me.josvth.trade.offer.description.OfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 
-public abstract class Offer {
+public abstract class Offer <T extends OfferDescription> {
 
 	protected final OfferList list;
    	protected final int offerIndex;
 
-	public Offer(OfferList list, int offerIndex) {
+    protected final T description;
+
+	public Offer(OfferList list, int offerIndex, T description) {
 		this.list = list;
 		this.offerIndex = offerIndex;
+        this.description = description;
 	}
 
-	public abstract ItemStack getDisplayItem();
+    public T getDescription() {
+        return description;
+    }
+
+	public ItemStack getDisplayItem() {
+        return getDescription().createItem(this);
+    }
 
 	public ItemStack getMirrorItem(TransactionHolder holder) {
-		return getDisplayItem();
-	}
+        return getDescription().createMirrorItem(this, holder);
+    }
 
 	public double getAmount() {
 		return 0;

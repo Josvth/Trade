@@ -2,6 +2,7 @@ package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
 import me.josvth.trade.tasks.SlotUpdateTask;
+import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
@@ -26,7 +27,7 @@ public class AcceptSlot extends Slot {
 
 		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-		holder.getTrader().setAccepted(!holder.getTrader().hasAccepted());
+		holder.getTrader().accept(Trader.AcceptReason.SELF);
 
 		AcceptSlot.updateAcceptSlots(holder, true);
 		StatusSlot.updateStatusSlots(holder.getOtherHolder(), true);

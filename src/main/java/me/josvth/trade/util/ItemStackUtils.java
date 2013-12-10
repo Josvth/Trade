@@ -50,7 +50,7 @@ public class ItemStackUtils {
 			- "This"
 			- "is"
 			- "lore"
-*/
+	*/
 	public static final ItemStack fromSection(ConfigurationSection section, FormatManager formatManager) {
 
 		if (section == null) {
@@ -62,7 +62,7 @@ public class ItemStackUtils {
 		if (section.isInt("material")) {
 			material = Material.getMaterial(section.getInt("material"));
 		} else if (section.isString("material")) {
-			material = Material.getMaterial(section.getString("material"));
+			material = Material.matchMaterial(section.getString("material"));
 		} else {
 			return null;
 		}

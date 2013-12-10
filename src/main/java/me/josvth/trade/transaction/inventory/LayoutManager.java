@@ -3,6 +3,8 @@ package me.josvth.trade.transaction.inventory;
 import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.bukkitformatlibrary.managers.FormatManager;
 import me.josvth.trade.Trade;
+import me.josvth.trade.offer.ItemOffer;
+import me.josvth.trade.offer.description.ItemOfferDescription;
 import me.josvth.trade.transaction.inventory.slot.*;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.configuration.ConfigurationSection;
@@ -85,6 +87,27 @@ public class LayoutManager {
 
 			final Layout layout = new Layout(key, size / 9, offerSize);
 
+            // Load offer descriptions
+            if (configuration.isConfigurationSection(key + ".offers")) {
+
+                for (String offerKey : configuration.getConfigurationSection(key + ".offers").getKeys(false)) {
+
+                    final ConfigurationSection offerSection = configuration.getConfigurationSection(key + ".offers." + offerKey);
+
+                    if ("item".equalsIgnoreCase(offerKey)) {
+                        final ItemOfferDescription description = new ItemOfferDescription();
+                        layout.setOfferDescription(description.getOfferClass(), new ItemOfferDescription());
+                    } else if ("experience".equalsIgnoreCase(offerKey)) {
+                        // TODO This
+                    } else if ("money".equalsIgnoreCase(offerKey)) {
+                        // TODO This
+                    }
+
+                }
+
+            }
+
+            // Load slots
 			if (!configuration.isConfigurationSection(key + ".slots")) {
 				// TODO add message
 				continue;
