@@ -1,13 +1,10 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.offer.ItemOffer;
 import me.josvth.trade.offer.Offer;
-import me.josvth.trade.offer.OfferList;
 import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
@@ -24,7 +21,7 @@ public class TradeSlot extends Slot {
 		this.offerIndex = offerIndex;
 	}
 
-	public Offer getContents(TransactionHolder holder) {
+	public Offer getSlotContents(TransactionHolder holder) {
 		return holder.getOffers().get(offerIndex);
 	}
 
@@ -38,7 +35,7 @@ public class TradeSlot extends Slot {
 
         final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-		final Offer offer = getContents(holder);
+		final Offer offer = getSlotContents(holder);
 
 		// If we have a offer on this slot we let the offer handle the event
 		if (offer == null) {
@@ -61,6 +58,17 @@ public class TradeSlot extends Slot {
 
 			holder.getOffers().set(offerIndex, (newItem == null)? null : holder.getOffers().createItemOffer(offerIndex, newItem));
 
+            ////// TODO MAKE THIS A FUNCTION?
+            if (holder.getOtherTrader().hasAccepted()) {
+                holder.getOtherTrader().setAccepted(false);
+
+                holder.getOtherTrader().getFormattedMessage("denied.offer-changed").send(holder.getOtherTrader().getPlayer());
+
+                AcceptSlot.updateAcceptSlots(holder.getOtherHolder(), true);
+                StatusSlot.updateStatusSlots(holder, true);
+
+            }
+
 			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
 
 		} else {
@@ -76,13 +84,24 @@ public class TradeSlot extends Slot {
 
 		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-		final Offer offer = getContents(holder);
+		final Offer offer = getSlotContents(holder);
 
 		if (offer != null) {
 			offer.onDrag(slot, event);
 		} else if (event.getNewItems().containsKey(slot)) {
 
 			holder.getOffers().set(offerIndex, holder.getOffers().createItemOffer(offerIndex, event.getNewItems().get(slot).clone()));
+
+            ////// TODO MAKE THIS A FUNCTION?
+            if (holder.getOtherTrader().hasAccepted()) {
+                holder.getOtherTrader().setAccepted(false);
+
+                holder.getOtherTrader().getFormattedMessage("denied.offer-changed").send(holder.getOtherTrader().getPlayer());
+
+                AcceptSlot.updateAcceptSlots(holder.getOtherHolder(), true);
+                StatusSlot.updateStatusSlots(holder, true);
+
+            }
 
 			MirrorSlot.updateMirrors(holder.getOtherHolder(), true, offerIndex);
 
@@ -93,7 +112,7 @@ public class TradeSlot extends Slot {
 	@Override
 	public void update(TransactionHolder holder) {
 
-		final Offer offer = getContents(holder);
+		final Offer offer = getSlotContents(holder);
 
 		if (offer != null) {
 			holder.getInventory().setItem(slot, offer.getDisplayItem());
@@ -102,10 +121,6 @@ public class TradeSlot extends Slot {
 		}
 
 	}
-
-
-
-
 
 	public static void updateTradeSlots(TransactionHolder holder, boolean nextTick, int... offerIndex) {
 

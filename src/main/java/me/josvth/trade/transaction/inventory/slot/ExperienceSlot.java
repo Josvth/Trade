@@ -5,6 +5,7 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.offer.ExperienceOffer;
 import me.josvth.trade.tasks.ExperienceSlotUpdateTask;
 import me.josvth.trade.offer.OfferList;
+import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
@@ -21,18 +22,11 @@ public class ExperienceSlot extends Slot {
 	private final int smallModifier;
 	private final int largeModifier;
 
-	private final FormattedMessage addMessage;
-	private final FormattedMessage removeMessage;
-	private final FormattedMessage insufficientMessage;
-
-	public ExperienceSlot(int slot, ItemStack experienceItem, int smallModifier, int largeModifier, FormattedMessage addMessage, FormattedMessage removeMessage, FormattedMessage insufficientMessage) {
+	public ExperienceSlot(int slot, ItemStack experienceItem, int smallModifier, int largeModifier) {
 		super(slot);
 		this.experienceItem = experienceItem;
 		this.smallModifier = smallModifier;
 		this.largeModifier = largeModifier;
-		this.addMessage = addMessage;
-		this.removeMessage = removeMessage;
-		this.insufficientMessage = insufficientMessage;
 	}
 
 	@Override
@@ -43,6 +37,8 @@ public class ExperienceSlot extends Slot {
 
 		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
+        final Trader trader = holder.getTrader();
+
 		final Player player = (Player) event.getWhoClicked();
 
 		if (event.isLeftClick()) {
@@ -50,7 +46,7 @@ public class ExperienceSlot extends Slot {
 			final int levelsToAdd = event.isShiftClick()? largeModifier : smallModifier;
 
 			if (player.getLevel() < levelsToAdd) {
-				insufficientMessage.send(player, "%levels%", String.valueOf(levelsToAdd));
+                trader.getFormattedMessage("experience.insufficient").send(player, "%levels%", String.valueOf(levelsToAdd));
 				return;
 			}
 
@@ -58,7 +54,10 @@ public class ExperienceSlot extends Slot {
 
 			player.setLevel(player.getLevel() - levelsToAdd);
 
-			addMessage.send(player, "%levels%", String.valueOf(levelsToAdd - remainder));
+            trader.getFormattedMessage("experience.add.self").send(player, "%levels%", String.valueOf(levelsToAdd - remainder));
+            if (trader.getOther().hasFormattedMessage("experience.add.other")) {
+                trader.getOther().getFormattedMessage("experience.add.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToAdd - remainder));
+            }
 
 		} else if (event.isRightClick()) {
 
@@ -68,8 +67,10 @@ public class ExperienceSlot extends Slot {
 
             player.setLevel(player.getLevel() + levelsToRemove - remainder);
 
-			removeMessage.send(player, "%levels%", String.valueOf(levelsToRemove - remainder));
-
+            trader.getFormattedMessage("experience.remove.self").send(player, "%levels%", String.valueOf(levelsToRemove - remainder));
+            if (trader.getOther().hasFormattedMessage("experience.remove.other")) {
+                trader.getOther().getFormattedMessage("experience.remove.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToRemove - remainder));
+            }
 		}
 
 	}

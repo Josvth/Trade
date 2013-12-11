@@ -4,7 +4,6 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -27,10 +26,31 @@ public class AcceptSlot extends Slot {
 
 		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-		holder.getTrader().accept(Trader.AcceptReason.SELF);
+        final Trader trader = holder.getTrader();
 
-		AcceptSlot.updateAcceptSlots(holder, true);
-		StatusSlot.updateStatusSlots(holder.getOtherHolder(), true);
+        if (trader.hasAccepted()) {
+
+            trader.setAccepted(false);
+
+            trader.getFormattedMessage("denied.self").send(trader.getPlayer());
+            holder.getOtherTrader().getFormattedMessage("denied.other").send(holder.getOtherTrader().getPlayer());
+
+            AcceptSlot.updateAcceptSlots(holder, true);
+            StatusSlot.updateStatusSlots(holder.getOtherHolder(), true);
+
+        } else {
+
+            trader.setAccepted(true);
+
+            trader.getFormattedMessage("accepted.self").send(trader.getPlayer());
+            holder.getOtherTrader().getFormattedMessage("accepted.other").send(holder.getOtherTrader().getPlayer());
+
+            AcceptSlot.updateAcceptSlots(holder, true);
+            StatusSlot.updateStatusSlots(holder.getOtherHolder(), true);
+
+            // TODO Finish trade if both parties accepted.
+
+        }
 
 		event.setCancelled(true);
 

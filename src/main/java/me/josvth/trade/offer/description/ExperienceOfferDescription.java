@@ -15,10 +15,6 @@ public class ExperienceOfferDescription extends OfferDescription<ExperienceOffer
     private int smallModifier;
     private int largeModifier;
 
-    private FormattedMessage addMessage;
-    private FormattedMessage removeMessage;
-    private FormattedMessage insufficientMessage;
-
     @Override
     public ItemStack createItem(ExperienceOffer offer) {
         final ItemStack itemStack;
@@ -85,27 +81,4 @@ public class ExperienceOfferDescription extends OfferDescription<ExperienceOffer
         this.largeModifier = largeModifier;
     }
 
-    public FormattedMessage getAddMessage() {
-        return addMessage;
-    }
-
-    public void setAddMessage(FormattedMessage addMessage) {
-        this.addMessage = addMessage;
-    }
-
-    public FormattedMessage getRemoveMessage() {
-        return removeMessage;
-    }
-
-    public void setRemoveMessage(FormattedMessage removeMessage) {
-        this.removeMessage = removeMessage;
-    }
-
-    public FormattedMessage getInsufficientMessage() {
-        return insufficientMessage;
-    }
-
-    public void setInsufficientMessage(FormattedMessage insufficientMessage) {
-        this.insufficientMessage = insufficientMessage;
-    }
 }

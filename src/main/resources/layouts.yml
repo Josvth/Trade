@@ -82,3 +82,22 @@ default:
         display-name: "%player% offers %levels% levels."
       small-modifier: 1
       large-modifier: 5
+  messages:
+    accepted:
+      self: "You accepted the trade."
+      other: "%player% accepted the trade."
+    denied:
+      self: "You denied the trade."
+      other: "%player% denied the trade."
+      offer-changed: "%player% changed their offer."
+    refused:
+      self: "You refused the trade."
+      other: "%player% refused the trade."
+    experience:
+      added:
+        self: Added %levels% levels to the trade.
+        other: "%player% added %levels% levels to the trade."
+      removed:
+        self: Removed %levels% levels from the trade.
+        other: "%player% removed %levels% levels from the trade."
+      insufficient: "You don't have %levels% levels!"

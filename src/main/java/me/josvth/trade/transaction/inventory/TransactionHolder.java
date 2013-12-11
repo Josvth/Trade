@@ -5,7 +5,6 @@ import me.josvth.trade.offer.*;
 import me.josvth.trade.transaction.Trader;
 
 import me.josvth.trade.transaction.Transaction;
-import me.josvth.trade.transaction.TransactionOptions;
 import me.josvth.trade.transaction.TransactionStage;
 import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
 import me.josvth.trade.transaction.inventory.slot.Slot;
@@ -19,7 +18,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -146,7 +144,7 @@ public class TransactionHolder implements InventoryHolder {
 					return;
 				}
 
-				final Offer offer = ((TradeSlot) slot).getContents(this);
+				final Offer offer = ((TradeSlot) slot).getSlotContents(this);
 
 				// Return if this offer does not support drag events
 				if (offer != null && !offer.isDraggable()) {

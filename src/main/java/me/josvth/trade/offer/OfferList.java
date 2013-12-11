@@ -34,8 +34,6 @@ public class OfferList {
 
 	public void set(int slot, Offer offer) {
 		offers[slot] = offer;
-		trader.deny(Trader.DenyReason.FORCED);
-		trader.getOther().deny(Trader.DenyReason.CHANGED_OFFER);
 	}
 
 	@Override

@@ -31,11 +31,11 @@ public class Layout {
         experienceOfferDescription.setExperienceItem(ItemStackUtils.setMeta(
                 new ItemStack(Material.EXP_BOTTLE),
                 "You added %levels% levels.",
-                Arrays.asList(new String[]{
+                Arrays.asList(
                         "Left click to add %small% level(s)",
                         "Right click to remove %small% level(s)",
                         "Shift left click to add %large% levels",
-                        "Shift right click to remove %large% levels"})
+                        "Shift right click to remove %large% levels")
         )
         );
 
@@ -60,6 +60,9 @@ public class Layout {
     private int offerSize = 4;
 
     private FormattedMessage title = DEFAULT_TITLE;
+
+    // Messages
+    private final Map<String, FormattedMessage> messages = new HashMap<String, FormattedMessage>();
 
     // Offer descriptions
     private final Map<Class<? extends Offer>, OfferDescription> offerDescriptions = new HashMap<Class<? extends Offer>, OfferDescription>(DEFAULT_OFFER_DESCRIPTIONS);
@@ -130,6 +133,18 @@ public class Layout {
             return titleBuilder.toString();
         }
 
+    }
+
+    public FormattedMessage getFormattedMessage(String key) {
+        FormattedMessage message = messages.get(key);
+        if (message == null) {
+            message = new FormattedMessage(key);
+        }
+        return message;
+    }
+
+    public boolean hasFormattedMessage(String key) {
+        return messages.containsKey(key);
     }
 
     // Offer descriptions

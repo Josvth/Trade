@@ -181,10 +181,7 @@ public class LayoutManager {
 							slotID,
 							ItemStackUtils.fromSection(slotSection.getConfigurationSection("experience-item"), formatManager),
 							slotSection.getInt("small-modifier", 1),
-							slotSection.getInt("large-modifier", 5),
-							new FormattedMessage(formatManager.preformatMessage(slotSection.getString("messages.add", "messages.add"))),
-							new FormattedMessage(formatManager.preformatMessage(slotSection.getString("messages.remove", "messages.remove"))),
-							new FormattedMessage(formatManager.preformatMessage(slotSection.getString("messages.insufficient", "messages.insufficient")))
+							slotSection.getInt("large-modifier", 5)
 					);
 				}
 

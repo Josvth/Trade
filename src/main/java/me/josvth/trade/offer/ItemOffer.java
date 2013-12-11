@@ -4,7 +4,9 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.offer.description.ItemOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
+import me.josvth.trade.transaction.inventory.slot.AcceptSlot;
 import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
+import me.josvth.trade.transaction.inventory.slot.StatusSlot;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -68,6 +70,18 @@ public class ItemOffer extends Offer<ItemOfferDescription> {
 			case HOTBAR_MOVE_AND_READD:
 				item = null;
                 holder.getOffers().set(offerIndex, null);
+
+                ////// TODO MAKE THIS A FUNCTION?
+                if (holder.getOtherTrader().hasAccepted()) {
+                    holder.getOtherTrader().setAccepted(false);
+
+                    holder.getOtherTrader().getFormattedMessage("denied.offer-changed").send(holder.getOtherTrader().getPlayer());
+
+                    AcceptSlot.updateAcceptSlots(holder.getOtherHolder(), true);
+                    StatusSlot.updateStatusSlots(holder, true);
+
+                }
+
 				break;
 			case PICKUP_HALF:
 				item.setAmount(item.getAmount() / 2);

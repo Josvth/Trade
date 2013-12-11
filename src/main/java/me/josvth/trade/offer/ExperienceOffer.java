@@ -66,14 +66,16 @@ public class ExperienceOffer extends Offer<ExperienceOfferDescription> {
 
 		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-		final Player player = (Player) event.getWhoClicked();
+        final Trader trader = holder.getTrader();
+
+        final Player player = (Player) event.getWhoClicked();
 
 		if (event.isLeftClick()) {
 
 			final int levelsToAdd = event.isShiftClick()? getDescription().getLargeModifier() : getDescription().getSmallModifier();
 
 			if (player.getLevel() < levelsToAdd) {
-				getDescription().getInsufficientMessage().send(player, "%levels%", String.valueOf(levelsToAdd));
+                trader.getFormattedMessage("experience.insufficient").send(player, "%levels%", String.valueOf(levelsToAdd));
 				return;
 			}
 
@@ -81,7 +83,10 @@ public class ExperienceOffer extends Offer<ExperienceOfferDescription> {
 
 			player.setLevel(player.getLevel() - levelsToAdd);
 
-			getDescription().getAddMessage().send(player, "%levels%", String.valueOf(levelsToAdd - remainder));
+            trader.getFormattedMessage("experience.add.self").send(player, "%levels%", String.valueOf(levelsToAdd - remainder));
+            if (trader.getOther().hasFormattedMessage("experience.add.other")) {
+                trader.getOther().getFormattedMessage("experience.add.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToAdd - remainder));
+            }
 
 		} else if (event.isRightClick()) {
 
@@ -91,7 +96,10 @@ public class ExperienceOffer extends Offer<ExperienceOfferDescription> {
 
 			player.setLevel(player.getLevel() + levelsToRemove - remainder);
 
-			getDescription().getRemoveMessage().send(player, "%levels%", String.valueOf(levelsToRemove - remainder));
+            trader.getFormattedMessage("experience.remove.self").send(player, "%levels%", String.valueOf(levelsToRemove - remainder));
+            if (trader.getOther().hasFormattedMessage("experience.remove.other")) {
+                trader.getOther().getFormattedMessage("experience.remove.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToRemove - remainder));
+            }
 
 		}
 
