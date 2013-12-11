@@ -1,10 +1,9 @@
 package me.josvth.trade.transaction.inventory.slot;
 
-import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.trade.Trade;
 import me.josvth.trade.offer.ExperienceOffer;
-import me.josvth.trade.tasks.ExperienceSlotUpdateTask;
 import me.josvth.trade.offer.OfferList;
+import me.josvth.trade.tasks.ExperienceSlotUpdateTask;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.util.ItemStackUtils;
@@ -13,55 +12,55 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.Set;
 
 public class ExperienceSlot extends Slot {
 
-	private final ItemStack experienceItem;
+    private final ItemStack experienceItem;
 
-	private final int smallModifier;
-	private final int largeModifier;
+    private final int smallModifier;
+    private final int largeModifier;
 
-	public ExperienceSlot(int slot, ItemStack experienceItem, int smallModifier, int largeModifier) {
-		super(slot);
-		this.experienceItem = experienceItem;
-		this.smallModifier = smallModifier;
-		this.largeModifier = largeModifier;
-	}
+    public ExperienceSlot(int slot, ItemStack experienceItem, int smallModifier, int largeModifier) {
+        super(slot);
+        this.experienceItem = experienceItem;
+        this.smallModifier = smallModifier;
+        this.largeModifier = largeModifier;
+    }
 
-	@Override
-	public void onClick(InventoryClickEvent event) {
+    @Override
+    public void onClick(InventoryClickEvent event) {
 
-		// We always cancel the event.
-		event.setCancelled(true);
+        // We always cancel the event.
+        event.setCancelled(true);
 
-		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
         final Trader trader = holder.getTrader();
 
-		final Player player = (Player) event.getWhoClicked();
+        final Player player = (Player) event.getWhoClicked();
 
-		if (event.isLeftClick()) {
+        if (event.isLeftClick()) {
 
-			final int levelsToAdd = event.isShiftClick()? largeModifier : smallModifier;
+            final int levelsToAdd = event.isShiftClick() ? largeModifier : smallModifier;
 
-			if (player.getLevel() < levelsToAdd) {
+            if (player.getLevel() < levelsToAdd) {
                 trader.getFormattedMessage("experience.insufficient").send(player, "%levels%", String.valueOf(levelsToAdd));
-				return;
-			}
+                return;
+            }
 
             final int remainder = holder.getOffers().removeExperience(levelsToAdd);
 
-			player.setLevel(player.getLevel() - levelsToAdd);
+            player.setLevel(player.getLevel() - levelsToAdd);
 
             trader.getFormattedMessage("experience.add.self").send(player, "%levels%", String.valueOf(levelsToAdd - remainder));
             if (trader.getOther().hasFormattedMessage("experience.add.other")) {
                 trader.getOther().getFormattedMessage("experience.add.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToAdd - remainder));
             }
 
-		} else if (event.isRightClick()) {
+        } else if (event.isRightClick()) {
 
-			final int levelsToRemove = event.isShiftClick()? largeModifier : smallModifier;
+            final int levelsToRemove = event.isShiftClick() ? largeModifier : smallModifier;
 
             final int remainder = holder.getOffers().removeExperience(levelsToRemove);
 
@@ -71,14 +70,14 @@ public class ExperienceSlot extends Slot {
             if (trader.getOther().hasFormattedMessage("experience.remove.other")) {
                 trader.getOther().getFormattedMessage("experience.remove.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToRemove - remainder));
             }
-		}
+        }
 
-	}
+    }
 
-	@Override
-	public void update(TransactionHolder holder) {
+    @Override
+    public void update(TransactionHolder holder) {
         update(holder, getLevels(holder.getOffers()));
-	}
+    }
 
     public void update(TransactionHolder holder, int levels) {
         setSlot(holder, ItemStackUtils.argument(experienceItem.clone(), "%levels%", String.valueOf(levels), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier)));
@@ -92,18 +91,18 @@ public class ExperienceSlot extends Slot {
         return levels;
     }
 
-	public static void updateExperienceSlots(TransactionHolder holder, boolean nextTick, int levels) {
+    public static void updateExperienceSlots(TransactionHolder holder, boolean nextTick, int levels) {
 
-		final Set<ExperienceSlot> slots = holder.getLayout().getSlotsOfType(ExperienceSlot.class);
+        final Set<ExperienceSlot> slots = holder.getLayout().getSlotsOfType(ExperienceSlot.class);
 
-		if (!nextTick) {
-			for (ExperienceSlot slot : slots) {
-				slot.update(holder, levels);
-			}
-		} else if (!slots.isEmpty()) {
-			Bukkit.getScheduler().runTask(Trade.getInstance(), new ExperienceSlotUpdateTask(holder, slots, levels));
-		}
+        if (!nextTick) {
+            for (ExperienceSlot slot : slots) {
+                slot.update(holder, levels);
+            }
+        } else if (!slots.isEmpty()) {
+            Bukkit.getScheduler().runTask(Trade.getInstance(), new ExperienceSlotUpdateTask(holder, slots, levels));
+        }
 
-	}
+    }
 
 }

@@ -165,7 +165,7 @@ public class TransactionHolder implements InventoryHolder {
 	public void onClose(InventoryCloseEvent event) {
 		if (getTransaction().getStage() == TransactionStage.IN_PROGRESS) {
 			if (getTransaction().getManager().getOptions().allowInventoryClosing()) {
-				plugin.getFormatManager().getMessage("trading.closed-inventory").send((CommandSender) event.getPlayer());
+				plugin.getMessageManager().getMessageHolder().getMessage("trading.closed-inventory").send((CommandSender) event.getPlayer());
 			} else {
 				trader.setRefused(true);
 			}

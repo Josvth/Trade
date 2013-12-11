@@ -1,6 +1,6 @@
 package me.josvth.trade.transaction;
 
-import me.josvth.bukkitformatlibrary.FormattedMessage;
+import me.josvth.bukkitformatlibrary.message.FormattedMessage;
 import me.josvth.trade.offer.OfferList;
 import me.josvth.trade.transaction.inventory.Layout;
 import me.josvth.trade.transaction.inventory.TransactionHolder;

@@ -1,6 +1,5 @@
 package me.josvth.trade.offer.description;
 
-import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.trade.offer.ExperienceOffer;
 import me.josvth.trade.offer.OfferList;
 import me.josvth.trade.transaction.inventory.TransactionHolder;

@@ -1,9 +1,8 @@
 package me.josvth.trade.transaction;
 
-import me.josvth.bukkitformatlibrary.FormattedMessage;
-import me.josvth.bukkitformatlibrary.managers.FormatManager;
+import me.josvth.bukkitformatlibrary.message.FormattedMessage;
+import me.josvth.bukkitformatlibrary.message.MessageHolder;
 import me.josvth.trade.Trade;
-import me.josvth.trade.request.Request;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -15,17 +14,17 @@ public class TransactionManager {
 
 	private final Trade plugin;
 
-	private final FormatManager formatManager;
+	private final MessageHolder messageHolder;
 	private final TransactionListener listener;
 
 	private TransactionOptions options = new TransactionOptions();
 
 	private Map<String, Transaction> transactions = new HashMap<String, Transaction>();
 
-	public TransactionManager(Trade plugin, FormatManager formatManager) {
+	public TransactionManager(Trade plugin, MessageHolder messageHolder) {
 		this.plugin = plugin;
-		this.formatManager = formatManager;
-		this.listener = new TransactionListener(this, this.formatManager);
+		this.messageHolder = messageHolder;
+		this.listener = new TransactionListener(this, this.messageHolder);
 	}
 
 	public void initialize() {
@@ -39,7 +38,7 @@ public class TransactionManager {
 	public void unload() {
 		for (Transaction transaction : new LinkedHashSet<Transaction>(transactions.values())) {
 			transaction.stop(false);
-			final FormattedMessage message = formatManager.getMessage("trading.reload");
+			final FormattedMessage message = messageHolder.getMessage("trading.reload");
 			message.send(transaction.getTraderA().getPlayer());
 			message.send(transaction.getTraderB().getPlayer());
 		}

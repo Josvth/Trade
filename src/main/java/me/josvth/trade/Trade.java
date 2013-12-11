@@ -1,16 +1,16 @@
 package me.josvth.trade;
 
 import com.conventnunnery.libraries.config.ConventYamlConfiguration;
-import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.bukkitformatlibrary.formatter.ColorFormatter;
-import me.josvth.bukkitformatlibrary.managers.YamlFormatManager;
+import me.josvth.bukkitformatlibrary.message.MessageHolder;
+import me.josvth.bukkitformatlibrary.message.managers.MessageManager;
+import me.josvth.bukkitformatlibrary.message.managers.YamlMessageManager;
 import me.josvth.trade.request.*;
 import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.TransactionManager;
 import me.josvth.trade.transaction.inventory.LayoutManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,173 +18,177 @@ import java.io.File;
 
 public class Trade extends JavaPlugin {
 
-	private static Trade instance;
+    private static Trade instance;
+    // Configurations
+    private ConventYamlConfiguration generalConfiguration;
+    private ConventYamlConfiguration layoutConfiguration;
+    private ConventYamlConfiguration messageConfiguration;
+    // Managers
+    private YamlMessageManager messageManager;
+    private LayoutManager layoutManager;
+    private TransactionManager transactionManager;
+    private RequestManager requestManager;
 
-	// Configurations
-	private ConventYamlConfiguration generalConfiguration;
-	private ConventYamlConfiguration layoutConfiguration;
-	private ConventYamlConfiguration messageConfiguration;
+    public Trade() {
 
-	// Managers
-	private YamlFormatManager formatManager;
-	private LayoutManager layoutManager;
-	private TransactionManager transactionManager;
-	private RequestManager requestManager;
+        instance = this;
 
-	public static Trade getInstance() {
-		return instance;
-	}
+        messageManager = new YamlMessageManager();
+        layoutManager = new LayoutManager(this, messageManager);
 
-	public Trade() {
+        transactionManager = new TransactionManager(this, messageManager.getMessageHolder());
+        requestManager = new RequestManager(this, messageManager.getMessageHolder(), transactionManager);
 
-		instance = this;
+    }
 
-		formatManager = new YamlFormatManager();
-		layoutManager = new LayoutManager(this, formatManager);
+    public static Trade getInstance() {
+        return instance;
+    }
 
-		transactionManager = new TransactionManager(this, formatManager);
-		requestManager = new RequestManager(this, formatManager, transactionManager);
+    @Override
+    public void onLoad() {
 
-	}
+        // Load configurations
+        generalConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "config.yml"), getDescription().getVersion());
+        generalConfiguration.setDefaults(getResource("config.yml"));
+        generalConfiguration.load();
 
-	@Override
-	public void onLoad() {
+        messageConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "messages.yml"), getDescription().getVersion());
+        messageConfiguration.setDefaults(getResource("messages.yml"));
+        messageConfiguration.load();
 
-		// Load configurations
-		generalConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "config.yml"), getDescription().getVersion());
-		generalConfiguration.setDefaults(getResource("config.yml"));
-		generalConfiguration.load();
+        layoutConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "layouts.yml"), getDescription().getVersion());
+        layoutConfiguration.setDefaults(getResource("layouts.yml"));
+        layoutConfiguration.load();
 
-		messageConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "messages.yml"), getDescription().getVersion());
-		messageConfiguration.setDefaults(getResource("messages.yml"));
-		messageConfiguration.load();
+        // Load managers
+        if (generalConfiguration.isConfigurationSection("formatters")) {
+            messageManager.loadFormatters(generalConfiguration.getConfigurationSection("formatters"));
+        }
 
-		layoutConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "layouts.yml"), getDescription().getVersion());
-		layoutConfiguration.setDefaults(getResource("layouts.yml"));
-		layoutConfiguration.load();
+        messageManager.loadMessages(messageConfiguration);
+        messageManager.getFormatterHolder().addFormatter(new ColorFormatter("default"));
 
-		// Load managers
-		if (generalConfiguration.isConfigurationSection("formatters")) {
-			formatManager.loadFormatters(generalConfiguration.getConfigurationSection("formatters"));
-		}
+        layoutManager.load(layoutConfiguration);
 
-		formatManager.loadMessages(messageConfiguration);
-		formatManager.addFormatter(new ColorFormatter("default"));
+        transactionManager.load(generalConfiguration.getConfigurationSection("trading"));
 
-		layoutManager.load(layoutConfiguration);
+        requestManager.load(generalConfiguration.getConfigurationSection("requesting"));
 
-		transactionManager.load(generalConfiguration.getConfigurationSection("trading"));
+    }
 
-		requestManager.load(generalConfiguration.getConfigurationSection("requesting"));
+    @Override
+    public void onEnable() {
+        transactionManager.initialize();
+        requestManager.initialize();
+    }
 
-	}
+    @Override
+    public void onDisable() {
+        requestManager.unload();
+        transactionManager.unload();
+        layoutManager.unload();
+        messageManager.unload();
+    }
 
-	@Override
-	public void onEnable() {
-		transactionManager.initialize();
-		requestManager.initialize();
-	}
+    public MessageManager getMessageManager() {
+        return messageManager;
+    }
 
-	@Override
-	public void onDisable() {
-		requestManager.unload();
-		transactionManager.unload();
-		layoutManager.unload();
-		formatManager.unload();
-	}
+    public MessageHolder getMessageHolder() {
+        return getMessageManager().getMessageHolder();
+    }
 
-	public YamlFormatManager getFormatManager() {
-		return formatManager;
-	}
+    public LayoutManager getLayoutManager() {
+        return layoutManager;
+    }
 
-	public LayoutManager getLayoutManager() {
-		return layoutManager;
-	}
+    public TransactionManager getTransactionManager() {
+        return transactionManager;
+    }
 
-	public TransactionManager getTransactionManager() {
-		return transactionManager;
-	}
+    public RequestManager getRequestManager() {
+        return requestManager;
+    }
 
-	public RequestManager getRequestManager() {
-		return requestManager;
-	}
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!(sender instanceof Player)) {
+            return true;
+        }
 
-		if (!(sender instanceof Player)) {
-			return true;
-		}
+        Player player = (Player) sender;
 
-		Player player = (Player) sender;
+        if (args.length < 1) {
+            getMessageHolder().getMessage("command.invalid-usage").send(player, "%usage%", "/trade <sub command> or /trade <player>");
+            return true;
+        }
 
-		if (args.length < 1) {
-			formatManager.getMessage("command.invalid-usage").send(player, "%usage%", "/trade <sub command> or /trade <player>");
-			return true;
-		}
+        if ("open".equalsIgnoreCase(args[0])) {
 
-		if ("open".equalsIgnoreCase(args[0])) {
+            Transaction transaction = transactionManager.getTransaction(player.getName());
 
-			Transaction transaction = transactionManager.getTransaction(player.getName());
+            if (transaction != null) {
+                transaction.getTrader(player.getName()).openInventory();
+            } else {
+                player.sendMessage("NOT TRADING!");
+            }
 
-			if (transaction != null) {
-				transaction.getTrader(player.getName()).openInventory();
-			} else {
-				player.sendMessage("NOT TRADING!");
-			}
+            return true;
 
-			return true;
+        }
 
-		}
+        if ("request".equalsIgnoreCase(args[0])) {
 
-		if ("request".equalsIgnoreCase(args[0])) {
+            if (args.length < 2) {
+                getMessageHolder().getMessage("command.invalid-usage").send(player, "%usage%", "/trade request <player>");
+                return true;
+            }
 
-			if (args.length < 2) {
-				formatManager.getMessage("command.invalid-usage").send(player, "%usage%", "/trade request <player>");
-				return true;
-			}
+            final RequestResponse response = requestManager.submit(new Request(player.getName(), args[1], RequestMethod.COMMAND));
 
-			final RequestResponse response = requestManager.submit(new Request(player.getName(), args[1], RequestMethod.COMMAND));
+            final RequestRestriction restriction = response.getRequestRestriction();
 
-			final RequestRestriction restriction = response.getRequestRestriction();
+            if (response.getTransaction() != null) {
+                response.getTransaction().start();
+                // TODO add messages
 
-			if (response.getTransaction() != null) {
-				response.getTransaction().start();
-				// TODO add messages
+            } else {
+                if (restriction == RequestRestriction.METHOD) {
+                    getMessageHolder().getMessage(RequestMethod.COMMAND.messagePath).send(player);
+                } else {
+                    getMessageHolder().getMessage(restriction.requestMessagePath).send(player, "%player%", args[1]);
+                }
+            }
 
-			} else {
-				if (restriction == RequestRestriction.METHOD) {
-					formatManager.getMessage(RequestMethod.COMMAND.messagePath).send(player);
-				} else {
-					formatManager.getMessage(restriction.requestMessagePath).send(player, "%player%", args[1]);
-				}
-			}
+            return true;
 
-			return true;
+        }
 
-		}
+        // /trade <player>
+        final RequestResponse response = requestManager.submit(new Request(player.getName(), args[0], RequestMethod.COMMAND));
 
-		// /trade <player>
-		final RequestResponse response = requestManager.submit(new Request(player.getName(), args[0], RequestMethod.COMMAND));
+        final RequestRestriction restriction = response.getRequestRestriction();
 
-		final RequestRestriction restriction = response.getRequestRestriction();
+        if (response.getTransaction() != null) {
+            response.getTransaction().start();
+            // TODO add messages
 
-		if (response.getTransaction() != null) {
-			response.getTransaction().start();
-			// TODO add messages
+        } else {
+            if (restriction == RequestRestriction.METHOD) {
+                getMessageHolder().getMessage(RequestMethod.COMMAND.messagePath).send(player);
+            } else {
+                getMessageHolder().getMessage(restriction.requestMessagePath).send(player, "%player%", args[0]);
+            }
+        }
 
-		} else {
-			if (restriction == RequestRestriction.METHOD) {
-				formatManager.getMessage(RequestMethod.COMMAND.messagePath).send(player);
-			} else {
-				formatManager.getMessage(restriction.requestMessagePath).send(player, "%player%", args[0]);
-			}
-		}
+        return true;
 
-		return true;
-
-	}
+    }
 
 
-
+    public ConventYamlConfiguration getMessageConfiguration() {
+        return messageConfiguration;
+    }
 }

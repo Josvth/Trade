@@ -1,7 +1,6 @@
 package me.josvth.trade.request;
 
-import me.josvth.bukkitformatlibrary.FormattedMessage;
-import me.josvth.bukkitformatlibrary.managers.FormatManager;
+import me.josvth.bukkitformatlibrary.message.MessageHolder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
@@ -11,78 +10,78 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class RequestListener implements Listener {
 
-	private final RequestManager requestManager;
-   	private final FormatManager formatManager;
+    private final RequestManager requestManager;
+    private final MessageHolder messageHolder;
 
-	public RequestListener(RequestManager requestManager) {
-		this.requestManager = requestManager;
-		this.formatManager = requestManager.getFormatManager();
-	}
+    public RequestListener(RequestManager requestManager) {
+        this.requestManager = requestManager;
+        this.messageHolder = requestManager.getMessageHolder();
+    }
 
-	@EventHandler
-	public void onRightClick(PlayerInteractEntityEvent event) {
+    @EventHandler
+    public void onRightClick(PlayerInteractEntityEvent event) {
 
-		if (!(event.getRightClicked() instanceof Player)) return;
+        if (!(event.getRightClicked() instanceof Player)) return;
 
-		Player requester = event.getPlayer();
-		Player requested = (Player) event.getRightClicked();
+        Player requester = event.getPlayer();
+        Player requested = (Player) event.getRightClicked();
 
-		RequestMethod method;
+        RequestMethod method;
 
-		if (requester.isSneaking())
-			method = RequestMethod.SHIFT_RIGHT_CLICK;
-		else
-			method = RequestMethod.RIGHT_CLICK;
+        if (requester.isSneaking())
+            method = RequestMethod.SHIFT_RIGHT_CLICK;
+        else
+            method = RequestMethod.RIGHT_CLICK;
 
-		handleEvent(event, requester, requested, method);
+        handleEvent(event, requester, requested, method);
 
-	}
+    }
 
-	@EventHandler
-	public void onLeftClick(EntityDamageByEntityEvent event) {
+    @EventHandler
+    public void onLeftClick(EntityDamageByEntityEvent event) {
 
-		if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof Player)) return;
+        if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof Player)) return;
 
-		Player requester = (Player) event.getDamager();
-		Player requested = (Player) event.getEntity();
+        Player requester = (Player) event.getDamager();
+        Player requested = (Player) event.getEntity();
 
-		RequestMethod method;
+        RequestMethod method;
 
-		if (requester.isSneaking())
-			method = RequestMethod.SHIFT_LEFT_CLICK;
-		else
-			method = RequestMethod.LEFT_CLICK;
+        if (requester.isSneaking())
+            method = RequestMethod.SHIFT_LEFT_CLICK;
+        else
+            method = RequestMethod.LEFT_CLICK;
 
-		handleEvent(event, requester, requested, method);
+        handleEvent(event, requester, requested, method);
 
-	}
+    }
 
-	private void handleEvent(Cancellable event, Player requester, Player requested, RequestMethod method) {
+    private void handleEvent(Cancellable event, Player requester, Player requested, RequestMethod method) {
 
-		final RequestResponse response = requestManager.submit(new Request(requester.getName(), requested.getName(), method));
+        final RequestResponse response = requestManager.submit(new Request(requester.getName(), requested.getName(), method));
 
-		final RequestRestriction restriction = response.getRequestRestriction();
+        final RequestRestriction restriction = response.getRequestRestriction();
 
-		if (restriction == RequestRestriction.ALLOW) {
-			event.setCancelled(true);
-		}
+        if (restriction == RequestRestriction.ALLOW) {
+            event.setCancelled(true);
+        }
 
-		if (response.getTransaction() != null) {
-			response.getTransaction().start();
-			// TODO add messages
+        if (response.getTransaction() != null) {
+            response.getTransaction().start();
+            // TODO add messages
 
-		} else {
+        } else {
 
-			if (restriction == RequestRestriction.METHOD) {
-				formatManager.getMessage(method.messagePath).send(requester);
-			} else {
-				formatManager.getMessage(restriction.requestMessagePath).send(requester, "%player%", requested.getName());
-				if (restriction == RequestRestriction.ALLOW) {
-					formatManager.getMessage("requesting.requested-by").send(requested, "%player%", requester.getName());
-				}
-			}
+            if (restriction == RequestRestriction.METHOD) {
+                messageHolder.getMessage(method.messagePath).send(requester);
+            } else {
+                messageHolder.getMessage(restriction.requestMessagePath).send(requester, "%player%", requested.getName());
+                if (restriction == RequestRestriction.ALLOW) {
+                    messageHolder.getMessage("requesting.requested-by").send(requested, "%player%", requester.getName());
+                }
+            }
 
-		}
+        }
 
-	}
+    }
 }

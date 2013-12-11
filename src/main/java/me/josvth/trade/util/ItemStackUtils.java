@@ -1,7 +1,7 @@
 package me.josvth.trade.util;
 
-import me.josvth.bukkitformatlibrary.FormattedMessage;
-import me.josvth.bukkitformatlibrary.managers.FormatManager;
+import me.josvth.bukkitformatlibrary.message.FormattedMessage;
+import me.josvth.bukkitformatlibrary.message.managers.MessageManager;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -51,7 +51,7 @@ public class ItemStackUtils {
 			- "is"
 			- "lore"
 	*/
-	public static final ItemStack fromSection(ConfigurationSection section, FormatManager formatManager) {
+	public static final ItemStack fromSection(ConfigurationSection section, MessageManager messageManager) {
 
 		if (section == null) {
 			return null;
@@ -75,12 +75,12 @@ public class ItemStackUtils {
 		final List<String> lore = section.getStringList("lore");
 
 		for (int i = 0; i < lore.size(); i++) {
-			lore.set(i, formatManager.preformatMessage(lore.get(i)));
+			lore.set(i, messageManager.preformatMessage(lore.get(i)));
 		}
 
 		return setMeta(new ItemStack(material, section.getInt("amount", 0), (short) section.getInt("damage", 0), (byte) section.getInt("data", 0)),
-				formatManager.preformatMessage(section.getString("display-name")),
-				lore);
+                messageManager.preformatMessage(section.getString("display-name")),
+                lore);
 
 	}
 

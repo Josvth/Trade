@@ -1,13 +1,12 @@
 package me.josvth.trade.transaction.inventory;
 
-import me.josvth.bukkitformatlibrary.FormattedMessage;
-import me.josvth.trade.offer.*;
-import me.josvth.trade.offer.ExperienceOffer;
+import me.josvth.bukkitformatlibrary.message.FormattedMessage;
+import me.josvth.bukkitformatlibrary.message.MessageHolder;
 import me.josvth.trade.offer.Offer;
 import me.josvth.trade.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.offer.description.ItemOfferDescription;
 import me.josvth.trade.offer.description.OfferDescription;
-import me.josvth.trade.transaction.inventory.slot.*;
+import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -16,10 +15,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Layout {
+public class Layout extends MessageHolder {
 
     private static final FormattedMessage DEFAULT_TITLE = new FormattedMessage("You%spaces%%other%");
-
     private static final Map<Class<? extends Offer>, OfferDescription> DEFAULT_OFFER_DESCRIPTIONS = new HashMap<Class<? extends Offer>, OfferDescription>();
 
     static {
@@ -55,18 +53,13 @@ public class Layout {
 
     private final String name;
     private final int rows;
-
-    private Slot[] slots;
-    private int offerSize = 4;
-
-    private FormattedMessage title = DEFAULT_TITLE;
-
     // Messages
     private final Map<String, FormattedMessage> messages = new HashMap<String, FormattedMessage>();
-
     // Offer descriptions
     private final Map<Class<? extends Offer>, OfferDescription> offerDescriptions = new HashMap<Class<? extends Offer>, OfferDescription>(DEFAULT_OFFER_DESCRIPTIONS);
-
+    private Slot[] slots;
+    private int offerSize = 4;
+    private FormattedMessage title = DEFAULT_TITLE;
     // Layout options
     private int priority = -1;
     private String permission = null;
