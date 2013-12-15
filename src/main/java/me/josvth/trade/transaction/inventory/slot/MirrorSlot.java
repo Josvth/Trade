@@ -27,7 +27,7 @@ public class MirrorSlot extends Slot {
 		final Offer offer = holder.getOtherHolder().getOffers().get(offerIndex);
 
 		if (offer != null) {
-			holder.getInventory().setItem(slot, offer.getMirrorItem(holder));
+			holder.getInventory().setItem(slot, offer.createMirror(holder));
 		} else {
 			holder.getInventory().setItem(slot, null);
 		}

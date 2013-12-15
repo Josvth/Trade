@@ -7,30 +7,23 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 
-public abstract class Offer <T extends OfferDescription> {
+public abstract class Offer {
 
 	protected final OfferList list;
    	protected final int offerIndex;
 
-    protected final T description;
-
-	public Offer(OfferList list, int offerIndex, T description) {
+	public Offer(OfferList list, int offerIndex) {
 		this.list = list;
 		this.offerIndex = offerIndex;
-        this.description = description;
 	}
 
-    public T getDescription() {
-        return description;
+    public OfferDescription<? extends Offer> getDescription() {
+        return list.getTrader().getLayout().getOfferDescription(this.getClass());
     }
 
-	public ItemStack getDisplayItem() {
-        return getDescription().createItem(this);
-    }
+    public abstract ItemStack createItem();
 
-	public ItemStack getMirrorItem(TransactionHolder holder) {
-        return getDescription().createMirrorItem(this, holder);
-    }
+    public abstract ItemStack createMirror(TransactionHolder holder);
 
 	public double getAmount() {
 		return 0;

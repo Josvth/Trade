@@ -38,10 +38,9 @@ public class TransactionManager {
 	public void unload() {
 		for (Transaction transaction : new LinkedHashSet<Transaction>(transactions.values())) {
 			transaction.stop(false);
-			final FormattedMessage message = messageHolder.getMessage("trading.reload");
-			message.send(transaction.getTraderA().getPlayer());
-			message.send(transaction.getTraderB().getPlayer());
-		}
+            transaction.getTraderA().getFormattedMessage("cancelled.reload").send(transaction.getTraderA().getPlayer());
+            transaction.getTraderB().getFormattedMessage("cancelled.reload").send(transaction.getTraderB().getPlayer());
+        }
 		transactions.clear();
 	}
 

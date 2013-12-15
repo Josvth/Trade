@@ -3,8 +3,10 @@ package me.josvth.trade.transaction.inventory;
 import me.josvth.bukkitformatlibrary.message.FormattedMessage;
 import me.josvth.bukkitformatlibrary.message.managers.MessageManager;
 import me.josvth.trade.Trade;
+import me.josvth.trade.offer.Offer;
 import me.josvth.trade.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.offer.description.ItemOfferDescription;
+import me.josvth.trade.offer.description.OfferDescription;
 import me.josvth.trade.transaction.inventory.slot.*;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.configuration.ConfigurationSection;
@@ -24,30 +26,21 @@ public class LayoutManager {
         this.messageManager = messageManager;
     }
 
-    public void load(ConfigurationSection configuration) {
+    public void load(ConfigurationSection layoutSection, ConfigurationSection messageSection, ConfigurationSection offerSection) {
 
-        try {
-            loadLayout(configuration.getConfigurationSection("default"));
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            loadLayout(plugin.getMessageConfiguration().getDefaultSection().getConfigurationSection("default"));
-        }
+        final Map<String, FormattedMessage> defaultMessages = getMessagesFromSection(messageSection);
+        final Map<Class<? extends Offer>, OfferDescription> defaultOfferDescriptions = getOfferDescriptionsFromSection(offerSection);
 
-        // Add messages.yml trading messages into default layout
-        for (Map.Entry<String, FormattedMessage> entry : messageManager.getMessageHolder().getMessages().entrySet()) {
-            if (entry.getKey().startsWith("trading.")) {
-                getDefaultLayout().addMessage(entry.getKey().replaceFirst("trading.", ""), entry.getValue());
-            }
-        }
-
-        for (String key : configuration.getKeys(false)) {
-
-            if (key.equalsIgnoreCase("default")) {
-                continue;
-            }
+        for (String key : layoutSection.getKeys(false)) {
 
             try {
-                loadLayout(configuration.getConfigurationSection(key));
+                Layout layout = layouts.get(key);
+                if (layout == null) {
+                    layout = new Layout(key);
+                }
+                layout.putMessages(defaultMessages);
+                layout.setOfferDescriptions(defaultOfferDescriptions);
+                loadLayout(layout, layoutSection.getConfigurationSection(key));
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             }
@@ -56,30 +49,26 @@ public class LayoutManager {
 
     }
 
-    private void loadLayout(ConfigurationSection section) throws IllegalArgumentException {
+    private void loadLayout(Layout layout, ConfigurationSection section) throws IllegalArgumentException {
+
+        // TODO make this not alter layout on failure
 
         if (section == null) {
             throw new IllegalArgumentException("Section is null.");
         }
 
-        final String name = section.getName();
+        layout.setRows(section.getInt("rows"));
 
-        final int size = section.getInt("size");
+        layout.setOfferSize(section.getInt("offer-size", 4));
 
-        if (size == 0 || size % 9 != 0) {
-            throw new IllegalArgumentException("Section does not have a slot section.");
-        }
-
-        final int offerSize = section.getInt("offer-size", 4);
-
-        final Layout layout = new Layout(name, size / 9, offerSize);
+        final int slotSize = layout.getRows() * 9;
 
         // Load slots
         if (!section.isConfigurationSection("slots")) {
             throw new IllegalArgumentException("Section does not have a slot section.");
         }
 
-        final Slot[] slots = new Slot[size];
+        final Slot[] slots = new Slot[slotSize];
 
         for (String slotKey : section.getConfigurationSection("slots").getKeys(false)) {
 
@@ -92,7 +81,7 @@ public class LayoutManager {
                 continue;
             }
 
-            if (slotID < 0 || slotID >= size) {
+            if (slotID < 0 || slotID >= slotSize) {
                 // TODO add message
                 continue;
             }
@@ -163,42 +152,62 @@ public class LayoutManager {
         layout.setSlots(slots);
 
         // Load offer descriptions
-        if (section.isConfigurationSection("offers")) {
-
-            for (String offerKey : section.getConfigurationSection("offers").getKeys(false)) {
-
-                final ConfigurationSection offerSection = section.getConfigurationSection("offers." + offerKey);
-
-                if ("item".equalsIgnoreCase(offerKey)) {
-                    final ItemOfferDescription description = new ItemOfferDescription();
-                    layout.setOfferDescription(description.getOfferClass(), new ItemOfferDescription());
-                } else if ("experience".equalsIgnoreCase(offerKey)) {
-                    final ExperienceOfferDescription description = new ExperienceOfferDescription();
-                    description.setSmallModifier(offerSection.getInt("small-modifier", 1));
-                    description.setLargeModifier(offerSection.getInt("large-modifier", 5));
-                    description.setExperienceItem(ItemStackUtils.fromSection(offerSection.getConfigurationSection("item"), messageManager));
-                    description.setExperienceItemMirror(ItemStackUtils.fromSection(offerSection.getConfigurationSection("item-mirror"), messageManager));
-                    layout.setOfferDescription(description.getOfferClass(), new ExperienceOfferDescription());
-                } else if ("money".equalsIgnoreCase(offerKey)) {
-                    // TODO This
-                }
-
-            }
-
-        }
+        layout.getOfferDescriptions().putAll(getOfferDescriptionsFromSection(section.getConfigurationSection("offers")));
 
         // Load messages
-        layout.putMessages(getDefaultLayout().getMessages());
+        layout.getMessages().putAll(getMessagesFromSection(section.getConfigurationSection("messages")));
 
-        if (section.isConfigurationSection("messages")) {
+        layouts.put(layout.getName(), layout);
 
-            for (Map.Entry<String, Object> entry : section.getConfigurationSection("messages").getValues(false).entrySet()) {
-                layout.addMessage(entry.getKey(), messageManager.preformatMessage((String) entry.getValue()));
+    }
+
+    private Map<String, FormattedMessage> getMessagesFromSection(ConfigurationSection section) {
+
+        final Map<String, FormattedMessage> messages = new HashMap<String, FormattedMessage>();
+
+        if (section == null) {
+            return messages;
+        }
+
+        for (Map.Entry<String, Object> entry : section.getValues(true).entrySet()) {
+            if (entry.getValue() instanceof String) {
+                messages.put(entry.getKey(), new FormattedMessage(messageManager.preformatMessage((String) entry.getValue())));
+            }
+        }
+
+        return messages;
+
+    }
+
+    private Map<Class<? extends Offer>, OfferDescription> getOfferDescriptionsFromSection(ConfigurationSection section) {
+
+        final Map<Class<? extends Offer>, OfferDescription> offerDescriptions = new HashMap<Class<? extends Offer>, OfferDescription>();
+
+        if (section == null) {
+            return offerDescriptions;
+        }
+
+        for (String offerKey : section.getKeys(false)) {
+
+            final ConfigurationSection offerSection = section.getConfigurationSection("offers." + offerKey);
+
+            if ("item".equalsIgnoreCase(offerKey)) {
+                final ItemOfferDescription description = new ItemOfferDescription();
+                offerDescriptions.put(description.getOfferClass(), description);
+            } else if ("experience".equalsIgnoreCase(offerKey)) {
+                final ExperienceOfferDescription description = new ExperienceOfferDescription();
+                description.setSmallModifier(offerSection.getInt("small-modifier", 1));
+                description.setLargeModifier(offerSection.getInt("large-modifier", 5));
+                description.setExperienceItem(ItemStackUtils.fromSection(offerSection.getConfigurationSection("item"), messageManager));
+                description.setExperienceItemMirror(ItemStackUtils.fromSection(offerSection.getConfigurationSection("item-mirror"), messageManager));
+                offerDescriptions.put(description.getOfferClass(), description);
+            } else if ("money".equalsIgnoreCase(offerKey)) {
+                // TODO This
             }
 
         }
 
-        layouts.put(layout.getName(), layout);
+        return offerDescriptions;
 
     }
 

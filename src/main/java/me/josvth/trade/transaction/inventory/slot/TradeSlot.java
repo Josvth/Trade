@@ -58,16 +58,8 @@ public class TradeSlot extends Slot {
 
 			holder.getOffers().set(offerIndex, (newItem == null)? null : holder.getOffers().createItemOffer(offerIndex, newItem));
 
-            ////// TODO MAKE THIS A FUNCTION?
-            if (holder.getOtherTrader().hasAccepted()) {
-                holder.getOtherTrader().setAccepted(false);
-
-                holder.getOtherTrader().getFormattedMessage("denied.offer-changed").send(holder.getOtherTrader().getPlayer());
-
-                AcceptSlot.updateAcceptSlots(holder.getOtherHolder(), true);
-                StatusSlot.updateStatusSlots(holder, true);
-
-            }
+            // Cancels the other players accept if he had accepted
+            holder.getOtherTrader().cancelAccept();
 
 			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
 
@@ -92,16 +84,8 @@ public class TradeSlot extends Slot {
 
 			holder.getOffers().set(offerIndex, holder.getOffers().createItemOffer(offerIndex, event.getNewItems().get(slot).clone()));
 
-            ////// TODO MAKE THIS A FUNCTION?
-            if (holder.getOtherTrader().hasAccepted()) {
-                holder.getOtherTrader().setAccepted(false);
-
-                holder.getOtherTrader().getFormattedMessage("denied.offer-changed").send(holder.getOtherTrader().getPlayer());
-
-                AcceptSlot.updateAcceptSlots(holder.getOtherHolder(), true);
-                StatusSlot.updateStatusSlots(holder, true);
-
-            }
+            // Cancels the other players accept if he had accepted
+            holder.getOtherTrader().cancelAccept();
 
 			MirrorSlot.updateMirrors(holder.getOtherHolder(), true, offerIndex);
 
@@ -115,7 +99,7 @@ public class TradeSlot extends Slot {
 		final Offer offer = getSlotContents(holder);
 
 		if (offer != null) {
-			holder.getInventory().setItem(slot, offer.getDisplayItem());
+			holder.getInventory().setItem(slot, offer.createItem());
 		} else {
 			holder.getInventory().setItem(slot, null);
 		}

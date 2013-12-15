@@ -5,13 +5,29 @@ import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 
-public class ExperienceOffer extends Offer<ExperienceOfferDescription> {
+public class ExperienceOffer extends Offer {
 
     private int levels = 0;
 
     public ExperienceOffer(OfferList list, int offerID) {
-        super(list, offerID, new ExperienceOfferDescription());
+        super(list, offerID);
+    }
+
+    @Override
+    public ExperienceOfferDescription getDescription() {
+       return (ExperienceOfferDescription) super.getDescription();
+    }
+
+    @Override
+    public ItemStack createItem() {
+        return getDescription().createItem(this);
+    }
+
+    @Override
+    public ItemStack createMirror(TransactionHolder holder) {
+        return getDescription().createMirrorItem(this, holder);
     }
 
     public int add(int amount) {
@@ -83,9 +99,9 @@ public class ExperienceOffer extends Offer<ExperienceOfferDescription> {
 
 			player.setLevel(player.getLevel() - levelsToAdd);
 
-            trader.getFormattedMessage("experience.add.self").send(player, "%levels%", String.valueOf(levelsToAdd - remainder));
-            if (trader.getOther().hasFormattedMessage("experience.add.other")) {
-                trader.getOther().getFormattedMessage("experience.add.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToAdd - remainder));
+            trader.getFormattedMessage("experience.added.self").send(player, "%levels%", String.valueOf(levelsToAdd - remainder));
+            if (trader.getOtherTrader().hasFormattedMessage("experience.added.other")) {
+                trader.getOtherTrader().getFormattedMessage("experience.added.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToAdd - remainder));
             }
 
 		} else if (event.isRightClick()) {
@@ -96,9 +112,9 @@ public class ExperienceOffer extends Offer<ExperienceOfferDescription> {
 
 			player.setLevel(player.getLevel() + levelsToRemove - remainder);
 
-            trader.getFormattedMessage("experience.remove.self").send(player, "%levels%", String.valueOf(levelsToRemove - remainder));
-            if (trader.getOther().hasFormattedMessage("experience.remove.other")) {
-                trader.getOther().getFormattedMessage("experience.remove.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToRemove - remainder));
+            trader.getFormattedMessage("experience.removed.self").send(player, "%levels%", String.valueOf(levelsToRemove - remainder));
+            if (trader.getOtherTrader().hasFormattedMessage("experience.removed.other")) {
+                trader.getOtherTrader().getFormattedMessage("experience.removed.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToRemove - remainder));
             }
 
 		}

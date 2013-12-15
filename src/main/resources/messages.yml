@@ -1,19 +1,33 @@
 commands:
   invalid-usage: That's not the way you use this command. Try %usage%.
 trading:
-  started: "You started trading with %player%!"
-  offer-changed: "%player% changed their offer."
-  accepted: "You accepted the trade."
-  accepted-other: "%player% accepted the trade."
-  denied: "You denied the trade."
-  denied-other: "%player% denied the trade."
-  refused: "You refused the trade."
-  refused-other: "%player% refused the trade."
-  success: "You successfully traded with %player%."
-  disconnect: "Your trade was cancelled because you disconnected."
-  disconnect-other: "Your trade was cancelled because %player% disconnected."
-  closed-inventory: "You closed your trading inventory. Type /trade open to reopen it."
-  reload: "Your trade was cancelled because of a reload."
+  accepted:
+    self: "You accepted the trade."
+    other: "%player% accepted the trade."
+  denied:
+    self: "You denied the trade."
+    other: "%player% denied the trade."
+    offer-changed: "%player% changed their offer."
+  refused:
+    self: "You refused the trade."
+    other: "%player% refused the trade."
+  experience:
+    added:
+      self: Added %levels% levels to the trade.
+      other: "%player% added %levels% levels to the trade."
+    removed:
+      self: Removed %levels% levels from the trade.
+      other: "%player% removed %levels% levels from the trade."
+    insufficient: "You don't have %levels% levels!"
+  disconnect:
+    self: "Your trade was cancelled because you disconnected."
+    other: "Your trade was cancelled because %player% disconnected."
+  closed-inventory:
+    self: "You closed your trading inventory. Type /trade open to reopen it."
+    other: "%player% closed their trading inventory."
+  cancelled:
+    op: "Your trade was cancelled by an operator."
+    reload: "Your trade was cancelled because of a reload."
 requesting:
   timeout: "Your request to trade with %player% timed out."
   requested-by: "You have been requested to trade by %player%."

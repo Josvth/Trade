@@ -11,6 +11,7 @@ import me.josvth.trade.transaction.TransactionManager;
 import me.josvth.trade.transaction.inventory.LayoutManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -69,7 +70,7 @@ public class Trade extends JavaPlugin {
         messageManager.loadMessages(messageConfiguration);
         messageManager.getFormatterHolder().addFormatter(new ColorFormatter("default"));
 
-        layoutManager.load(layoutConfiguration);
+        layoutManager.load(layoutConfiguration, messageConfiguration.getConfigurationSection("trading"), generalConfiguration.getConfigurationSection("offers"));
 
         transactionManager.load(generalConfiguration.getConfigurationSection("trading"));
 
@@ -187,8 +188,8 @@ public class Trade extends JavaPlugin {
 
     }
 
-
-    public ConventYamlConfiguration getMessageConfiguration() {
-        return messageConfiguration;
+    public ConventYamlConfiguration getLayoutConfiguration() {
+        return layoutConfiguration;
     }
+
 }

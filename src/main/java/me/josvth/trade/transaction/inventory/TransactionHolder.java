@@ -40,7 +40,7 @@ public class TransactionHolder implements InventoryHolder {
 
 	//TODO THIS METHOD IS USE A LOT!
 	public Trader getOtherTrader() {
-		return trader.getOther();
+		return trader.getOtherTrader();
 	}
 
 	//TODO THIS METHOD IS USE A LOT!
@@ -165,7 +165,8 @@ public class TransactionHolder implements InventoryHolder {
 	public void onClose(InventoryCloseEvent event) {
 		if (getTransaction().getStage() == TransactionStage.IN_PROGRESS) {
 			if (getTransaction().getManager().getOptions().allowInventoryClosing()) {
-				plugin.getMessageManager().getMessageHolder().getMessage("trading.closed-inventory").send((CommandSender) event.getPlayer());
+                getTrader().getFormattedMessage("closed-inventory.self").send(getTrader().getPlayer());
+                getOtherTrader().getFormattedMessage("closed-inventory.other").send(getOtherTrader().getPlayer(), "%player%", getTrader().getPlayer().getName());
 			} else {
 				trader.setRefused(true);
 			}

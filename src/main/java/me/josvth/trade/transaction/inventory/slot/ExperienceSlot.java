@@ -54,8 +54,8 @@ public class ExperienceSlot extends Slot {
             player.setLevel(player.getLevel() - levelsToAdd);
 
             trader.getFormattedMessage("experience.add.self").send(player, "%levels%", String.valueOf(levelsToAdd - remainder));
-            if (trader.getOther().hasFormattedMessage("experience.add.other")) {
-                trader.getOther().getFormattedMessage("experience.add.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToAdd - remainder));
+            if (trader.getOtherTrader().hasFormattedMessage("experience.add.other")) {
+                trader.getOtherTrader().getFormattedMessage("experience.add.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToAdd - remainder));
             }
 
         } else if (event.isRightClick()) {
@@ -67,8 +67,8 @@ public class ExperienceSlot extends Slot {
             player.setLevel(player.getLevel() + levelsToRemove - remainder);
 
             trader.getFormattedMessage("experience.remove.self").send(player, "%levels%", String.valueOf(levelsToRemove - remainder));
-            if (trader.getOther().hasFormattedMessage("experience.remove.other")) {
-                trader.getOther().getFormattedMessage("experience.remove.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToRemove - remainder));
+            if (trader.getOtherTrader().hasFormattedMessage("experience.remove.other")) {
+                trader.getOtherTrader().getFormattedMessage("experience.remove.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToRemove - remainder));
             }
         }
 

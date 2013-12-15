@@ -29,27 +29,9 @@ public class AcceptSlot extends Slot {
         final Trader trader = holder.getTrader();
 
         if (trader.hasAccepted()) {
-
-            trader.setAccepted(false);
-
-            trader.getFormattedMessage("denied.self").send(trader.getPlayer());
-            holder.getOtherTrader().getFormattedMessage("denied.other").send(holder.getOtherTrader().getPlayer());
-
-            AcceptSlot.updateAcceptSlots(holder, true);
-            StatusSlot.updateStatusSlots(holder.getOtherHolder(), true);
-
+            trader.deny();
         } else {
-
-            trader.setAccepted(true);
-
-            trader.getFormattedMessage("accepted.self").send(trader.getPlayer());
-            holder.getOtherTrader().getFormattedMessage("accepted.other").send(holder.getOtherTrader().getPlayer());
-
-            AcceptSlot.updateAcceptSlots(holder, true);
-            StatusSlot.updateStatusSlots(holder.getOtherHolder(), true);
-
-            // TODO Finish trade if both parties accepted.
-
+            trader.accept();
         }
 
 		event.setCancelled(true);

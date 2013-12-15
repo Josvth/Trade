@@ -1,6 +1,7 @@
 package me.josvth.trade.offer;
 
 import me.josvth.trade.Trade;
+import me.josvth.trade.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.offer.description.ItemOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
@@ -13,7 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemOffer extends Offer<ItemOfferDescription> {
+public class ItemOffer extends Offer {
 
 	private ItemStack item = null;
 
@@ -22,9 +23,24 @@ public class ItemOffer extends Offer<ItemOfferDescription> {
 	}
 
 	public ItemOffer(OfferList list, int id, ItemStack item) {
-		super(list, id, new ItemOfferDescription());
+		super(list, id);
 		this.item = item;
 	}
+
+    @Override
+    public ItemOfferDescription getDescription() {
+        return (ItemOfferDescription) super.getDescription();
+    }
+
+    @Override
+    public ItemStack createItem() {
+        return getDescription().createItem(this);
+    }
+
+    @Override
+    public ItemStack createMirror(TransactionHolder holder) {
+        return getDescription().createMirrorItem(this, holder);
+    }
 
 	@Override
 	public double getAmount() {
@@ -71,16 +87,8 @@ public class ItemOffer extends Offer<ItemOfferDescription> {
 				item = null;
                 holder.getOffers().set(offerIndex, null);
 
-                ////// TODO MAKE THIS A FUNCTION?
-                if (holder.getOtherTrader().hasAccepted()) {
-                    holder.getOtherTrader().setAccepted(false);
-
-                    holder.getOtherTrader().getFormattedMessage("denied.offer-changed").send(holder.getOtherTrader().getPlayer());
-
-                    AcceptSlot.updateAcceptSlots(holder.getOtherHolder(), true);
-                    StatusSlot.updateStatusSlots(holder, true);
-
-                }
+                // Cancels the other players accept if he had accepted
+                holder.getOtherTrader().cancelAccept();
 
 				break;
 			case PICKUP_HALF:

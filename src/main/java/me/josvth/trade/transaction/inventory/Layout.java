@@ -18,58 +18,24 @@ import java.util.regex.Pattern;
 public class Layout extends MessageHolder {
 
     private static final FormattedMessage DEFAULT_TITLE = new FormattedMessage("You%spaces%%other%");
-    private static final Map<Class<? extends Offer>, OfferDescription> DEFAULT_OFFER_DESCRIPTIONS = new HashMap<Class<? extends Offer>, OfferDescription>();
-
-    static {
-
-        final ItemOfferDescription itemOfferDescription = new ItemOfferDescription();
-        DEFAULT_OFFER_DESCRIPTIONS.put(itemOfferDescription.getOfferClass(), itemOfferDescription);
-
-        final ExperienceOfferDescription experienceOfferDescription = new ExperienceOfferDescription();
-        experienceOfferDescription.setExperienceItem(ItemStackUtils.setMeta(
-                new ItemStack(Material.EXP_BOTTLE),
-                "You added %levels% levels.",
-                Arrays.asList(
-                        "Left click to add %small% level(s)",
-                        "Right click to remove %small% level(s)",
-                        "Shift left click to add %large% levels",
-                        "Shift right click to remove %large% levels")
-        )
-        );
-
-        experienceOfferDescription.setExperienceItemMirror(ItemStackUtils.setMeta(
-                new ItemStack(Material.EXP_BOTTLE),
-                "%player% added %levels% levels.",
-                null)
-        );
-
-        experienceOfferDescription.setSmallModifier(1);
-        experienceOfferDescription.setLargeModifier(5);
-        DEFAULT_OFFER_DESCRIPTIONS.put(experienceOfferDescription.getOfferClass(), experienceOfferDescription);
-
-        // TODO add money offer
-
-    }
 
     private final String name;
-    private final int rows;
-    // Messages
-    private final Map<String, FormattedMessage> messages = new HashMap<String, FormattedMessage>();
-    // Offer descriptions
-    private final Map<Class<? extends Offer>, OfferDescription> offerDescriptions = new HashMap<Class<? extends Offer>, OfferDescription>(DEFAULT_OFFER_DESCRIPTIONS);
+
+    private int rows;
     private Slot[] slots;
     private int offerSize = 4;
     private FormattedMessage title = DEFAULT_TITLE;
+
+    // Offer descriptions
+    private Map<Class<? extends Offer>, OfferDescription> offerDescriptions = new HashMap<Class<? extends Offer>, OfferDescription>();
+
     // Layout options
     private int priority = -1;
     private String permission = null;
     private boolean shared = true;
 
-    public Layout(String name, int rows, int offerSize) {
+    public Layout(String name) {
         this.name = name;
-        this.rows = rows;
-        this.offerSize = offerSize;
-        this.slots = new Slot[rows * 9];
     }
 
     public String getName() {
@@ -78,6 +44,10 @@ public class Layout extends MessageHolder {
 
     public int getRows() {
         return rows;
+    }
+
+    public void setRows(int rows) {
+        this.rows = rows;
     }
 
     public int getOfferSize() {
@@ -128,29 +98,17 @@ public class Layout extends MessageHolder {
 
     }
 
-    public FormattedMessage getFormattedMessage(String key) {
-        FormattedMessage message = messages.get(key);
-        if (message == null) {
-            message = new FormattedMessage(key);
-        }
-        return message;
-    }
-
-    public boolean hasFormattedMessage(String key) {
-        return messages.containsKey(key);
-    }
-
     // Offer descriptions
-    public <T extends OfferDescription> T getOfferDescription(Class<? extends Offer<T>> offerClass) {
-        return (T) offerDescriptions.get(offerClass);
+    public <T extends Offer> OfferDescription<T> getOfferDescription(Class<T> offerClass) {
+        return offerDescriptions.get(offerClass);
     }
 
-    public <T extends OfferDescription> T setOfferDescription(Class<? extends Offer<T>> offerClass, T description) {
-        if (description == null) {
-            return (T) offerDescriptions.put(offerClass, DEFAULT_OFFER_DESCRIPTIONS.get(offerClass));
-        } else {
-            return (T) offerDescriptions.put(offerClass, description);
-        }
+    public Map<Class<? extends Offer>, OfferDescription> getOfferDescriptions() {
+        return offerDescriptions;
+    }
+
+    public void setOfferDescriptions(Map<Class<? extends Offer>, OfferDescription> offerDescriptions) {
+        this.offerDescriptions = offerDescriptions;
     }
 
     // Layout options
@@ -191,6 +149,5 @@ public class Layout extends MessageHolder {
         return set;
 
     }
-
 
 }

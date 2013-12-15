@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 /*
 We use OfferDescriptions to make sure that if a layout is changed mid trade all current offers show the same
  */
-public abstract class OfferDescription <T extends Offer> {
+public abstract class OfferDescription <T extends Offer>{
 
     public abstract ItemStack createItem(T offer);
 

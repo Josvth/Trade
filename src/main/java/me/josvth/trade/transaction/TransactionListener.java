@@ -53,8 +53,8 @@ public class TransactionListener implements Listener {
 
         transaction.stop(false);
 
-        messageHolder.getMessage("trading.disconnect").send(trader.getPlayer());
-        messageHolder.getMessage("trading.disconnect-other").send(trader.getOther().getPlayer(), "%player%", event.getPlayer().getName());
+        trader.getFormattedMessage("trading.disconnect.self").send(trader.getPlayer());
+        trader.getOtherTrader().getFormattedMessage("trading.disconnect.other").send(trader.getOtherTrader().getPlayer(), "%player%", event.getPlayer().getName());
 
     }
 
