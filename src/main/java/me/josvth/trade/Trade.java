@@ -37,7 +37,7 @@ public class Trade extends JavaPlugin {
         messageManager = new YamlMessageManager();
         layoutManager = new LayoutManager(this, messageManager);
 
-        transactionManager = new TransactionManager(this, messageManager.getMessageHolder());
+        transactionManager = new TransactionManager(this);
         requestManager = new RequestManager(this, messageManager.getMessageHolder(), transactionManager);
 
     }
@@ -186,10 +186,6 @@ public class Trade extends JavaPlugin {
 
         return true;
 
-    }
-
-    public ConventYamlConfiguration getLayoutConfiguration() {
-        return layoutConfiguration;
     }
 
 }

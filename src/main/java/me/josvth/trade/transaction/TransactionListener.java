@@ -12,11 +12,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class TransactionListener implements Listener {
 
     private final TransactionManager transactionManager;
-    private final MessageHolder messageHolder;
 
-    public TransactionListener(TransactionManager transactionManager, MessageHolder messageHolder) {
+    public TransactionListener(TransactionManager transactionManager) {
         this.transactionManager = transactionManager;
-        this.messageHolder = messageHolder;
     }
 
     @EventHandler
@@ -53,8 +51,8 @@ public class TransactionListener implements Listener {
 
         transaction.stop(false);
 
-        trader.getFormattedMessage("trading.disconnect.self").send(trader.getPlayer());
-        trader.getOtherTrader().getFormattedMessage("trading.disconnect.other").send(trader.getOtherTrader().getPlayer(), "%player%", event.getPlayer().getName());
+        trader.getFormattedMessage("disconnect.self").send(trader.getPlayer());
+        trader.getOtherTrader().getFormattedMessage("disconnect.other").send(trader.getOtherTrader().getPlayer(), "%player%", event.getPlayer().getName());
 
     }
 

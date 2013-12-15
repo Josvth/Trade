@@ -214,7 +214,7 @@ public class OfferList {
 	}
 
 	public ExperienceOffer createExperienceOffer(int index, int levels) {
-		final ExperienceOffer offer = (ExperienceOffer) getTrader().getLayout().getOfferDescription(ExperienceOffer.class).createOffer(this, index);
+		final ExperienceOffer offer = getTrader().getLayout().getOfferDescription(ExperienceOffer.class).createOffer(this, index);
 		offer.setLevels(levels);
 		return offer;
 	}

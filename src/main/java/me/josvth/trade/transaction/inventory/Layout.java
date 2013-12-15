@@ -27,7 +27,7 @@ public class Layout extends MessageHolder {
     private FormattedMessage title = DEFAULT_TITLE;
 
     // Offer descriptions
-    private Map<Class<? extends Offer>, OfferDescription> offerDescriptions = new HashMap<Class<? extends Offer>, OfferDescription>();
+    private final Map<Class<? extends Offer>, OfferDescription> offerDescriptions = new HashMap<Class<? extends Offer>, OfferDescription>();
 
     // Layout options
     private int priority = -1;
@@ -78,7 +78,7 @@ public class Layout extends MessageHolder {
         final int maxCharacters = 32;
 
 
-        final StringBuilder titleBuilder = new StringBuilder(title.get("%other%", holder.getTrader().getName()));
+        final StringBuilder titleBuilder = new StringBuilder(title.get("%other%", holder.getOtherTrader().getName()));
 
         Matcher matcher = Pattern.compile("%spaces%").matcher(titleBuilder);
 
@@ -105,10 +105,6 @@ public class Layout extends MessageHolder {
 
     public Map<Class<? extends Offer>, OfferDescription> getOfferDescriptions() {
         return offerDescriptions;
-    }
-
-    public void setOfferDescriptions(Map<Class<? extends Offer>, OfferDescription> offerDescriptions) {
-        this.offerDescriptions = offerDescriptions;
     }
 
     // Layout options

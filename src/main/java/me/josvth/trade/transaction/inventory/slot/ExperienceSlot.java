@@ -6,6 +6,7 @@ import me.josvth.trade.offer.OfferList;
 import me.josvth.trade.tasks.ExperienceSlotUpdateTask;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
+import me.josvth.trade.util.ExperienceManager;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -42,34 +43,41 @@ public class ExperienceSlot extends Slot {
 
         if (event.isLeftClick()) {
 
-            final int levelsToAdd = event.isShiftClick() ? largeModifier : smallModifier;
+            final ExperienceManager expManager = new ExperienceManager(player);
 
-            if (player.getLevel() < levelsToAdd) {
+            final int levelsToAdd = event.isShiftClick()? smallModifier : largeModifier;
+
+            if (!expManager.hasExp(levelsToAdd)) {
                 trader.getFormattedMessage("experience.insufficient").send(player, "%levels%", String.valueOf(levelsToAdd));
                 return;
             }
 
-            final int remainder = holder.getOffers().removeExperience(levelsToAdd);
+            final int remainder = holder.getOffers().addExperience(levelsToAdd);
 
-            player.setLevel(player.getLevel() - levelsToAdd);
+            expManager.changeExp(-1 * (levelsToAdd - remainder));
 
-            trader.getFormattedMessage("experience.add.self").send(player, "%levels%", String.valueOf(levelsToAdd - remainder));
-            if (trader.getOtherTrader().hasFormattedMessage("experience.add.other")) {
-                trader.getOtherTrader().getFormattedMessage("experience.add.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToAdd - remainder));
+            trader.getFormattedMessage("experience.added.self").send(player, "%levels%", String.valueOf(levelsToAdd - remainder));
+            if (trader.getOtherTrader().hasFormattedMessage("experience.added.other")) {
+                trader.getOtherTrader().getFormattedMessage("experience.added.other").send(trader.getOtherTrader().getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToAdd - remainder));
             }
 
         } else if (event.isRightClick()) {
 
-            final int levelsToRemove = event.isShiftClick() ? largeModifier : smallModifier;
+            final int levelsToRemove = event.isShiftClick()? smallModifier : largeModifier;
 
             final int remainder = holder.getOffers().removeExperience(levelsToRemove);
 
-            player.setLevel(player.getLevel() + levelsToRemove - remainder);
+            if (levelsToRemove > remainder) {
 
-            trader.getFormattedMessage("experience.remove.self").send(player, "%levels%", String.valueOf(levelsToRemove - remainder));
-            if (trader.getOtherTrader().hasFormattedMessage("experience.remove.other")) {
-                trader.getOtherTrader().getFormattedMessage("experience.remove.other").send(trader.getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToRemove - remainder));
+                new ExperienceManager(player).changeExp(levelsToRemove - remainder);
+
+                trader.getFormattedMessage("experience.removed.self").send(player, "%levels%", String.valueOf(levelsToRemove - remainder));
+                if (trader.getOtherTrader().hasFormattedMessage("experience.removed.other")) {
+                    trader.getOtherTrader().getFormattedMessage("experience.removed.other").send(trader.getOtherTrader().getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToRemove - remainder));
+                }
+
             }
+
         }
 
     }

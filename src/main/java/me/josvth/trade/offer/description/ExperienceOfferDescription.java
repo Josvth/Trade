@@ -40,7 +40,7 @@ public class ExperienceOfferDescription extends OfferDescription<ExperienceOffer
 
     @Override
     public ExperienceOffer createOffer(OfferList list, int offerIndex) {
-        return null;
+        return new ExperienceOffer(list, offerIndex);
     }
 
     @Override

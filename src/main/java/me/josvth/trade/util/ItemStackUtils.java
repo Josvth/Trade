@@ -14,6 +14,11 @@ import java.util.List;
 public class ItemStackUtils {
 
     public static ItemStack argument(ItemStack itemStack, String... arguments) {
+
+        if (itemStack == null) {
+            return itemStack;
+        }
+
         if (itemStack.hasItemMeta()) {
             final ItemMeta meta = itemStack.getItemMeta();
             if (meta.hasDisplayName()) {

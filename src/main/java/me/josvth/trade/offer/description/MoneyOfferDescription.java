@@ -23,7 +23,7 @@ public class MoneyOfferDescription extends OfferDescription<MoneyOffer> {
 
     @Override
     public MoneyOffer createOffer(OfferList list, int offerIndex) {
-        return null;
+        return new MoneyOffer(list, offerIndex);
     }
 
     @Override

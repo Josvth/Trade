@@ -34,13 +34,15 @@ public class LayoutManager {
         for (String key : layoutSection.getKeys(false)) {
 
             try {
-                Layout layout = layouts.get(key);
-                if (layout == null) {
-                    layout = new Layout(key);
+                if (layoutSection.isConfigurationSection(key)) {
+                    Layout layout = layouts.get(key);
+                    if (layout == null) {
+                        layout = new Layout(key);
+                    }
+                    layout.getMessages().putAll(defaultMessages);
+                    layout.getOfferDescriptions().putAll(defaultOfferDescriptions);
+                    loadLayout(layout, layoutSection.getConfigurationSection(key));
                 }
-                layout.putMessages(defaultMessages);
-                layout.setOfferDescriptions(defaultOfferDescriptions);
-                loadLayout(layout, layoutSection.getConfigurationSection(key));
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             }
@@ -72,80 +74,85 @@ public class LayoutManager {
 
         for (String slotKey : section.getConfigurationSection("slots").getKeys(false)) {
 
-            int slotID = -1;
+            if (section.getConfigurationSection("slots").isConfigurationSection(slotKey)) {
 
-            try {
-                slotID = Integer.parseInt(slotKey);
-            } catch (NumberFormatException e) {
-                // TODO add message
-                continue;
+
+                int slotID = -1;
+
+                try {
+                    slotID = Integer.parseInt(slotKey);
+                } catch (NumberFormatException e) {
+                    // TODO add message
+                    continue;
+                }
+
+                if (slotID < 0 || slotID >= slotSize) {
+                    // TODO add message
+                    continue;
+                }
+
+                final ConfigurationSection slotSection = section.getConfigurationSection("slots." + slotKey);
+
+                final String type = slotSection.getString("type");
+
+                Slot slot = null;
+
+                if ("accept".equalsIgnoreCase(type)) {
+                    slot = new AcceptSlot(
+                            slotID,
+                            ItemStackUtils.fromSection(slotSection.getConfigurationSection("accept-item"), messageManager),
+                            ItemStackUtils.fromSection(slotSection.getConfigurationSection("accepted-item"), messageManager)
+                    );
+                } else if ("refuse".equalsIgnoreCase(type)) {
+                    slot = new RefuseSlot(
+                            slotID,
+                            ItemStackUtils.fromSection(slotSection.getConfigurationSection("refuse-item"), messageManager)
+                    );
+                } else if ("close".equalsIgnoreCase(type)) {
+                    slot = new CloseSlot(
+                            slotID,
+                            ItemStackUtils.fromSection(slotSection.getConfigurationSection("close-item"), messageManager)
+                    );
+                } else if ("status".equalsIgnoreCase(type)) {
+                    slot = new StatusSlot(
+                            slotID,
+                            ItemStackUtils.fromSection(slotSection.getConfigurationSection("considering-item"), messageManager),
+                            ItemStackUtils.fromSection(slotSection.getConfigurationSection("accepted-item"), messageManager)
+                    );
+                } else if ("trade".equalsIgnoreCase(type)) {
+                    slot = new TradeSlot(
+                            slotID,
+                            slotSection.getInt("slot", 0)
+                    );
+                } else if ("mirror".equalsIgnoreCase(type)) {
+                    slot = new MirrorSlot(
+                            slotID,
+                            slotSection.getInt("slot", 0)
+                    );
+                } else if ("money".equalsIgnoreCase(type)) {
+                    slot = new MoneySlot(
+                            slotID,
+                            ItemStackUtils.fromSection(slotSection.getConfigurationSection("money-item"), messageManager),
+                            slotSection.getInt("small-modifier", 5),
+                            slotSection.getInt("large-modifier", 10)
+                    );
+                } else if ("experience".equalsIgnoreCase(type)) {
+                    slot = new ExperienceSlot(
+                            slotID,
+                            ItemStackUtils.fromSection(slotSection.getConfigurationSection("experience-item"), messageManager),
+                            slotSection.getInt("small-modifier", 1),
+                            slotSection.getInt("large-modifier", 5)
+                    );
+                }
+
+                if (slot == null) {
+                    // TODO add message
+                    continue;
+                }
+
+                slots[slotID] = slot;
+
             }
-
-            if (slotID < 0 || slotID >= slotSize) {
-                // TODO add message
-                continue;
-            }
-
-            final ConfigurationSection slotSection = section.getConfigurationSection("slots." + slotKey);
-
-            final String type = slotSection.getString("type");
-
-            Slot slot = null;
-
-            if ("accept".equalsIgnoreCase(type)) {
-                slot = new AcceptSlot(
-                        slotID,
-                        ItemStackUtils.fromSection(slotSection.getConfigurationSection("accept-item"), messageManager),
-                        ItemStackUtils.fromSection(slotSection.getConfigurationSection("accepted-item"), messageManager)
-                );
-            } else if ("refuse".equalsIgnoreCase(type)) {
-                slot = new RefuseSlot(
-                        slotID,
-                        ItemStackUtils.fromSection(slotSection.getConfigurationSection("refuse-item"), messageManager)
-                );
-            } else if ("close".equalsIgnoreCase(type)) {
-                slot = new CloseSlot(
-                        slotID,
-                        ItemStackUtils.fromSection(slotSection.getConfigurationSection("close-item"), messageManager)
-                );
-            } else if ("status".equalsIgnoreCase(type)) {
-                slot = new StatusSlot(
-                        slotID,
-                        ItemStackUtils.fromSection(slotSection.getConfigurationSection("considering-item"), messageManager),
-                        ItemStackUtils.fromSection(slotSection.getConfigurationSection("accepted-item"), messageManager)
-                );
-            } else if ("trade".equalsIgnoreCase(type)) {
-                slot = new TradeSlot(
-                        slotID,
-                        slotSection.getInt("slot", 0)
-                );
-            } else if ("mirror".equalsIgnoreCase(type)) {
-                slot = new MirrorSlot(
-                        slotID,
-                        slotSection.getInt("slot", 0)
-                );
-            } else if ("money".equalsIgnoreCase(type)) {
-                slot = new MoneySlot(
-                        slotID,
-                        ItemStackUtils.fromSection(slotSection.getConfigurationSection("money-item"), messageManager),
-                        slotSection.getInt("small-modifier", 5),
-                        slotSection.getInt("large-modifier", 10)
-                );
-            } else if ("experience".equalsIgnoreCase(type)) {
-                slot = new ExperienceSlot(
-                        slotID,
-                        ItemStackUtils.fromSection(slotSection.getConfigurationSection("experience-item"), messageManager),
-                        slotSection.getInt("small-modifier", 1),
-                        slotSection.getInt("large-modifier", 5)
-                );
-            }
-
-            if (slot == null) {
-                // TODO add message
-                continue;
-            }
-
-            slots[slotID] = slot;
 
         }
 
@@ -189,20 +196,24 @@ public class LayoutManager {
 
         for (String offerKey : section.getKeys(false)) {
 
-            final ConfigurationSection offerSection = section.getConfigurationSection("offers." + offerKey);
+            if (section.isConfigurationSection(offerKey)) {
 
-            if ("item".equalsIgnoreCase(offerKey)) {
-                final ItemOfferDescription description = new ItemOfferDescription();
-                offerDescriptions.put(description.getOfferClass(), description);
-            } else if ("experience".equalsIgnoreCase(offerKey)) {
-                final ExperienceOfferDescription description = new ExperienceOfferDescription();
-                description.setSmallModifier(offerSection.getInt("small-modifier", 1));
-                description.setLargeModifier(offerSection.getInt("large-modifier", 5));
-                description.setExperienceItem(ItemStackUtils.fromSection(offerSection.getConfigurationSection("item"), messageManager));
-                description.setExperienceItemMirror(ItemStackUtils.fromSection(offerSection.getConfigurationSection("item-mirror"), messageManager));
-                offerDescriptions.put(description.getOfferClass(), description);
-            } else if ("money".equalsIgnoreCase(offerKey)) {
-                // TODO This
+                final ConfigurationSection offerSection = section.getConfigurationSection(offerKey);
+
+                if ("item".equalsIgnoreCase(offerKey)) {
+                    final ItemOfferDescription description = new ItemOfferDescription();
+                    offerDescriptions.put(description.getOfferClass(), description);
+                } else if ("experience".equalsIgnoreCase(offerKey)) {
+                    final ExperienceOfferDescription description = new ExperienceOfferDescription();
+                    description.setSmallModifier(offerSection.getInt("small-modifier"));
+                    description.setLargeModifier(offerSection.getInt("large-modifier"));
+                    description.setExperienceItem(ItemStackUtils.fromSection(offerSection.getConfigurationSection("experience-item"), messageManager));
+                    description.setExperienceItemMirror(ItemStackUtils.fromSection(offerSection.getConfigurationSection("experience-item-mirror"), messageManager));
+                    offerDescriptions.put(description.getOfferClass(), description);
+                } else if ("money".equalsIgnoreCase(offerKey)) {
+                    // TODO This
+                }
+
             }
 
         }

@@ -168,8 +168,8 @@ public class TransactionHolder implements InventoryHolder {
                 getTrader().getFormattedMessage("closed-inventory.self").send(getTrader().getPlayer());
                 getOtherTrader().getFormattedMessage("closed-inventory.other").send(getOtherTrader().getPlayer(), "%player%", getTrader().getPlayer().getName());
 			} else {
-				trader.setRefused(true);
-			}
+                trader.refuse();
+            }
 		}
 	}
 

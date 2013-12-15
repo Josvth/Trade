@@ -102,7 +102,7 @@ public class Trader {
             setAccepted(false);
 
             getFormattedMessage("denied.self").send(getPlayer());
-            holder.getOtherTrader().getFormattedMessage("denied.other").send(getOtherTrader().getPlayer(), "%player%", getPlayer().getName());
+            getOtherTrader().getFormattedMessage("denied.other").send(getOtherTrader().getPlayer(), "%player%", getPlayer().getName());
 
             AcceptSlot.updateAcceptSlots(holder, true);
             StatusSlot.updateStatusSlots(holder.getOtherHolder(), true);
@@ -125,7 +125,7 @@ public class Trader {
             setRefused(true);
 
             getFormattedMessage("refused.self").send(getPlayer());
-            getFormattedMessage("refused.other").send(getOtherTrader().getPlayer(), "%player%", holder.getTrader().getName());
+            getOtherTrader().getFormattedMessage("refused.other").send(getOtherTrader().getPlayer(), "%player%", holder.getTrader().getName());
 
             getTransaction().stop(false);
 
