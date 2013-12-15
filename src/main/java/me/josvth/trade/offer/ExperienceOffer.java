@@ -3,14 +3,12 @@ package me.josvth.trade.offer;
 import me.josvth.trade.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.util.ExperienceManager;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class ExperienceOffer extends Offer {
 
-    private int levels = 0;
+    private int experience = 0;
 
     public ExperienceOffer(OfferList list, int offerID) {
         super(list, offerID);
@@ -32,43 +30,43 @@ public class ExperienceOffer extends Offer {
     }
 
     public int add(int amount) {
-        final int remainder = levels + amount - 64; // TODO Remove hard coded 64
+        final int remainder = experience + amount - 64; // TODO Remove hard coded 64
         if (remainder > 0) {
-            levels = 64;
+            experience = 64;
             return remainder;
         } else {
-            levels = levels + amount;
+            experience = experience + amount;
             return 0;
         }
     }
 
     public int remove(int amount) {
-        final int remainder = levels - amount;
+        final int remainder = experience - amount;
         if (remainder > 0) {
-            levels = remainder;
+            experience = remainder;
             return 0;
         } else {
-            levels = 0;
+            experience = 0;
             return -1 * remainder;
         }
     }
 
-    public int getLevels() {
-        return levels;
+    public int getExperience() {
+        return experience;
     }
 
-    public void setLevels(int levels) {
-        this.levels = levels;
+    public void setExperience(int experience) {
+        this.experience = experience;
     }
 
     @Override
     public boolean isWorthless() {
-        return levels <= 0;
+        return experience <= 0;
     }
 
     @Override
     public void grant(Trader trader) {
-        grant(trader, levels);
+        grant(trader, experience);
     }
 
     public static void grant(Trader trader, int levels) {
@@ -83,58 +81,21 @@ public class ExperienceOffer extends Offer {
 
 		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-        final Trader trader = holder.getTrader();
+        if (event.isLeftClick()) {
 
-        final Player player = (Player) event.getWhoClicked();
+            holder.getOffers().addExperience(event.isShiftClick()?  getDescription().getLargeModifier() : getDescription().getSmallModifier());
 
-        player.sendMessage("TOTAL: " + player.getTotalExperience());
-        player.sendMessage("NEXT: " + player.getExpToLevel());
-        player.sendMessage("EXP: " + player.getExp());
+        } else if (event.isRightClick()) {
 
-		if (event.isLeftClick()) {
+            holder.getOffers().removeExperience(event.isShiftClick()?  getDescription().getLargeModifier() : getDescription().getSmallModifier());
 
-            final ExperienceManager expManager = new ExperienceManager(player);
-
-			final int levelsToAdd = event.isShiftClick()? getDescription().getLargeModifier() : getDescription().getSmallModifier();
-
-			if (!expManager.hasExp(levelsToAdd)) {
-                trader.getFormattedMessage("experience.insufficient").send(player, "%levels%", String.valueOf(levelsToAdd));
-				return;
-			}
-
-			final int remainder = holder.getOffers().addExperience(levelsToAdd);
-
-            expManager.changeExp(-1 * (levelsToAdd - remainder));
-
-            trader.getFormattedMessage("experience.added.self").send(player, "%levels%", String.valueOf(levelsToAdd - remainder));
-            if (trader.getOtherTrader().hasFormattedMessage("experience.added.other")) {
-                trader.getOtherTrader().getFormattedMessage("experience.added.other").send(trader.getOtherTrader().getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToAdd - remainder));
-            }
-
-		} else if (event.isRightClick()) {
-
-			final int levelsToRemove = event.isShiftClick()? getDescription().getLargeModifier() : getDescription().getSmallModifier();
-
-			final int remainder = holder.getOffers().removeExperience(levelsToRemove);
-
-            if (levelsToRemove > remainder) {
-
-                new ExperienceManager(player).changeExp(levelsToRemove - remainder);
-
-                trader.getFormattedMessage("experience.removed.self").send(player, "%levels%", String.valueOf(levelsToRemove - remainder));
-                if (trader.getOtherTrader().hasFormattedMessage("experience.removed.other")) {
-                    trader.getOtherTrader().getFormattedMessage("experience.removed.other").send(trader.getOtherTrader().getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToRemove - remainder));
-                }
-
-            }
-
-		}
+        }
 
     }
 
     @Override
     public String toString() {
-        return "EXP: " + levels;
+        return "EXP: " + experience;
     }
 
 }

@@ -13,12 +13,12 @@ trading:
     other: "%player% refused the trade."
   experience:
     added:
-      self: Added %levels% levels to the trade.
-      other: "%player% added %levels% levels to the trade."
+      self: Added %experience% experience to the trade.
+      other: "%player% added %experience% experience to the trade."
     removed:
-      self: Removed %levels% levels from the trade.
-      other: "%player% removed %levels% levels from the trade."
-    insufficient: "You don't have %levels% levels!"
+      self: Removed %experience% experience from the trade.
+      other: "%player% removed %experience% experience from the trade."
+    insufficient: "You don't have %experience% experience!"
   disconnect:
     self: "Your trade was cancelled because you disconnected."
     other: "Your trade was cancelled because %player% disconnected."

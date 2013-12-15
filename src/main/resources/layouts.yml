@@ -51,18 +51,18 @@ default:
       type: experience
       experience-item:
         material: 384
-        display-name: "You added %levels% levels."
+        display-name: "You added %experience% experience."
         lore:
           - "Left click to add %small% level(s)"
           - "Right click to remove %small% level(s)"
-          - "Shift left click to add %large% levels"
-          - "Shift right click to remove %large% levels"
+          - "Shift left click to add %large% experience"
+          - "Shift right click to remove %large% experience"
       small-modifier: 1
       large-modifier: 5
       messages:
-        add: "Added %levels% levels to the trade."
-        remove: "Removed %levels% levels from the trade."
-        insufficient: "You don't have %levels% levels!"
+        add: "Added %experience% experience to the trade."
+        remove: "Removed %experience% experience from the trade."
+        insufficient: "You don't have %experience% experience!"
     13:
       type: close
       close-item:

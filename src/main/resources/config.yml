@@ -20,15 +20,15 @@ offers:
   experience:
     experience-item:
       material: 384
-      display-name: "You added %levels% levels."
+      display-name: "You added %experience% experience."
       lore:
         - "Left click to add %small% level(s)"
         - "Right click to remove %small% level(s)"
-        - "Shift left click to add %large% levels"
-        - "Shift right click to remove %large% levels"
+        - "Shift left click to add %large% experience"
+        - "Shift right click to remove %large% experience"
     experience-item-mirror:
       material: 384
-      display-name: "%player% offers %levels% levels."
+      display-name: "%player% offers %experience% experience."
     small-modifier: 1
     large-modifier: 5
   item: {}

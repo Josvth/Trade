@@ -19,11 +19,11 @@ public class ExperienceOfferDescription extends OfferDescription<ExperienceOffer
         final ItemStack itemStack;
         if (experienceItem != null) {
             itemStack = experienceItem.clone();
-            itemStack.setAmount(offer.getLevels());
+            itemStack.setAmount(offer.getExperience());
         } else {
             itemStack = null;
         }
-        return ItemStackUtils.argument(itemStack, "%levels%", String.valueOf(offer.getLevels()), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier));
+        return ItemStackUtils.argument(itemStack, "%levels%", String.valueOf(offer.getExperience()), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier));
     }
 
     @Override
@@ -31,11 +31,11 @@ public class ExperienceOfferDescription extends OfferDescription<ExperienceOffer
         final ItemStack itemStack;
         if (experienceItemMirror != null) {
             itemStack = experienceItemMirror.clone();
-            itemStack.setAmount(offer.getLevels());
+            itemStack.setAmount(offer.getExperience());
         } else {
             itemStack = null;
         }
-        return ItemStackUtils.argument(itemStack, "%player%", holder.getOtherTrader().getName(), "%levels%", String.valueOf(offer.getLevels()));
+        return ItemStackUtils.argument(itemStack, "%player%", holder.getOtherTrader().getName(), "%levels%", String.valueOf(offer.getExperience()));
     }
 
     @Override

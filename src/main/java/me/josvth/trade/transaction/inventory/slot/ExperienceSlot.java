@@ -4,12 +4,9 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.offer.ExperienceOffer;
 import me.josvth.trade.offer.OfferList;
 import me.josvth.trade.tasks.ExperienceSlotUpdateTask;
-import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.util.ExperienceManager;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -37,46 +34,13 @@ public class ExperienceSlot extends Slot {
 
         final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-        final Trader trader = holder.getTrader();
-
-        final Player player = (Player) event.getWhoClicked();
-
         if (event.isLeftClick()) {
 
-            final ExperienceManager expManager = new ExperienceManager(player);
-
-            final int levelsToAdd = event.isShiftClick()? smallModifier : largeModifier;
-
-            if (!expManager.hasExp(levelsToAdd)) {
-                trader.getFormattedMessage("experience.insufficient").send(player, "%levels%", String.valueOf(levelsToAdd));
-                return;
-            }
-
-            final int remainder = holder.getOffers().addExperience(levelsToAdd);
-
-            expManager.changeExp(-1 * (levelsToAdd - remainder));
-
-            trader.getFormattedMessage("experience.added.self").send(player, "%levels%", String.valueOf(levelsToAdd - remainder));
-            if (trader.getOtherTrader().hasFormattedMessage("experience.added.other")) {
-                trader.getOtherTrader().getFormattedMessage("experience.added.other").send(trader.getOtherTrader().getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToAdd - remainder));
-            }
+            holder.getOffers().addExperience(event.isShiftClick()? largeModifier : smallModifier);
 
         } else if (event.isRightClick()) {
 
-            final int levelsToRemove = event.isShiftClick()? smallModifier : largeModifier;
-
-            final int remainder = holder.getOffers().removeExperience(levelsToRemove);
-
-            if (levelsToRemove > remainder) {
-
-                new ExperienceManager(player).changeExp(levelsToRemove - remainder);
-
-                trader.getFormattedMessage("experience.removed.self").send(player, "%levels%", String.valueOf(levelsToRemove - remainder));
-                if (trader.getOtherTrader().hasFormattedMessage("experience.removed.other")) {
-                    trader.getOtherTrader().getFormattedMessage("experience.removed.other").send(trader.getOtherTrader().getPlayer(), "%player%", player.getName(), "%levels%", String.valueOf(levelsToRemove - remainder));
-                }
-
-            }
+            holder.getOffers().removeExperience(event.isShiftClick()? largeModifier : smallModifier);
 
         }
 
@@ -84,31 +48,31 @@ public class ExperienceSlot extends Slot {
 
     @Override
     public void update(TransactionHolder holder) {
-        update(holder, getLevels(holder.getOffers()));
+        update(holder, getExperience(holder.getOffers()));
     }
 
-    public void update(TransactionHolder holder, int levels) {
-        setSlot(holder, ItemStackUtils.argument(experienceItem.clone(), "%levels%", String.valueOf(levels), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier)));
+    public void update(TransactionHolder holder, int experience) {
+        setSlot(holder, ItemStackUtils.argument(experienceItem.clone(), "%experience%", String.valueOf(experience), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier)));
     }
 
-    private static int getLevels(OfferList list) {
-        int levels = 0;
+    private static int getExperience(OfferList list) {
+        int experience = 0;
         for (ExperienceOffer tradeable : list.getOfClass(ExperienceOffer.class).values()) {
-            levels += tradeable.getLevels();
+            experience += tradeable.getExperience();
         }
-        return levels;
+        return experience;
     }
 
-    public static void updateExperienceSlots(TransactionHolder holder, boolean nextTick, int levels) {
+    public static void updateExperienceSlots(TransactionHolder holder, boolean nextTick, int experience) {
 
         final Set<ExperienceSlot> slots = holder.getLayout().getSlotsOfType(ExperienceSlot.class);
 
         if (!nextTick) {
             for (ExperienceSlot slot : slots) {
-                slot.update(holder, levels);
+                slot.update(holder, experience);
             }
         } else if (!slots.isEmpty()) {
-            Bukkit.getScheduler().runTask(Trade.getInstance(), new ExperienceSlotUpdateTask(holder, slots, levels));
+            Bukkit.getScheduler().runTask(Trade.getInstance(), new ExperienceSlotUpdateTask(holder, slots, experience));
         }
 
     }

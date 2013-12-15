@@ -5,6 +5,7 @@ import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.slot.ExperienceSlot;
 import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
 import me.josvth.trade.transaction.inventory.slot.TradeSlot;
+import me.josvth.trade.util.ExperienceManager;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -80,84 +81,101 @@ public class OfferList {
 		}
 	}
 
-	public int addExperience(int levels) {
+    public void addExperience(int experience) {
 
-		final LinkedList<Integer> changedIndexes = new LinkedList<Integer>();
+        final ExperienceManager expManager = new ExperienceManager(getTrader().getPlayer());
 
-		// First we try and fill up existing experience offers
-		final Iterator<Map.Entry<Integer, ExperienceOffer>> iterator = getOfClass(ExperienceOffer.class).entrySet().iterator();
+        if (!expManager.hasExp(experience)) {
+            trader.getFormattedMessage("experience.insufficient").send(getTrader().getPlayer(), "%levels%", String.valueOf(experience));
+            return;
+        }
 
-		int currentLevels = 0;
+        final LinkedList<Integer> changedIndexes = new LinkedList<Integer>();
 
-		while (iterator.hasNext()) {
+        // First we try and fill up existing experience offers
+        final Iterator<Map.Entry<Integer, ExperienceOffer>> iterator = getOfClass(ExperienceOffer.class).entrySet().iterator();
 
-			final Map.Entry<Integer, ExperienceOffer> entry = iterator.next();
+        int remaining = experience;
 
-			if (levels > 0) {
+        int currentLevels = 0;
 
-				final int remaining = entry.getValue().add(levels);
+        while (iterator.hasNext()) {
 
-				// If we have added something change the remaining levels and add this slot to the changed indexes
-				if (remaining < levels) {
-					changedIndexes.add(entry.getKey());
-					levels = remaining;
-				}
+            final Map.Entry<Integer, ExperienceOffer> entry = iterator.next();
 
-			}
+            if (experience > 0) {
 
-			// Meanwhile we count the current levels
-			currentLevels += entry.getValue().getLevels();
+                final int overflow = entry.getValue().add(experience);
 
-		}
+                // If we have added something change the remaining levels and add this slot to the changed indexes
+                if (overflow < remaining) {
+                    changedIndexes.add(entry.getKey());
+                    remaining = overflow;
+                }
 
+            }
 
-		// Next put the remaining levels in empty offer slots
-		if (levels > 0) {
+            // Meanwhile we count the current levels
+            currentLevels += entry.getValue().getExperience();
 
-			int firstEmpty = getFirstEmpty();
+        }
 
-			while (levels > 0 && firstEmpty != -1) {
+        // Next put the remaining levels in empty offer slots
+        if (remaining > 0) {
 
-				final int remainder = levels - 64;
+            int firstEmpty = getFirstEmpty();
 
-				if (remainder <= 0) {
-					set(firstEmpty, createExperienceOffer(firstEmpty, levels));
-					levels = 0;
-				} else {
-					set(firstEmpty, createExperienceOffer(firstEmpty, 64));
-					levels = -1 * remainder;
-					firstEmpty = getFirstEmpty();
-				}
+            while (remaining > 0 && firstEmpty != -1) {
 
-				changedIndexes.add(firstEmpty);
+                final int overflow = remaining - 64;
 
-			}
+                if (overflow <= 0) {
+                    set(firstEmpty, createExperienceOffer(firstEmpty, experience));
+                    remaining = 0;
+                } else {
+                    set(firstEmpty, createExperienceOffer(firstEmpty, 64));
+                    remaining = -1 * overflow;
+                    firstEmpty = getFirstEmpty();
+                }
 
-		}
+                changedIndexes.add(firstEmpty);
 
-		// If we changed anything we update the holder and mirror
-		if (!changedIndexes.isEmpty()) {
+            }
 
-			// We place our changed indexes into an array
-			final int[] indexesArray = new int[changedIndexes.size()];
+        }
 
-			int i = 0;
-			for (int index : changedIndexes) {
-				indexesArray[i] = index;
-				i++;
-			}
+        // Calculated add experience
+        final int added = experience - remaining;
 
-			TradeSlot.updateTradeSlots(getHolder(), true, indexesArray);
-			MirrorSlot.updateMirrors(getHolder().getOtherHolder(), true, indexesArray);
-			ExperienceSlot.updateExperienceSlots(getHolder(), true, currentLevels - levels);
+        // If we changed anything we update the holder and mirror
+        if (!changedIndexes.isEmpty()) {
 
-		}
+            // We place our changed indexes into an array
+            final int[] indexesArray = new int[changedIndexes.size()];
 
-		return levels;
+            int i = 0;
+            for (int index : changedIndexes) {
+                indexesArray[i] = index;
+                i++;
+            }
 
-	}
+            TradeSlot.updateTradeSlots(getHolder(), true, indexesArray);
+            MirrorSlot.updateMirrors(getHolder().getOtherHolder(), true, indexesArray);
+            ExperienceSlot.updateExperienceSlots(getHolder(), true, currentLevels + added);
 
-	public int removeExperience(int levels) {
+        }
+
+        // Take experience from player
+        expManager.changeExp(-1 * added);
+
+        trader.getFormattedMessage("experience.added.self").send(trader.getPlayer(), "%levels%", String.valueOf(added));
+        if (trader.getOtherTrader().hasFormattedMessage("experience.added.other")) {
+            trader.getOtherTrader().getFormattedMessage("experience.added.other").send(trader.getOtherTrader().getPlayer(), "%player%", trader.getName(), "%levels%", String.valueOf(added));
+        }
+
+    }
+
+	public void removeExperience(int experience) {
 
 		final LinkedList<Integer> changedIndexes = new LinkedList<Integer>();
 
@@ -167,20 +185,22 @@ public class OfferList {
 
 		int currentLevels = 0;
 
-		while (iterator.hasNext() && levels > 0) {
+        int remaining = experience;
+
+		while (iterator.hasNext()) {
 
 			final Map.Entry<Integer, ExperienceOffer> entry = iterator.next();
 
-			if (levels > 0)  {
+			if (remaining > 0)  {
 
-				final int remaining = entry.getValue().remove(levels);
+				final int overflow = entry.getValue().remove(remaining);
 
-				if (remaining < levels) {
+				if (overflow < remaining) {
 					changedIndexes.add(entry.getKey());
-					levels = remaining;
+                    remaining = overflow;
 
 					// TODO What about this?
-					if (entry.getValue().getLevels() == 0) {
+					if (entry.getValue().getExperience() == 0) {
 						set(entry.getKey(), null);
 					}
 
@@ -188,7 +208,7 @@ public class OfferList {
 
 			}
 
-			currentLevels += entry.getValue().getLevels();
+			currentLevels += entry.getValue().getExperience();
 
 		}
 
@@ -205,17 +225,27 @@ public class OfferList {
 
 			TradeSlot.updateTradeSlots(getHolder(), true, indexesArray);
 			MirrorSlot.updateMirrors(getHolder().getOtherHolder(), true, indexesArray);
-			ExperienceSlot.updateExperienceSlots(getHolder(), true, currentLevels - levels);
+			ExperienceSlot.updateExperienceSlots(getHolder(), true, currentLevels);
 
 		}
 
-		return levels;
+        final int removedExperience = experience - remaining;
 
-	}
+        trader.getFormattedMessage("experience.removed.self").send(trader.getPlayer(), "%levels%", String.valueOf(removedExperience));
+
+        // Give the player experience
+        new ExperienceManager(getTrader().getPlayer()).changeExp(removedExperience);
+
+        if (trader.getOtherTrader().hasFormattedMessage("experience.removed.other") && removedExperience > 0) {
+            trader.getOtherTrader().getFormattedMessage("experience.removed.other").send(trader.getOtherTrader().getPlayer(), "%player%", trader.getName(), "%levels%", String.valueOf(removedExperience));
+        }
+
+
+    }
 
 	public ExperienceOffer createExperienceOffer(int index, int levels) {
 		final ExperienceOffer offer = getTrader().getLayout().getOfferDescription(ExperienceOffer.class).createOffer(this, index);
-		offer.setLevels(levels);
+		offer.setExperience(levels);
 		return offer;
 	}
 

@@ -56,8 +56,8 @@ public class MoneySlot extends Slot {
 //
 //			// TODO Regrant money
 //			if (remaining != null) {
-//				player.sendMessage("TEST MESSAGE: Removed " + (moneyToRemove - remaining.getLevels()) + " levels.");
-//				//player.setLevel(player.getLevel() + moneyToRemove - remaining.getLevels());
+//				player.sendMessage("TEST MESSAGE: Removed " + (moneyToRemove - remaining.getExperience()) + " levels.");
+//				//player.setLevel(player.getLevel() + moneyToRemove - remaining.getExperience());
 //			} else {
 //				//player.setLevel(player.getLevel() + moneyToRemove);
 //			}
