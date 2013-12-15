@@ -1,6 +1,7 @@
 default:
   rows: 2
   offer-size: 3
+  title: "You%spaces%%other%"
   slots:
     0:
       type: trade

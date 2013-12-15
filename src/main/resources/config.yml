@@ -15,7 +15,7 @@ requesting:
     left-click: false
     shift-left-click: false
 trading:
-  allow-inventory-closing: true
+  allow-inventory-closing: false
 offers:
   experience:
     experience-item:
@@ -32,3 +32,4 @@ offers:
     small-modifier: 1
     large-modifier: 5
   item: {}
+  money: {}

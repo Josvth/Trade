@@ -53,8 +53,6 @@ public class LayoutManager {
 
     private void loadLayout(Layout layout, ConfigurationSection section) throws IllegalArgumentException {
 
-        // TODO make this not alter layout on failure
-
         if (section == null) {
             throw new IllegalArgumentException("Section is null.");
         }
@@ -62,6 +60,8 @@ public class LayoutManager {
         layout.setRows(section.getInt("rows"));
 
         layout.setOfferSize(section.getInt("offer-size", 4));
+
+        layout.setTitle(new FormattedMessage(messageManager.preformatMessage(section.getString("title"))));
 
         final int slotSize = layout.getRows() * 9;
 
@@ -75,7 +75,6 @@ public class LayoutManager {
         for (String slotKey : section.getConfigurationSection("slots").getKeys(false)) {
 
             if (section.getConfigurationSection("slots").isConfigurationSection(slotKey)) {
-
 
                 int slotID = -1;
 

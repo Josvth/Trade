@@ -3,28 +3,24 @@ package me.josvth.trade.transaction.inventory;
 import me.josvth.bukkitformatlibrary.message.FormattedMessage;
 import me.josvth.bukkitformatlibrary.message.MessageHolder;
 import me.josvth.trade.offer.Offer;
-import me.josvth.trade.offer.description.ExperienceOfferDescription;
-import me.josvth.trade.offer.description.ItemOfferDescription;
 import me.josvth.trade.offer.description.OfferDescription;
 import me.josvth.trade.transaction.inventory.slot.Slot;
-import me.josvth.trade.util.ItemStackUtils;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Layout extends MessageHolder {
-
-    private static final FormattedMessage DEFAULT_TITLE = new FormattedMessage("You%spaces%%other%");
 
     private final String name;
 
     private int rows;
     private Slot[] slots;
     private int offerSize = 4;
-    private FormattedMessage title = DEFAULT_TITLE;
+    private FormattedMessage title = new FormattedMessage("");
 
     // Offer descriptions
     private final Map<Class<? extends Offer>, OfferDescription> offerDescriptions = new HashMap<Class<? extends Offer>, OfferDescription>();
@@ -76,7 +72,6 @@ public class Layout extends MessageHolder {
     public String generateTitle(TransactionHolder holder) {
 
         final int maxCharacters = 32;
-
 
         final StringBuilder titleBuilder = new StringBuilder(title.get("%other%", holder.getOtherTrader().getName()));
 
@@ -146,4 +141,7 @@ public class Layout extends MessageHolder {
 
     }
 
+    public void setTitle(FormattedMessage title) {
+        this.title = title;
+    }
 }
