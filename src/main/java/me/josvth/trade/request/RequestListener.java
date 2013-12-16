@@ -72,7 +72,7 @@ public class RequestListener implements Listener {
 
         } else {
 
-            if (restriction == RequestRestriction.METHOD) {
+            if (restriction == RequestRestriction.METHOD && messageHolder.hasMessage(method.messagePath)) {
                 messageHolder.getMessage(method.messagePath).send(requester);
             } else {
                 messageHolder.getMessage(restriction.requestMessagePath).send(requester, "%player%", requested.getName());
