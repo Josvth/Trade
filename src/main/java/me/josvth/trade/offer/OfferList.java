@@ -86,7 +86,7 @@ public class OfferList {
         final ExperienceManager expManager = new ExperienceManager(getTrader().getPlayer());
 
         if (!expManager.hasExp(experience)) {
-            trader.getFormattedMessage("experience.insufficient").send(getTrader().getPlayer(), "%levels%", String.valueOf(experience));
+            trader.getFormattedMessage("experience.insufficient").send(getTrader().getPlayer(), "%experience%", String.valueOf(experience));
             return;
         }
 
@@ -103,6 +103,9 @@ public class OfferList {
 
             final Map.Entry<Integer, ExperienceOffer> entry = iterator.next();
 
+            // Meanwhile we count the current levels we add our addition later
+            currentLevels += entry.getValue().getExperience();
+
             if (experience > 0) {
 
                 final int overflow = entry.getValue().add(experience);
@@ -114,9 +117,6 @@ public class OfferList {
                 }
 
             }
-
-            // Meanwhile we count the current levels
-            currentLevels += entry.getValue().getExperience();
 
         }
 
@@ -168,10 +168,12 @@ public class OfferList {
         // Take experience from player
         expManager.changeExp(-1 * added);
 
-        trader.getFormattedMessage("experience.added.self").send(trader.getPlayer(), "%levels%", String.valueOf(added));
+        trader.getFormattedMessage("experience.added.self").send(trader.getPlayer(), "%experience%", String.valueOf(added));
         if (trader.getOtherTrader().hasFormattedMessage("experience.added.other")) {
-            trader.getOtherTrader().getFormattedMessage("experience.added.other").send(trader.getOtherTrader().getPlayer(), "%player%", trader.getName(), "%levels%", String.valueOf(added));
+            trader.getOtherTrader().getFormattedMessage("experience.added.other").send(trader.getOtherTrader().getPlayer(), "%player%", trader.getName(), "%experience%", String.valueOf(added));
         }
+
+        trader.getOtherTrader().cancelAccept();
 
     }
 
@@ -191,6 +193,8 @@ public class OfferList {
 
 			final Map.Entry<Integer, ExperienceOffer> entry = iterator.next();
 
+            currentLevels += entry.getValue().getExperience();
+
 			if (remaining > 0)  {
 
 				final int overflow = entry.getValue().remove(remaining);
@@ -207,8 +211,6 @@ public class OfferList {
 				}
 
 			}
-
-			currentLevels += entry.getValue().getExperience();
 
 		}
 
@@ -231,15 +233,16 @@ public class OfferList {
 
         final int removedExperience = experience - remaining;
 
-        trader.getFormattedMessage("experience.removed.self").send(trader.getPlayer(), "%levels%", String.valueOf(removedExperience));
+        trader.getFormattedMessage("experience.removed.self").send(trader.getPlayer(), "%experience%", String.valueOf(removedExperience));
 
         // Give the player experience
         new ExperienceManager(getTrader().getPlayer()).changeExp(removedExperience);
 
         if (trader.getOtherTrader().hasFormattedMessage("experience.removed.other") && removedExperience > 0) {
-            trader.getOtherTrader().getFormattedMessage("experience.removed.other").send(trader.getOtherTrader().getPlayer(), "%player%", trader.getName(), "%levels%", String.valueOf(removedExperience));
+            trader.getOtherTrader().getFormattedMessage("experience.removed.other").send(trader.getOtherTrader().getPlayer(), "%player%", trader.getName(), "%experience%", String.valueOf(removedExperience));
         }
 
+        trader.getOtherTrader().cancelAccept();
 
     }
 
@@ -250,7 +253,7 @@ public class OfferList {
 	}
 
     public ItemOffer createItemOffer(int index, ItemStack itemStack) {
-        final ItemOffer offer = (ItemOffer) getTrader().getLayout().getOfferDescription(ItemOffer.class).createOffer(this, index);
+        final ItemOffer offer = getTrader().getLayout().getOfferDescription(ItemOffer.class).createOffer(this, index);
         offer.setItem(itemStack);
         return offer;
     }

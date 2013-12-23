@@ -139,7 +139,7 @@ public class Trader {
 
             setAccepted(false);
 
-            getFormattedMessage("denied.offer-changed").send(holder.getOtherTrader().getPlayer(), "%player%", holder.getTrader().getName());
+            getFormattedMessage("denied.offer-changed").send(getPlayer(), "%player%", getOtherTrader().getName());
 
             AcceptSlot.updateAcceptSlots(holder.getOtherHolder(), true);
             StatusSlot.updateStatusSlots(holder, true);

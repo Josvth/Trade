@@ -3,6 +3,7 @@ package me.josvth.trade.offer;
 import me.josvth.trade.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
+import me.josvth.trade.util.ExperienceManager;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -69,8 +70,8 @@ public class ExperienceOffer extends Offer {
         grant(trader, experience);
     }
 
-    public static void grant(Trader trader, int levels) {
-        trader.getPlayer().setLevel(trader.getPlayer().getLevel() + levels);
+    public static void grant(Trader trader, int experience) {
+        new ExperienceManager(trader.getPlayer()).changeExp(experience);
     }
 
     @Override

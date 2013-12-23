@@ -23,7 +23,7 @@ public class ExperienceOfferDescription extends OfferDescription<ExperienceOffer
         } else {
             itemStack = null;
         }
-        return ItemStackUtils.argument(itemStack, "%levels%", String.valueOf(offer.getExperience()), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier));
+        return ItemStackUtils.argument(itemStack, "%experience%", String.valueOf(offer.getExperience()), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier));
     }
 
     @Override
@@ -35,7 +35,7 @@ public class ExperienceOfferDescription extends OfferDescription<ExperienceOffer
         } else {
             itemStack = null;
         }
-        return ItemStackUtils.argument(itemStack, "%player%", holder.getOtherTrader().getName(), "%levels%", String.valueOf(offer.getExperience()));
+        return ItemStackUtils.argument(itemStack, "%player%", holder.getOtherTrader().getName(), "%experience%", String.valueOf(offer.getExperience()));
     }
 
     @Override
