@@ -1,6 +1,6 @@
-package me.josvth.trade.offer;
+package me.josvth.trade.transaction.offer;
 
-import me.josvth.trade.offer.description.ExperienceOfferDescription;
+import me.josvth.trade.transaction.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.util.ExperienceManager;

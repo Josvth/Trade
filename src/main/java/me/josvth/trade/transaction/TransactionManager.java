@@ -1,6 +1,7 @@
 package me.josvth.trade.transaction;
 
 import me.josvth.trade.Trade;
+import me.josvth.trade.transaction.action.EndAction;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -33,9 +34,7 @@ public class TransactionManager {
 
     public void unload() {
         for (Transaction transaction : new LinkedHashSet<Transaction>(transactions.values())) {
-            transaction.stop(false);
-            transaction.getTraderA().getFormattedMessage("cancelled.reload").send(transaction.getTraderA().getPlayer());
-            transaction.getTraderB().getFormattedMessage("cancelled.reload").send(transaction.getTraderB().getPlayer());
+            new EndAction(transaction, EndAction.Reason.RELOAD).execute();
         }
         transactions.clear();
     }
@@ -51,10 +50,14 @@ public class TransactionManager {
     public Transaction createTransaction(String playerA, String playerB) {
 
         Transaction transaction = removeTransaction(playerA);
-        if (transaction != null) transaction.cancel();
+        if (transaction != null) {
+            new EndAction(transaction, EndAction.Reason.GENERIC).execute();
+        }
 
         transaction = removeTransaction(playerB);
-        if (transaction != null) transaction.cancel();
+        if (transaction != null) {
+            new EndAction(transaction, EndAction.Reason.GENERIC).execute();
+        }
 
         transaction = new Transaction(this, plugin.getLayoutManager().getLayout(playerA, playerB), playerA, playerB);
 
@@ -83,6 +86,5 @@ public class TransactionManager {
     private Transaction removeTransaction(String player) {
         return transactions.remove(player);
     }
-
 
 }

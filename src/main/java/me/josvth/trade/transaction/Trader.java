@@ -1,7 +1,8 @@
 package me.josvth.trade.transaction;
 
 import me.josvth.bukkitformatlibrary.message.FormattedMessage;
-import me.josvth.trade.offer.OfferList;
+import me.josvth.trade.transaction.action.ActionExecutor;
+import me.josvth.trade.transaction.offer.OfferList;
 import me.josvth.trade.transaction.inventory.Layout;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.slot.AcceptSlot;
@@ -9,7 +10,7 @@ import me.josvth.trade.transaction.inventory.slot.StatusSlot;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class Trader {
+public class Trader implements ActionExecutor {
 
     private final Transaction transaction;
     private final String name;
@@ -19,6 +20,8 @@ public class Trader {
     private final TransactionHolder holder;
 
     private Trader other;
+
+    private State state = State.IN_GUI;
 
     private boolean accepted = false;
     private boolean refused = false;
@@ -76,61 +79,12 @@ public class Trader {
         this.accepted = accepted;
     }
 
-    public void accept() {
-
-        if (!hasAccepted()) {
-
-            setAccepted(true);
-
-            getFormattedMessage("accepted.self").send(getPlayer());
-            holder.getOtherTrader().getFormattedMessage("accepted.other").send(getOtherTrader().getPlayer(), "%player%", getPlayer().getName());
-
-            AcceptSlot.updateAcceptSlots(holder, true);
-            StatusSlot.updateStatusSlots(holder.getOtherHolder(), true);
-
-            if (getOtherTrader().hasAccepted()) {
-                holder.getTransaction().stop(true);
-            }
-
-        }
-
-    }
-
-    public void deny() {
-
-        if (hasAccepted()) {
-            setAccepted(false);
-
-            getFormattedMessage("denied.self").send(getPlayer());
-            getOtherTrader().getFormattedMessage("denied.other").send(getOtherTrader().getPlayer(), "%player%", getPlayer().getName());
-
-            AcceptSlot.updateAcceptSlots(holder, true);
-            StatusSlot.updateStatusSlots(holder.getOtherHolder(), true);
-        }
-
-    }
-
     public boolean hasRefused() {
         return refused;
     }
 
     public void setRefused(boolean refused) {
         this.refused = refused;
-    }
-
-    public void refuse() {
-
-        if (!hasRefused()) {
-
-            setRefused(true);
-
-            getFormattedMessage("refused.self").send(getPlayer());
-            getOtherTrader().getFormattedMessage("refused.other").send(getOtherTrader().getPlayer(), "%player%", holder.getTrader().getName());
-
-            getTransaction().stop(false);
-
-        }
-
     }
 
     public void cancelAccept() {
@@ -164,6 +118,15 @@ public class Trader {
         return getLayout().hasMessage(key);
     }
 
+    public void setState(State state) {
+        this.state = state;
+    }
 
+    public State getState() {
+        return state;
+    }
 
+    public enum State {
+        IN_GUI, ROAMING;
+    }
 }

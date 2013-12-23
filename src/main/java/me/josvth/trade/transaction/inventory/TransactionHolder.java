@@ -1,16 +1,16 @@
 package me.josvth.trade.transaction.inventory;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.offer.*;
+import me.josvth.trade.transaction.action.CloseAction;
+import me.josvth.trade.transaction.action.RefuseAction;
+import me.josvth.trade.transaction.offer.*;
 import me.josvth.trade.transaction.Trader;
 
 import me.josvth.trade.transaction.Transaction;
-import me.josvth.trade.transaction.TransactionStage;
 import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
 import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.inventory.slot.TradeSlot;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -163,15 +163,17 @@ public class TransactionHolder implements InventoryHolder {
 	}
 
 	public void onClose(InventoryCloseEvent event) {
-		if (getTransaction().getStage() == TransactionStage.IN_PROGRESS) {
+		if (getTransaction().getStage() == Transaction.Stage.IN_PROGRESS) {
 			if (getTransaction().getManager().getOptions().allowInventoryClosing()) {
-                getTrader().getFormattedMessage("closed-inventory.self").send(getTrader().getPlayer());
-                getOtherTrader().getFormattedMessage("closed-inventory.other").send(getOtherTrader().getPlayer(), "%player%", getTrader().getPlayer().getName());
+                new CloseAction(getTrader()).execute();
 			} else {
-                trader.refuse();
+                new RefuseAction(getTrader()).execute();
             }
 		}
 	}
 
+    public boolean hasViewers() {
+        return (getInventory().getViewers() != null && getInventory().getViewers().size() > 0);
+    }
 }
 

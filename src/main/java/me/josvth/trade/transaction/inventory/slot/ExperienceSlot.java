@@ -1,8 +1,8 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.offer.ExperienceOffer;
-import me.josvth.trade.offer.OfferList;
+import me.josvth.trade.transaction.offer.ExperienceOffer;
+import me.josvth.trade.transaction.offer.OfferList;
 import me.josvth.trade.tasks.ExperienceSlotUpdateTask;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.util.ItemStackUtils;

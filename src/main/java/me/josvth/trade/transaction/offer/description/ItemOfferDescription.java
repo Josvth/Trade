@@ -1,8 +1,7 @@
-package me.josvth.trade.offer.description;
+package me.josvth.trade.transaction.offer.description;
 
-import me.josvth.trade.offer.ItemOffer;
-import me.josvth.trade.offer.OfferList;
-import org.bukkit.entity.Item;
+import me.josvth.trade.transaction.offer.ItemOffer;
+import me.josvth.trade.transaction.offer.OfferList;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemOfferDescription extends OfferDescription<ItemOffer> {

@@ -1,127 +1,137 @@
 package me.josvth.trade.transaction;
 
 import me.josvth.trade.Trade;
+import me.josvth.trade.transaction.action.Action;
+import me.josvth.trade.transaction.action.ActionExecutor;
 import me.josvth.trade.transaction.inventory.Layout;
 
 public class Transaction {
 
-	private final TransactionManager manager;
+    private final TransactionManager manager;
 
-	private final Layout layout;
+    private final Layout layout;
 
-	private final Trader traderA;
-	private final Trader traderB;
+    private final Trader traderA;
+    private final Trader traderB;
 
-	private TransactionStage stage = TransactionStage.PRE;
+    private Transaction.Stage stage = Transaction.Stage.PRE;
+    private TransactionExecutor transactionExecutor = new TransactionExecutor();
 
-	public Transaction(TransactionManager manager, Layout layout, String playerA, String playerB) {
+    public Transaction(TransactionManager manager, Layout layout, String playerA, String playerB) {
 
-		this.manager = manager;
-	   	this.layout = layout;
+        this.manager = manager;
+        this.layout = layout;
 
-		traderA = new Trader(this, playerA, layout.getOfferSize());
-		traderB = new Trader(this, playerB, layout.getOfferSize());
+        traderA = new Trader(this, playerA, layout.getOfferSize());
+        traderB = new Trader(this, playerB, layout.getOfferSize());
 
-		traderA.setOther(traderB);
-		traderB.setOther(traderA);
-	}
+        traderA.setOther(traderB);
+        traderB.setOther(traderA);
+    }
 
-	public TransactionManager getManager() {
-		return manager;
-	}
+    public TransactionManager getManager() {
+        return manager;
+    }
 
-	public Trade getPlugin() {
-		return manager.getPlugin();
-	}
+    public Trade getPlugin() {
+        return manager.getPlugin();
+    }
 
-	public Trader getTraderA() {
-		return traderA;
-	}
+    public Trader getTraderA() {
+        return traderA;
+    }
 
-	public Trader getTraderB() {
-		return traderB;
-	}
+    public Trader getTraderB() {
+        return traderB;
+    }
 
-	public Trader getTrader(String playerName) {
-		if (traderA.getName().equals(playerName))
-			return traderA;
-		if (traderB.getName().equals(playerName))
-			return traderB;
-		throw new IllegalArgumentException("Player " + playerName + " is not participating in this trade or went offline.");
-	}
+    public Trader getTrader(String playerName) {
+        if (traderA.getName().equals(playerName))
+            return traderA;
+        if (traderB.getName().equals(playerName))
+            return traderB;
+        throw new IllegalArgumentException("Player " + playerName + " is not participating in this trade or went offline.");
+    }
 
-	public Layout getLayout() {
-		return layout;
-	}
+    public Layout getLayout() {
+        return layout;
+    }
 
-	public TransactionStage getStage() {
-		return stage;
-	}
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
 
-	public boolean isStarted() {
-		return stage == TransactionStage.IN_PROGRESS;
-	}
+    public Transaction.Stage getStage() {
+        return stage;
+    }
 
-	public boolean hasEnded() {
-	 	return stage == TransactionStage.POST;
-	}
+    public boolean isStarted() {
+        return stage == Transaction.Stage.IN_PROGRESS;
+    }
 
-	public void start() {
+    public boolean hasEnded() {
+        return stage == Transaction.Stage.POST;
+    }
 
-		if (isStarted()) {
-			throw new IllegalArgumentException("Cannot start an already started transaction");
-		}
+    public void start() {
 
-		if (hasEnded()) {
-			throw new IllegalArgumentException("Cannot start an ended transaction");
-		}
+        if (isStarted()) {
+            throw new IllegalArgumentException("Cannot start an already started transaction");
+        }
 
-		if (layout == null) {
-			throw new IllegalStateException("Cannot start transaction without an layout.");
-		}
+        if (hasEnded()) {
+            throw new IllegalArgumentException("Cannot start an ended transaction");
+        }
 
-		if (manager.isInTransaction(traderA.getName()) || manager.isInTransaction(traderB.getName())) {
-			throw new IllegalArgumentException("One of the traders is already trading!");
-		}
+        if (layout == null) {
+            throw new IllegalStateException("Cannot start transaction without an layout.");
+        }
 
-		manager.addTransaction(this);
+        if (manager.isInTransaction(traderA.getName()) || manager.isInTransaction(traderB.getName())) {
+            throw new IllegalArgumentException("One of the traders is already trading!");
+        }
 
-		stage = TransactionStage.IN_PROGRESS;
+        manager.addTransaction(this);
 
-		traderA.openInventory();
-		traderB.openInventory();
+        stage = Transaction.Stage.IN_PROGRESS;
 
-	}
+        traderA.openInventory();
+        traderB.openInventory();
 
-	public void stop(boolean success) {
+    }
 
-		if (!isStarted()) {
-			throw new IllegalArgumentException("Cannot stop a non started transaction");
-		}
+    public void stop() {
 
-		if (hasEnded()) {
-			throw new IllegalArgumentException("Cannot stop an ended transaction");
-		}
+        stage = Transaction.Stage.POST;
 
-		if (success) {
-			traderA.getOffers().grant(traderB);
-			traderB.getOffers().grant(traderA);
-		} else {
-			traderA.getOffers().grant(traderA);
-			traderB.getOffers().grant(traderB);
-		}
+        manager.removeTransaction(this);
 
-		stage = TransactionStage.POST;
+    }
 
-		manager.removeTransaction(this);
+    public boolean useLogging() {
+        return false;
+    }
 
-		traderA.closeInventory();
-		traderB.closeInventory();
+    public void logAction(Action action) {
 
-	}
+    }
 
-	public void cancel() {
-		stop(false);
-	}
+    public TransactionExecutor getTransactionExecutor() {
+        return transactionExecutor;
+    }
 
+    private class TransactionExecutor implements ActionExecutor {
+
+        @Override
+        public String getName() {
+            return "TRANSACTION";
+        }
+
+    }
+
+    public enum Stage {
+        PRE,
+        IN_PROGRESS,
+        POST;
+    }
 }

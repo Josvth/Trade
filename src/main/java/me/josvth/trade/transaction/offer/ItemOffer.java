@@ -1,15 +1,11 @@
-package me.josvth.trade.offer;
+package me.josvth.trade.transaction.offer;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.offer.description.ExperienceOfferDescription;
-import me.josvth.trade.offer.description.ItemOfferDescription;
+import me.josvth.trade.transaction.offer.description.ItemOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.inventory.slot.AcceptSlot;
 import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
-import me.josvth.trade.transaction.inventory.slot.StatusSlot;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;

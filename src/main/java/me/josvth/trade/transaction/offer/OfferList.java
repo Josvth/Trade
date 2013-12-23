@@ -1,4 +1,4 @@
-package me.josvth.trade.offer;
+package me.josvth.trade.transaction.offer;
 
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;

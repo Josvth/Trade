@@ -3,6 +3,8 @@ package me.josvth.trade.transaction.inventory.slot;
 import me.josvth.trade.Trade;
 import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.Trader;
+import me.josvth.trade.transaction.action.AcceptAction;
+import me.josvth.trade.transaction.action.DenyAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -29,9 +31,9 @@ public class AcceptSlot extends Slot {
         final Trader trader = holder.getTrader();
 
         if (trader.hasAccepted()) {
-            trader.deny();
+            new AcceptAction(trader, AcceptAction.Method.BUTTON).execute();
         } else {
-            trader.accept();
+            new DenyAction(trader, DenyAction.Method.BUTTON).execute();
         }
 
 		event.setCancelled(true);

@@ -1,6 +1,6 @@
 package me.josvth.trade.transaction;
 
-import me.josvth.bukkitformatlibrary.message.MessageHolder;
+import me.josvth.trade.transaction.action.RefuseAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -49,7 +49,7 @@ public class TransactionListener implements Listener {
 
         final Trader trader = transaction.getTrader(event.getPlayer().getName());
 
-        transaction.stop(false);
+        new RefuseAction(trader, RefuseAction.Method.DISCONNECT);
 
         trader.getFormattedMessage("disconnect.self").send(trader.getPlayer());
         trader.getOtherTrader().getFormattedMessage("disconnect.other").send(trader.getOtherTrader().getPlayer(), "%player%", event.getPlayer().getName());

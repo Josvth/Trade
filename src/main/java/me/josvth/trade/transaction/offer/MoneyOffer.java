@@ -1,12 +1,9 @@
-package me.josvth.trade.offer;
+package me.josvth.trade.transaction.offer;
 
-import me.josvth.trade.offer.description.ExperienceOfferDescription;
-import me.josvth.trade.offer.description.MoneyOfferDescription;
+import me.josvth.trade.transaction.offer.description.MoneyOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class MoneyOffer extends Offer {
 
