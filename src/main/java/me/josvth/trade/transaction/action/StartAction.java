@@ -6,7 +6,7 @@ import me.josvth.trade.transaction.TransactionManager;
 public class StartAction extends Action {
 
     public StartAction(Transaction transaction) {
-        super(transaction, transaction.getTransactionExecutor());
+        super(transaction.getTransactionProvoker());
     }
 
     private TransactionManager getManager() {
@@ -44,5 +44,6 @@ public class StartAction extends Action {
         }
 
     }
+
 
 }

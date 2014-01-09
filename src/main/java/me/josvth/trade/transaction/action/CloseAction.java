@@ -13,8 +13,8 @@ public class CloseAction extends TraderAction {
 
         if (getTrader().getState() != Trader.State.ROAMING) {
 
-            getTrader().getFormattedMessage("closed-inventory.self").send(getTrader().getPlayer());
-            getTrader().getOtherTrader().getFormattedMessage("closed-inventory.other").send(getTrader().getOtherTrader().getPlayer(), "%player%", getTrader().getPlayer().getName());
+            getTrader().getFormattedMessage("closed-inventory.self").send(getPlayer());
+            getOtherTrader().getFormattedMessage("closed-inventory.other").send(getOtherTrader().getPlayer(), "%player%", getPlayer().getName());
 
             getTrader().setState(Trader.State.ROAMING);
 

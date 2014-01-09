@@ -8,13 +8,13 @@ public class AcceptAction extends TraderAction {
 
     private final Method method;
 
-    public AcceptAction(Trader trader) {
-        super(trader);
+    public AcceptAction(ActionProvoker provoker, Trader trader) {
+        super(provoker, trader);
         method = Method.GENERIC;
     }
 
     public AcceptAction(Trader trader, Method method) {
-        super(trader);
+        super(trader, trader);  // TODO Correctly handle provoker
         this.method = method;
     }
 
@@ -25,8 +25,8 @@ public class AcceptAction extends TraderAction {
 
             getTrader().setAccepted(true);
 
-            getTrader().getFormattedMessage(method.messagePath).send(getTrader().getPlayer());
-            getTrader().getOtherTrader().getFormattedMessage(method.mirrorMessagePath).send(getTrader().getOtherTrader().getPlayer(), "%player%", getTrader().getName());
+            getTrader().getFormattedMessage(method.messagePath).send(getPlayer());
+            getOtherTrader().getFormattedMessage(method.mirrorMessagePath).send(getOtherTrader().getPlayer(), "%player%", getTrader().getName());
 
             if (getTrader().getHolder().hasViewers()) {
                 AcceptSlot.updateAcceptSlots(getTrader().getHolder(), true);
@@ -37,12 +37,17 @@ public class AcceptAction extends TraderAction {
                 getTransaction().logAction(this);
             }
 
-            if (getTrader().getOtherTrader().hasAccepted()) {
+            if (getOtherTrader().hasAccepted()) {
                 new EndAction(getTransaction(), EndAction.Reason.ACCEPT).execute();
             }
 
         }
 
+    }
+
+    @Override
+    public String getLogMessage() {
+        return null;
     }
 
 

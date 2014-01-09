@@ -4,22 +4,26 @@ import me.josvth.trade.transaction.Transaction;
 
 public abstract class Action {
 
-    private final Transaction transaction;
-    private final ActionExecutor executor;
+    private final ActionProvoker provoker;
 
-    public Action(Transaction transaction, ActionExecutor executor) {
-        this.transaction = transaction;
-        this.executor = executor;
+    public Action(ActionProvoker provoker) {
+        this.provoker = provoker;
     }
 
     public Transaction getTransaction() {
-        return transaction;
+        return provoker.getTransaction();
     }
 
-    public ActionExecutor getExecutor() {
-        return executor;
+    public ActionProvoker getProvoker() {
+        return provoker;
     }
 
     public abstract void execute();
+
+    public abstract String getLogMessage();
+
+    public int getAmount() {
+        return 0;
+    }
 
 }

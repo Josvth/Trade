@@ -9,38 +9,20 @@ import org.bukkit.inventory.ItemStack;
 
 public abstract class Offer {
 
-	protected final OfferList list;
-   	protected final int offerIndex;
-
-	public Offer(OfferList list, int offerIndex) {
-		this.list = list;
-		this.offerIndex = offerIndex;
-	}
-
-    public OfferDescription<? extends Offer> getDescription() {
-        return list.getTrader().getLayout().getOfferDescription(this.getClass());
+    public OfferDescription<? extends Offer> getDescription(Trader trader) {
+        return trader.getLayout().getOfferDescription(this.getClass());
     }
 
-    public abstract ItemStack createItem();
+    public abstract String getType();
+
+    public abstract ItemStack createItem(TransactionHolder holder);
 
     public abstract ItemStack createMirror(TransactionHolder holder);
-
-	public double getAmount() {
-		return 0;
-	}
-
-	public boolean isFull() {
-		return false;
-	}
-
-	public boolean isWorthless() {
-		return getAmount() == 0.0;
-	}
 
 	public abstract void grant(Trader trader);
 
 	// Event handling
-	public void onClick(InventoryClickEvent event) {
+	public void onClick(InventoryClickEvent event, int offerIndex) {
 
 	}
 
@@ -48,7 +30,7 @@ public abstract class Offer {
 		return false;
 	}
 
-	public void onDrag(int slot, InventoryDragEvent event) {
+    public void onDrag(InventoryDragEvent event, int offerIndex, int slotIndex) {
 
 	}
 

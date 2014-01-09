@@ -7,12 +7,12 @@ public class EndAction extends Action {
     private final Reason reason;
 
     public EndAction(Transaction transaction) {
-        super(transaction, transaction.getTransactionExecutor());
+        super(transaction, transaction.getTransactionProvoker());
         this.reason = Reason.GENERIC;
     }
 
     public EndAction(Transaction transaction, Reason reason) {
-        super(transaction, transaction.getTransactionExecutor());
+        super(transaction, transaction.getTransactionProvoker());
         this.reason = reason;
     }
 
@@ -44,6 +44,12 @@ public class EndAction extends Action {
         getTransaction().stop();
 
     }
+
+    @Override
+    public String getLogMessage() {
+        return null;
+    }
+
 
     public enum Reason {
 

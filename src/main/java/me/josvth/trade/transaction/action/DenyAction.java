@@ -25,8 +25,8 @@ public class DenyAction extends TraderAction {
 
             getTrader().setAccepted(false);
 
-            getTrader().getFormattedMessage(method.messagePath).send(getTrader().getPlayer());
-            getTrader().getOtherTrader().getFormattedMessage(method.mirrorMessagePath).send(getTrader().getOtherTrader().getPlayer(), "%player%", getTrader().getName());
+            getTrader().getFormattedMessage(method.messagePath).send(getPlayer());
+            getOtherTrader().getFormattedMessage(method.mirrorMessagePath).send(getOtherTrader().getPlayer(), "%player%", getTrader().getName());
 
             if (getTrader().getHolder().hasViewers()) {
                 AcceptSlot.updateAcceptSlots(getTrader().getHolder(), true);

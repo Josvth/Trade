@@ -1,6 +1,7 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
+import me.josvth.trade.transaction.action.ChangeExperienceAction;
 import me.josvth.trade.transaction.offer.ExperienceOffer;
 import me.josvth.trade.transaction.offer.OfferList;
 import me.josvth.trade.tasks.ExperienceSlotUpdateTask;
@@ -35,13 +36,9 @@ public class ExperienceSlot extends Slot {
         final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
         if (event.isLeftClick()) {
-
-            holder.getOffers().addExperience(event.isShiftClick()? largeModifier : smallModifier);
-
+            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), event.isShiftClick() ? smallModifier : largeModifier);
         } else if (event.isRightClick()) {
-
-            holder.getOffers().removeExperience(event.isShiftClick()? largeModifier : smallModifier);
-
+            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), -1*(event.isShiftClick() ? smallModifier : largeModifier));
         }
 
     }
@@ -58,7 +55,7 @@ public class ExperienceSlot extends Slot {
     private static int getExperience(OfferList list) {
         int experience = 0;
         for (ExperienceOffer tradeable : list.getOfClass(ExperienceOffer.class).values()) {
-            experience += tradeable.getExperience();
+            experience += tradeable.getAmount();
         }
         return experience;
     }

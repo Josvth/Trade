@@ -1,5 +1,6 @@
 package me.josvth.trade.transaction.offer;
 
+import me.josvth.trade.transaction.action.ChangeExperienceAction;
 import me.josvth.trade.transaction.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
@@ -7,62 +8,61 @@ import me.josvth.trade.util.ExperienceManager;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class ExperienceOffer extends Offer {
+public class ExperienceOffer extends StackableOffer {
 
     private int experience = 0;
 
-    public ExperienceOffer(OfferList list, int offerID) {
-        super(list, offerID);
+    public ExperienceOffer() {
+        this(0);
+    }
+
+    public ExperienceOffer(int experience) {
+        this.experience = experience;
     }
 
     @Override
-    public ExperienceOfferDescription getDescription() {
-       return (ExperienceOfferDescription) super.getDescription();
+    public String getType() {
+        return null;
     }
 
     @Override
-    public ItemStack createItem() {
-        return getDescription().createItem(this);
+    public ExperienceOfferDescription getDescription(Trader trader) {
+       return (ExperienceOfferDescription) super.getDescription(trader);
+    }
+
+    @Override
+    public ItemStack createItem(TransactionHolder holder) {
+        return getDescription(holder.getTrader()).createItem(this);
     }
 
     @Override
     public ItemStack createMirror(TransactionHolder holder) {
-        return getDescription().createMirrorItem(this, holder);
+        return getDescription(holder.getTrader()).createMirrorItem(this, holder);
     }
 
-    public int add(int amount) {
-        final int remainder = experience + amount - 64; // TODO Remove hard coded 64
-        if (remainder > 0) {
-            experience = 64;
-            return remainder;
-        } else {
-            experience = experience + amount;
-            return 0;
-        }
-    }
-
-    public int remove(int amount) {
-        final int remainder = experience - amount;
-        if (remainder > 0) {
-            experience = remainder;
-            return 0;
-        } else {
-            experience = 0;
-            return -1 * remainder;
-        }
-    }
-
-    public int getExperience() {
+    @Override
+    public int getAmount() {
         return experience;
     }
 
-    public void setExperience(int experience) {
-        this.experience = experience;
+    @Override
+    public void setAmount(int amount) {
+        this.experience = amount;
+    }
+
+    @Override
+    public int getMaxAmount() {
+        return 64;
     }
 
     @Override
     public boolean isWorthless() {
         return experience <= 0;
+    }
+
+    @Override
+    public ExperienceOffer clone() {
+        return new ExperienceOffer(experience);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class ExperienceOffer extends Offer {
     }
 
     @Override
-    public void onClick(InventoryClickEvent event) {
+    public void onClick(InventoryClickEvent event, int offerIndex) {
 
 		// We always cancel the event.
 		event.setCancelled(true);
@@ -83,13 +83,9 @@ public class ExperienceOffer extends Offer {
 		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
         if (event.isLeftClick()) {
-
-            holder.getOffers().addExperience(event.isShiftClick()?  getDescription().getLargeModifier() : getDescription().getSmallModifier());
-
+            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), event.isShiftClick() ? getDescription(holder.getTrader()).getLargeModifier() : getDescription(holder.getTrader()).getSmallModifier());
         } else if (event.isRightClick()) {
-
-            holder.getOffers().removeExperience(event.isShiftClick()?  getDescription().getLargeModifier() : getDescription().getSmallModifier());
-
+            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), -1*(event.isShiftClick() ? getDescription(holder.getTrader()).getLargeModifier() : getDescription(holder.getTrader()).getSmallModifier()));
         }
 
     }

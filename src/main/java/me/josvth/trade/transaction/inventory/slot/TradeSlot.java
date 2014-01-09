@@ -56,7 +56,7 @@ public class TradeSlot extends Slot {
 					throw new IllegalStateException("Not handled action: " + event.getAction().name());
 			}
 
-			holder.getOffers().set(offerIndex, (newItem == null)? null : holder.getOffers().createItemOffer(offerIndex, newItem));
+			holder.getOffers().set(offerIndex, (newItem == null)? null : holder.getOffers().createItemOffer(newItem));
 
             // Cancels the other players accept if he had accepted
             holder.getOtherTrader().cancelAccept();
@@ -65,7 +65,7 @@ public class TradeSlot extends Slot {
 
 		} else {
 
-			offer.onClick(event);
+			offer.onClick(event, offerIndex);
 
 		}
 
@@ -79,10 +79,10 @@ public class TradeSlot extends Slot {
 		final Offer offer = getSlotContents(holder);
 
 		if (offer != null) {
-			offer.onDrag(slot, event);
+			offer.onDrag(event, offerIndex, slot);
 		} else if (event.getNewItems().containsKey(slot)) {
 
-			holder.getOffers().set(offerIndex, holder.getOffers().createItemOffer(offerIndex, event.getNewItems().get(slot).clone()));
+			holder.getOffers().set(offerIndex, holder.getOffers().createItemOffer(event.getNewItems().get(slot).clone()));
 
             // Cancels the other players accept if he had accepted
             holder.getOtherTrader().cancelAccept();
@@ -99,7 +99,7 @@ public class TradeSlot extends Slot {
 		final Offer offer = getSlotContents(holder);
 
 		if (offer != null) {
-			holder.getInventory().setItem(slot, offer.createItem());
+			holder.getInventory().setItem(slot, offer.createItem(holder));
 		} else {
 			holder.getInventory().setItem(slot, null);
 		}

@@ -2,7 +2,7 @@ package me.josvth.trade.transaction;
 
 import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.action.Action;
-import me.josvth.trade.transaction.action.ActionExecutor;
+import me.josvth.trade.transaction.action.ActionProvoker;
 import me.josvth.trade.transaction.inventory.Layout;
 
 public class Transaction {
@@ -15,7 +15,7 @@ public class Transaction {
     private final Trader traderB;
 
     private Transaction.Stage stage = Transaction.Stage.PRE;
-    private TransactionExecutor transactionExecutor = new TransactionExecutor();
+    private TransactionActionProvoker transactionProvoker = new TransactionActionProvoker(this);
 
     public Transaction(TransactionManager manager, Layout layout, String playerA, String playerB) {
 
@@ -116,11 +116,22 @@ public class Transaction {
 
     }
 
-    public TransactionExecutor getTransactionExecutor() {
-        return transactionExecutor;
+    public TransactionActionProvoker getTransactionProvoker() {
+        return transactionProvoker;
     }
 
-    private class TransactionExecutor implements ActionExecutor {
+    private class TransactionActionProvoker implements ActionProvoker {
+
+        private final Transaction transaction;
+
+        private TransactionActionProvoker(Transaction transaction) {
+            this.transaction = transaction;
+        }
+
+        @Override
+        public Transaction getTransaction() {
+            return transaction;
+        }
 
         @Override
         public String getName() {

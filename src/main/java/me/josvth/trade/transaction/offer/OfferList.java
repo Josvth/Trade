@@ -64,6 +64,20 @@ public class OfferList {
 
 	}
 
+    public TreeMap<Integer, Offer> getOfType(String type) {
+
+        final TreeMap<Integer, Offer> found = new TreeMap<Integer, Offer>();
+
+        for (int i = 0; i < offers.length; i++) {
+            if (type.equalsIgnoreCase(offers[i].getType())) {
+                found.put(i, offers[i]);
+            }
+        }
+
+        return found;
+
+    }
+
 	public int getFirstEmpty() {
 		for (int i = 0; i < offers.length; i++) {
 			if (offers[i] == null) {
@@ -81,181 +95,210 @@ public class OfferList {
 		}
 	}
 
-    public void addExperience(int experience) {
+    public boolean addOffer(Offer offer) {
 
-        final ExperienceManager expManager = new ExperienceManager(getTrader().getPlayer());
+        boolean complete = false;   // true if the whole amount could be added
 
-        if (!expManager.hasExp(experience)) {
-            trader.getFormattedMessage("experience.insufficient").send(getTrader().getPlayer(), "%experience%", String.valueOf(experience));
-            return;
-        }
+        if (offer instanceof StackableOffer) {
 
-        final LinkedList<Integer> changedIndexes = new LinkedList<Integer>();
+            StackableOffer stackableOffer = (StackableOffer) offer;
 
-        // First we try and fill up existing experience offers
-        final Iterator<Map.Entry<Integer, ExperienceOffer>> iterator = getOfClass(ExperienceOffer.class).entrySet().iterator();
+            System.out.print(stackableOffer.getClass());
 
-        int remaining = experience;
+            // We keep a list of changed offer indexes so we can update the slots later
+            final LinkedList<Integer> changedIndexes = new LinkedList<Integer>();
 
-        int currentLevels = 0;
+            // First we try and fill up existing offers
+            final Iterator<? extends Map.Entry<Integer,? extends StackableOffer>> iterator = getOfClass(stackableOffer.getClass()).entrySet().iterator();
 
-        while (iterator.hasNext()) {
+            int currentAmount = 0;  // At the moment only used by experience items
 
-            final Map.Entry<Integer, ExperienceOffer> entry = iterator.next();
+            while (iterator.hasNext()) {
 
-            // Meanwhile we count the current levels we add our addition later
-            currentLevels += entry.getValue().getExperience();
+                final Map.Entry<Integer, ? extends StackableOffer> entry = iterator.next();
 
-            if (experience > 0) {
+                if (stackableOffer.getAmount() > 0) {
 
-                final int overflow = entry.getValue().add(experience);
+                    final int overflow = entry.getValue().add(stackableOffer.getAmount());
 
-                // If we have added something change the remaining levels and add this slot to the changed indexes
-                if (overflow < remaining) {
-                    changedIndexes.add(entry.getKey());
-                    remaining = overflow;
+                    // If we have added something change the remaining levels and add this slot to the changed indexes
+                    if (overflow < stackableOffer.getAmount()) {
+                        changedIndexes.add(entry.getKey());
+                        stackableOffer.setAmount(overflow);
+                    }
+
+                }
+
+                currentAmount += entry.getValue().getAmount();  // We count the total amount currently offered
+
+            }
+
+            // Next put the remaining levels in empty offer slots
+            if (stackableOffer.getAmount() > 0) {
+
+                int firstEmpty = getFirstEmpty();
+
+                while (stackableOffer.getAmount() > 0 && firstEmpty != -1) {
+
+                    final int overflow = stackableOffer.getAmount() - stackableOffer.getMaxAmount();
+
+                    if (overflow <= 0) {
+
+                        set(firstEmpty, stackableOffer.clone());
+                        currentAmount += stackableOffer.getAmount();
+
+                        stackableOffer.setAmount(0); // Set the amount to 0 to make the user know there's nothing left
+                        complete = true;
+
+                        firstEmpty = -1; // End the loop
+
+                    } else {
+
+                        // We fill the slot up with a full stack of the offer
+                        final StackableOffer fullStack = stackableOffer.clone();
+                        fullStack.setAmount(stackableOffer.getMaxAmount());
+
+                        set(firstEmpty, fullStack);
+                        currentAmount += fullStack.getMaxAmount();
+
+                        stackableOffer.setAmount(-1 * overflow);
+
+                        firstEmpty = getFirstEmpty();
+
+                    }
+
+                    changedIndexes.add(firstEmpty);
+
                 }
 
             }
 
-        }
+            // If we changed anything we update the holder and mirror
+            if (!changedIndexes.isEmpty()) {
 
-        // Next put the remaining levels in empty offer slots
-        if (remaining > 0) {
+                // We place our changed indexes into an array
+                final int[] indexesArray = new int[changedIndexes.size()];
 
-            int firstEmpty = getFirstEmpty();
-
-            while (remaining > 0 && firstEmpty != -1) {
-
-                final int overflow = remaining - 64;
-
-                if (overflow <= 0) {
-                    set(firstEmpty, createExperienceOffer(firstEmpty, experience));
-                    remaining = 0;
-                } else {
-                    set(firstEmpty, createExperienceOffer(firstEmpty, 64));
-                    remaining = -1 * overflow;
-                    firstEmpty = getFirstEmpty();
+                int i = 0;
+                for (int index : changedIndexes) {
+                    indexesArray[i] = index;
+                    i++;
                 }
 
-                changedIndexes.add(firstEmpty);
+                TradeSlot.updateTradeSlots(getHolder(), true, indexesArray);
+                MirrorSlot.updateMirrors(getHolder().getOtherHolder(), true, indexesArray);
 
+                if (stackableOffer instanceof ExperienceOffer) {
+                    ExperienceSlot.updateExperienceSlots(getHolder(), true, currentAmount);
+                }
+
+            }
+
+        } else {
+
+            final int empty = getFirstEmpty();
+
+            if (empty != -1) {
+                set(empty, offer);
+                TradeSlot.updateTradeSlots(getHolder(), true, empty);
+                MirrorSlot.updateMirrors(getHolder().getOtherHolder(), true, empty);
+                complete = true;
             }
 
         }
 
-        // Calculated add experience
-        final int added = experience - remaining;
+        return complete;
 
-        // If we changed anything we update the holder and mirror
-        if (!changedIndexes.isEmpty()) {
+    }
 
-            // We place our changed indexes into an array
-            final int[] indexesArray = new int[changedIndexes.size()];
+    public boolean removeOffer(Offer offer) {
 
-            int i = 0;
-            for (int index : changedIndexes) {
-                indexesArray[i] = index;
-                i++;
+        boolean complete = false;   // true if the whole amount could be removed
+
+        if (offer instanceof StackableOffer) {
+
+            final StackableOffer stackableOffer = (StackableOffer) offer;
+
+            // We keep a list of changed offer indexes so we can update the slots later
+            final LinkedList<Integer> changedIndexes = new LinkedList<Integer>();
+
+            // TODO lowest amount first
+            // First we try and remove from existing offers
+            final Iterator<? extends Map.Entry<Integer, ? extends StackableOffer>> iterator = getOfClass(stackableOffer.getClass()).entrySet().iterator();
+
+            int currentAmount = 0;  // At the moment only used by experience offers
+
+            while (iterator.hasNext()) {
+
+                final Map.Entry<Integer, ? extends StackableOffer> entry = iterator.next();
+
+                if (stackableOffer.getAmount() > 0)  {
+
+                    final int overflow = entry.getValue().remove(stackableOffer.getAmount());
+
+                    if (overflow < stackableOffer.getAmount()) {    // We only changed something if the overflow is smaller then the amount
+
+                        changedIndexes.add(entry.getKey());
+                        stackableOffer.setAmount(overflow);
+
+                        if (entry.getValue().getAmount() == 0) {    // If the amount of the changed offer is 0 we remove it
+                            set(entry.getKey(), null);
+                        }
+
+                    }
+
+                }
+
+                currentAmount += entry.getValue().getAmount();
+
             }
 
-            TradeSlot.updateTradeSlots(getHolder(), true, indexesArray);
-            MirrorSlot.updateMirrors(getHolder().getOtherHolder(), true, indexesArray);
-            ExperienceSlot.updateExperienceSlots(getHolder(), true, currentLevels + added);
+            // We set our boolean if we removed everything
+            complete = stackableOffer.getAmount() == 0;
+
+            // If we changed anything we update the holder and mirror
+            if (!changedIndexes.isEmpty()) {
+
+                // We place our changed indexes into an array
+                final int[] indexesArray = new int[changedIndexes.size()];
+
+                int i = 0;
+                for (int index : changedIndexes) {
+                    indexesArray[i] = index;
+                }
+
+                TradeSlot.updateTradeSlots(getHolder(), true, indexesArray);
+                MirrorSlot.updateMirrors(getHolder().getOtherHolder(), true, indexesArray);
+
+                if (stackableOffer instanceof ExperienceOffer) {
+                    ExperienceSlot.updateExperienceSlots(getHolder(), true, currentAmount);
+                }
+
+            }
+
+
+        } else {
+
+            final TreeMap<Integer, Offer> current = getOfType(offer.getType());
+
+            if (!current.isEmpty()) {
+                set(current.lastKey(), null);
+                TradeSlot.updateTradeSlots(getHolder(), true, current.lastKey());
+                MirrorSlot.updateMirrors(getHolder().getOtherHolder(), true, current.lastKey());
+                complete = true;
+            }
 
         }
 
-        // Take experience from player
-        expManager.changeExp(-1 * added);
-
-        trader.getFormattedMessage("experience.added.self").send(trader.getPlayer(), "%experience%", String.valueOf(added));
-        if (trader.getOtherTrader().hasFormattedMessage("experience.added.other")) {
-            trader.getOtherTrader().getFormattedMessage("experience.added.other").send(trader.getOtherTrader().getPlayer(), "%player%", trader.getName(), "%experience%", String.valueOf(added));
-        }
-
-        trader.getOtherTrader().cancelAccept();
+        return complete;
 
     }
 
-	public void removeExperience(int experience) {
-
-		final LinkedList<Integer> changedIndexes = new LinkedList<Integer>();
-
-		// TODO TAKE ACCOUNT OF ORDER
-		// First we try and remove from existing experience offers
-		final Iterator<Map.Entry<Integer, ExperienceOffer>> iterator = getOfClass(ExperienceOffer.class).entrySet().iterator();
-
-		int currentLevels = 0;
-
-        int remaining = experience;
-
-		while (iterator.hasNext()) {
-
-			final Map.Entry<Integer, ExperienceOffer> entry = iterator.next();
-
-            currentLevels += entry.getValue().getExperience();
-
-			if (remaining > 0)  {
-
-				final int overflow = entry.getValue().remove(remaining);
-
-				if (overflow < remaining) {
-					changedIndexes.add(entry.getKey());
-                    remaining = overflow;
-
-					// TODO What about this?
-					if (entry.getValue().getExperience() == 0) {
-						set(entry.getKey(), null);
-					}
-
-				}
-
-			}
-
-		}
-
-		// If we changed anything we update the holder and mirror
-		if (!changedIndexes.isEmpty()) {
-
-			// We place our changed indexes into an array
-			final int[] indexesArray = new int[changedIndexes.size()];
-
-			int i = 0;
-			for (int index : changedIndexes) {
-				indexesArray[i] = index;
-			}
-
-			TradeSlot.updateTradeSlots(getHolder(), true, indexesArray);
-			MirrorSlot.updateMirrors(getHolder().getOtherHolder(), true, indexesArray);
-			ExperienceSlot.updateExperienceSlots(getHolder(), true, currentLevels);
-
-		}
-
-        final int removedExperience = experience - remaining;
-
-        trader.getFormattedMessage("experience.removed.self").send(trader.getPlayer(), "%experience%", String.valueOf(removedExperience));
-
-        // Give the player experience
-        new ExperienceManager(getTrader().getPlayer()).changeExp(removedExperience);
-
-        if (trader.getOtherTrader().hasFormattedMessage("experience.removed.other") && removedExperience > 0) {
-            trader.getOtherTrader().getFormattedMessage("experience.removed.other").send(trader.getOtherTrader().getPlayer(), "%player%", trader.getName(), "%experience%", String.valueOf(removedExperience));
-        }
-
-        trader.getOtherTrader().cancelAccept();
-
-    }
-
-	public ExperienceOffer createExperienceOffer(int index, int levels) {
-		final ExperienceOffer offer = getTrader().getLayout().getOfferDescription(ExperienceOffer.class).createOffer(this, index);
-		offer.setExperience(levels);
-		return offer;
-	}
-
-    public ItemOffer createItemOffer(int index, ItemStack itemStack) {
-        final ItemOffer offer = getTrader().getLayout().getOfferDescription(ItemOffer.class).createOffer(this, index);
+    public ItemOffer createItemOffer(ItemStack itemStack) {
+        final ItemOffer offer = getTrader().getLayout().getOfferDescription(ItemOffer.class).createOffer();
         offer.setItem(itemStack);
         return offer;
     }
+
 
 }

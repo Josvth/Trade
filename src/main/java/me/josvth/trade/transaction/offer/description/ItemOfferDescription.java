@@ -15,8 +15,8 @@ public class ItemOfferDescription extends OfferDescription<ItemOffer> {
     }
 
     @Override
-    public ItemOffer createOffer(OfferList list, int offerIndex) {
-        return new ItemOffer(list, offerIndex);
+    public ItemOffer createOffer() {
+        return new ItemOffer();
     }
 
     @Override

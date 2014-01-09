@@ -16,7 +16,7 @@ public abstract class OfferDescription <T extends Offer>{
         return createItem(offer);
     }
 
-    public abstract T createOffer(OfferList list, int offerIndex);
+    public abstract T createOffer();
 
     public abstract Class<T> getOfferClass();
 

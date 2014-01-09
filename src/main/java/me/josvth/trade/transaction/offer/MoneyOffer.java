@@ -5,46 +5,64 @@ import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.inventory.ItemStack;
 
-public class MoneyOffer extends Offer {
+public class MoneyOffer extends StackableOffer {
 
 	private double amount = 0;
 
-	public MoneyOffer(OfferList list, int offerID) {
-		this(list, offerID, 0);
+	public MoneyOffer() {
+		this(0.0);
 	}
 
-	public MoneyOffer(OfferList list, int offerID, double amount) {
-		super(list, offerID);
+	public MoneyOffer(double amount) {
 		this.amount = amount;
 	}
 
     @Override
-    public MoneyOfferDescription getDescription() {
-        return (MoneyOfferDescription) super.getDescription();
+    public String getType() {
+        return "money";
     }
 
     @Override
-    public ItemStack createItem() {
-        return getDescription().createItem(this);
+    public MoneyOfferDescription getDescription(Trader trader) {
+        return (MoneyOfferDescription) super.getDescription(trader);
+    }
+
+    @Override
+    public ItemStack createItem(TransactionHolder holder) {
+        return getDescription(holder.getTrader()).createItem(this);
     }
 
     @Override
     public ItemStack createMirror(TransactionHolder holder) {
-        return getDescription().createMirrorItem(this, holder);
+        return getDescription(holder.getTrader()).createMirrorItem(this, holder);
     }
 
 	@Override
-	public double getAmount() {
-		return amount;
+	public int getAmount() {
+		return (int) (getDoubleAmount() * 100);
 	}
 
-	public void setAmount(double amount) {
+    @Override
+    public void setAmount(int amount) {
+        setDoubleAmount(amount / 100);
+    }
+
+    @Override
+    public int getMaxAmount() {
+        return -1;
+    }
+
+    public void setDoubleAmount(double amount) {
 		this.amount = amount;
 	}
 
+    public double getDoubleAmount() {
+        return amount;
+    }
+
 	@Override
-	protected MoneyOffer clone() {
-		return new MoneyOffer(list, offerIndex, amount);
+	public MoneyOffer clone() {
+		return new MoneyOffer(amount);
 	}
 
 	@Override

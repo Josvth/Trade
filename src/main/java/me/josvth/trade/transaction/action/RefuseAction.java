@@ -22,8 +22,8 @@ public class RefuseAction extends TraderAction {
 
             getTrader().setRefused(true);
 
-            getTrader().getFormattedMessage(method.messagePath).send(getTrader().getPlayer());
-            getTrader().getOtherTrader().getFormattedMessage(method.mirrorMessagePath).send(getTrader().getOtherTrader().getPlayer(), "%player%", getTrader().getName());
+            getTrader().getFormattedMessage(method.messagePath).send(getPlayer());
+            getOtherTrader().getFormattedMessage(method.mirrorMessagePath).send(getOtherTrader().getPlayer(), "%player%", getTrader().getName());
 
             if (getTransaction().useLogging()) {
                 getTransaction().logAction(this);

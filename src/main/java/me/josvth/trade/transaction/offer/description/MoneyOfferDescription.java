@@ -22,8 +22,8 @@ public class MoneyOfferDescription extends OfferDescription<MoneyOffer> {
     }
 
     @Override
-    public MoneyOffer createOffer(OfferList list, int offerIndex) {
-        return new MoneyOffer(list, offerIndex);
+    public MoneyOffer createOffer() {
+        return new MoneyOffer();
     }
 
     @Override

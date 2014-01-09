@@ -9,41 +9,62 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
+import sun.plugin.dom.exception.InvalidStateException;
 
-public class ItemOffer extends Offer {
+public class ItemOffer extends StackableOffer {
 
 	private ItemStack item = null;
 
-	public ItemOffer(OfferList list, int offerIndex) {
-		this(list, offerIndex, null);
-	}
+    public ItemOffer() {
+        this(null);
+    }
 
-	public ItemOffer(OfferList list, int id, ItemStack item) {
-		super(list, id);
+	public ItemOffer(ItemStack item) {
 		this.item = item;
 	}
 
     @Override
-    public ItemOfferDescription getDescription() {
-        return (ItemOfferDescription) super.getDescription();
+    public String getType() {
+        return "item";
     }
 
     @Override
-    public ItemStack createItem() {
-        return getDescription().createItem(this);
+    public ItemOfferDescription getDescription(Trader trader) {
+        return (ItemOfferDescription) super.getDescription(trader);
+    }
+
+    @Override
+    public ItemStack createItem(TransactionHolder holder) {
+        return getDescription(holder.getTrader()).createItem(this);
     }
 
     @Override
     public ItemStack createMirror(TransactionHolder holder) {
-        return getDescription().createMirrorItem(this, holder);
+        return getDescription(holder.getTrader()).createMirrorItem(this, holder);
     }
 
-	@Override
-	public double getAmount() {
-		return (item == null)? 0.0 : item.getAmount();
-	}
+    @Override
+    public int getAmount() {
+        return (item == null)? 0 : item.getAmount();
+    }
 
-	@Override
+    @Override
+    public void setAmount(int amount) {
+
+        if (item == null) {
+            throw new InvalidStateException("Cannot set amount if item is zero");
+        }
+
+        item.setAmount(amount);
+
+    }
+
+    @Override
+    public int getMaxAmount() {
+        return (item == null)? 0 : item.getMaxStackSize();
+    }
+
+    @Override
 	public boolean isFull() {
 		return item != null && item.getMaxStackSize() - item.getAmount() <= 0;
 	}
@@ -58,6 +79,7 @@ public class ItemOffer extends Offer {
 		});
 	}
 
+
 	public ItemStack getItem() {
 		return item;
 	}
@@ -67,12 +89,12 @@ public class ItemOffer extends Offer {
     }
 
 	public ItemOffer clone() {
-		return new ItemOffer(list, offerIndex, item);
+		return new ItemOffer(item);
 	}
 
 	// Event handling
 	@Override
-	public void onClick(InventoryClickEvent event) {
+	public void onClick(InventoryClickEvent event, int offerIndex) {
 
         final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
@@ -116,9 +138,9 @@ public class ItemOffer extends Offer {
 	}
 
 	@Override
-	public void onDrag(int slot, InventoryDragEvent event) {
+	public void onDrag(InventoryDragEvent event, int offerIndex, int slotIndex) {
 
-		item = event.getNewItems().get(slot).clone();
+		item = event.getNewItems().get(slotIndex).clone();
 
         // We only update the mirror because we assume the current view is showing the correct item stack
         MirrorSlot.updateMirrors(((TransactionHolder)event.getInventory().getHolder()).getOtherHolder(), true, offerIndex);
