@@ -19,7 +19,7 @@ public class RefuseSlot extends Slot {
 
         final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-        new RefuseAction(holder.getTrader(), RefuseAction.Method.BUTTON).execute();
+        new RefuseAction(holder.getTrader(), RefuseAction.Reason.BUTTON).execute();
 
         event.setCancelled(true);
 

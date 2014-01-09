@@ -20,10 +20,4 @@ public abstract class Action {
 
     public abstract void execute();
 
-    public abstract String getLogMessage();
-
-    public int getAmount() {
-        return 0;
-    }
-
 }

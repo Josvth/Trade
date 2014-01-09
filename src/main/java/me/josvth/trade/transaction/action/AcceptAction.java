@@ -25,8 +25,8 @@ public class AcceptAction extends TraderAction {
 
             getTrader().setAccepted(true);
 
-            getTrader().getFormattedMessage(method.messagePath).send(getPlayer());
-            getOtherTrader().getFormattedMessage(method.mirrorMessagePath).send(getOtherTrader().getPlayer(), "%player%", getTrader().getName());
+            getTrader().sendFormattedMessage(method.messagePath, false);
+            getOtherTrader().sendFormattedMessage(method.mirrorMessagePath, false, "%player%", getTrader().getName());
 
             if (getTrader().getHolder().hasViewers()) {
                 AcceptSlot.updateAcceptSlots(getTrader().getHolder(), true);
@@ -44,12 +44,6 @@ public class AcceptAction extends TraderAction {
         }
 
     }
-
-    @Override
-    public String getLogMessage() {
-        return null;
-    }
-
 
     public enum Method {
 

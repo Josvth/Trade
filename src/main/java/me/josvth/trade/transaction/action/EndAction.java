@@ -7,12 +7,12 @@ public class EndAction extends Action {
     private final Reason reason;
 
     public EndAction(Transaction transaction) {
-        super(transaction, transaction.getTransactionProvoker());
+        super(transaction.getTransactionProvoker());
         this.reason = Reason.GENERIC;
     }
 
     public EndAction(Transaction transaction, Reason reason) {
-        super(transaction, transaction.getTransactionProvoker());
+        super(transaction.getTransactionProvoker());
         this.reason = reason;
     }
 
@@ -35,8 +35,8 @@ public class EndAction extends Action {
             getTransaction().getTraderB().getOffers().grant(getTransaction().getTraderB());
         }
 
-        getTransaction().getTraderA().getFormattedMessage(reason.messagePath).send(getTransaction().getTraderA().getPlayer());
-        getTransaction().getTraderB().getFormattedMessage(reason.messagePath).send(getTransaction().getTraderB().getPlayer());
+        getTransaction().getTraderA().sendFormattedMessage(reason.messagePath, false);
+        getTransaction().getTraderB().sendFormattedMessage(reason.messagePath, false);
 
         getTransaction().getTraderA().closeInventory();
         getTransaction().getTraderB().closeInventory();
@@ -44,12 +44,6 @@ public class EndAction extends Action {
         getTransaction().stop();
 
     }
-
-    @Override
-    public String getLogMessage() {
-        return null;
-    }
-
 
     public enum Reason {
 

@@ -1,6 +1,7 @@
 package me.josvth.trade.transaction.offer;
 
 import me.josvth.trade.Trade;
+import me.josvth.trade.transaction.action.DenyAction;
 import me.josvth.trade.transaction.offer.description.ItemOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
@@ -106,7 +107,7 @@ public class ItemOffer extends StackableOffer {
                 holder.getOffers().set(offerIndex, null);
 
                 // Cancels the other players accept if he had accepted
-                holder.getOtherTrader().cancelAccept();
+                new DenyAction(holder.getTransaction().getTransactionProvoker(), holder.getTrader(), DenyAction.Reason.OFFER_CHANGED).execute();
 
 				break;
 			case PICKUP_HALF:

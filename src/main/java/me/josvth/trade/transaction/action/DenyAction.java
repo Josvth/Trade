@@ -6,16 +6,15 @@ import me.josvth.trade.transaction.inventory.slot.StatusSlot;
 
 public class DenyAction extends TraderAction {
 
-    private final Method method;
+    private final Reason reason;
 
-    public DenyAction(Trader trader) {
-        super(trader);
-        method = Method.GENERIC;
+    public DenyAction(Trader trader, Reason reason) {
+        this(trader, trader, reason);
     }
 
-    public DenyAction(Trader trader, Method method) {
-        super(trader);
-        this.method = method;
+    public DenyAction(ActionProvoker provoker, Trader trader, Reason reason) {
+        super(provoker, trader);
+        this.reason = reason;
     }
 
     @Override
@@ -25,12 +24,15 @@ public class DenyAction extends TraderAction {
 
             getTrader().setAccepted(false);
 
-            getTrader().getFormattedMessage(method.messagePath).send(getPlayer());
-            getOtherTrader().getFormattedMessage(method.mirrorMessagePath).send(getOtherTrader().getPlayer(), "%player%", getTrader().getName());
+            getTrader().sendFormattedMessage(reason.messagePath, false);
+            getOtherTrader().sendFormattedMessage(reason.mirrorMessagePath, false, "%player%", getTrader().getName());
 
             if (getTrader().getHolder().hasViewers()) {
                 AcceptSlot.updateAcceptSlots(getTrader().getHolder(), true);
-                StatusSlot.updateStatusSlots(getTrader().getHolder().getOtherHolder(), true);
+            }
+
+            if (getOtherTrader().getHolder().hasViewers()) {
+                StatusSlot.updateStatusSlots(getOtherTrader().getHolder(), true);
             }
 
             if (getTransaction().useLogging()) {
@@ -41,16 +43,17 @@ public class DenyAction extends TraderAction {
 
     }
 
-    public enum Method {
+    public enum Reason {
 
         GENERIC ("deny.generic.message", "deny.generic.mirror"),
-        BUTTON ("deny.generic.message", "deny.generic.mirror"),
+        BUTTON ("deny.button.message", "deny.generic.mirror"),
+        OFFER_CHANGED ("deny.offer-changed.message", "deny.offer-changed.mirror"),
         COMMAND ("deny.generic.message", "deny.generic.mirror");
 
         public final String messagePath;
         public final String mirrorMessagePath;
 
-        Method(String messagePath, String mirrorMessagePath) {
+        Reason(String messagePath, String mirrorMessagePath) {
             this.messagePath = messagePath;
             this.mirrorMessagePath = mirrorMessagePath;
         }

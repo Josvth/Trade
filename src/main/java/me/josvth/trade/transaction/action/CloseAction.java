@@ -5,7 +5,11 @@ import me.josvth.trade.transaction.Trader;
 public class CloseAction extends TraderAction {
 
     public CloseAction(Trader trader) {
-        super(trader);
+        super(trader, trader);
+    }
+
+    public CloseAction(ActionProvoker provoker, Trader trader) {
+        super(provoker, trader);
     }
 
     @Override
@@ -13,8 +17,8 @@ public class CloseAction extends TraderAction {
 
         if (getTrader().getState() != Trader.State.ROAMING) {
 
-            getTrader().getFormattedMessage("closed-inventory.self").send(getPlayer());
-            getOtherTrader().getFormattedMessage("closed-inventory.other").send(getOtherTrader().getPlayer(), "%player%", getPlayer().getName());
+            getTrader().sendFormattedMessage("closed-inventory.self", false);
+            getOtherTrader().sendFormattedMessage("closed-inventory.other", false, "%player%", getPlayer().getName());
 
             getTrader().setState(Trader.State.ROAMING);
 

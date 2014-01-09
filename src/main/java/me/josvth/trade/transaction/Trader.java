@@ -87,21 +87,6 @@ public class Trader implements ActionProvoker {
         this.refused = refused;
     }
 
-    public void cancelAccept() {
-
-        if (hasAccepted()) {
-
-            setAccepted(false);
-
-            getFormattedMessage("denied.offer-changed").send(getPlayer(), "%player%", getOtherTrader().getName());
-
-            AcceptSlot.updateAcceptSlots(holder.getOtherHolder(), true);
-            StatusSlot.updateStatusSlots(holder, true);
-
-        }
-
-    }
-
     public void openInventory() {
         getPlayer().openInventory(holder.getInventory());
     }
@@ -110,12 +95,13 @@ public class Trader implements ActionProvoker {
         getPlayer().closeInventory();
     }
 
-    public FormattedMessage getFormattedMessage(String key) {
-        return getLayout().getMessage(key);
-    }
-
-    public boolean hasFormattedMessage(String key) {
-        return getLayout().hasMessage(key);
+    public void sendFormattedMessage(String key, boolean keyWhenMissing, String... arguments) {
+        keyWhenMissing = true; // TODO REMOVE THIS DEBUG LINE!!
+        if (getLayout().hasMessage(key)) {
+            getLayout().getMessage(key).send(getPlayer(), arguments);
+        } else if (keyWhenMissing) {
+            getPlayer().sendMessage(key);
+        }
     }
 
     public void setState(State state) {

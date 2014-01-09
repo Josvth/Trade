@@ -3,7 +3,6 @@ package me.josvth.trade.transaction.action;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.offer.ExperienceOffer;
 import me.josvth.trade.util.ExperienceManager;
-import org.bukkit.entity.Player;
 
 public class ChangeExperienceAction extends TraderAction {
 
@@ -22,7 +21,7 @@ public class ChangeExperienceAction extends TraderAction {
             final ExperienceManager expManager = new ExperienceManager(getPlayer());
 
             if (!expManager.hasExp(amount)) {
-                getTrader().getFormattedMessage("experience.insufficient").send(getPlayer(), "%experience%", String.valueOf(amount));
+                getTrader().sendFormattedMessage("experience.insufficient", false, "%experience%", String.valueOf(amount));
                 return;
             }
 
@@ -34,12 +33,10 @@ public class ChangeExperienceAction extends TraderAction {
 
             expManager.changeExp(-1 * added);
 
-            getTrader().getFormattedMessage("experience.added.self").send(getPlayer(), "%experience%", String.valueOf(added));
-            if (getOtherTrader().hasFormattedMessage("experience.added.other")) {
-                getOtherTrader().getFormattedMessage("experience.added.other").send(getOtherTrader().getPlayer(), "%player%", getTrader().getName(), "%experience%", String.valueOf(added));
-            }
+            getTrader().sendFormattedMessage("experience.added.self", false, "%experience%", String.valueOf(added));
+            getOtherTrader().sendFormattedMessage("experience.added.other", false, "%experience%", String.valueOf(added));
 
-            getOtherTrader().cancelAccept();
+            new DenyAction(getTransaction().getTransactionProvoker(), getTrader(), DenyAction.Reason.OFFER_CHANGED).execute();
 
         } else {
 
@@ -52,18 +49,13 @@ public class ChangeExperienceAction extends TraderAction {
             // Give the player experience
             new ExperienceManager(getPlayer()).changeExp(removed);
 
-            if (getOtherTrader().hasFormattedMessage("experience.removed.other") && removed > 0) {
-                getOtherTrader().getFormattedMessage("experience.removed.other").send(getOtherTrader().getPlayer(), "%player%", getTrader().getName(), "%experience%", String.valueOf(removed));
-            }
+            getTrader().sendFormattedMessage("experience.removed.self", false, "%experience%", String.valueOf(removed));
+            getOtherTrader().sendFormattedMessage("experience.removed.other", false, "%experience%", String.valueOf(removed));
 
-            getOtherTrader().cancelAccept();
+            new DenyAction(getTransaction().getTransactionProvoker(), getTrader(), DenyAction.Reason.OFFER_CHANGED).execute();
 
         }
 
     }
 
-    @Override
-    public String getLogMessage() {
-        return null;
-    }
 }

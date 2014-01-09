@@ -167,7 +167,7 @@ public class TransactionHolder implements InventoryHolder {
 			if (getTransaction().getManager().getOptions().allowInventoryClosing()) {
                 new CloseAction(getTrader()).execute();
 			} else {
-                new RefuseAction(getTrader()).execute();
+                new RefuseAction(getTrader(), RefuseAction.Reason.CLOSE).execute();
             }
 		}
 	}

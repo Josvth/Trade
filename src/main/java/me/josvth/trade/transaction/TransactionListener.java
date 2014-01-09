@@ -49,10 +49,10 @@ public class TransactionListener implements Listener {
 
         final Trader trader = transaction.getTrader(event.getPlayer().getName());
 
-        new RefuseAction(trader, RefuseAction.Method.DISCONNECT);
+        new RefuseAction(trader, RefuseAction.Reason.DISCONNECT);
 
-        trader.getFormattedMessage("disconnect.self").send(trader.getPlayer());
-        trader.getOtherTrader().getFormattedMessage("disconnect.other").send(trader.getOtherTrader().getPlayer(), "%player%", event.getPlayer().getName());
+        trader.sendFormattedMessage("disconnect.self", false);
+        trader.getOtherTrader().sendFormattedMessage("disconnect.other", false, "%player%", event.getPlayer().getName());
 
     }
 

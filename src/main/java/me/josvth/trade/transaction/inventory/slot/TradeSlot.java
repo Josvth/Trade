@@ -1,6 +1,7 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
+import me.josvth.trade.transaction.action.DenyAction;
 import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
@@ -14,105 +15,105 @@ import java.util.Set;
 
 public class TradeSlot extends Slot {
 
-	private final int offerIndex;
+    private final int offerIndex;
 
-	public TradeSlot(int slot, int offerIndex) {
-		super(slot);
-		this.offerIndex = offerIndex;
-	}
+    public TradeSlot(int slot, int offerIndex) {
+        super(slot);
+        this.offerIndex = offerIndex;
+    }
 
-	public Offer getSlotContents(TransactionHolder holder) {
-		return holder.getOffers().get(offerIndex);
-	}
+    public Offer getSlotContents(TransactionHolder holder) {
+        return holder.getOffers().get(offerIndex);
+    }
 
-	public int getOfferIndex() {
-		return offerIndex;
-	}
+    public int getOfferIndex() {
+        return offerIndex;
+    }
 
-	// Event handling
-	@Override
-	public void onClick(InventoryClickEvent event) {
+    // Event handling
+    @Override
+    public void onClick(InventoryClickEvent event) {
 
         final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-		final Offer offer = getSlotContents(holder);
+        final Offer offer = getSlotContents(holder);
 
-		// If we have a offer on this slot we let the offer handle the event
-		if (offer == null) {
+        // If we have a offer on this slot we let the offer handle the event
+        if (offer == null) {
 
-			// TODO An alternative would be to determine the new item in the update() method instead of during the event.
+            // TODO An alternative would be to determine the new item in the update() method instead of during the event.
 
-			ItemStack newItem = null;
+            ItemStack newItem = null;
 
-			switch (event.getAction()) {
-				case PLACE_ALL:
-					newItem = event.getCursor().clone();
-					break;
-				case PLACE_ONE:
-					newItem = event.getCursor().clone();
-					newItem.setAmount(1);
-					break;
-				default:
-					throw new IllegalStateException("Not handled action: " + event.getAction().name());
-			}
+            switch (event.getAction()) {
+                case PLACE_ALL:
+                    newItem = event.getCursor().clone();
+                    break;
+                case PLACE_ONE:
+                    newItem = event.getCursor().clone();
+                    newItem.setAmount(1);
+                    break;
+                default:
+                    throw new IllegalStateException("Not handled action: " + event.getAction().name());
+            }
 
-			holder.getOffers().set(offerIndex, (newItem == null)? null : holder.getOffers().createItemOffer(newItem));
-
-            // Cancels the other players accept if he had accepted
-            holder.getOtherTrader().cancelAccept();
-
-			MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
-
-		} else {
-
-			offer.onClick(event, offerIndex);
-
-		}
-
-	}
-
-	@Override
-	public void onDrag(InventoryDragEvent event) {
-
-		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-
-		final Offer offer = getSlotContents(holder);
-
-		if (offer != null) {
-			offer.onDrag(event, offerIndex, slot);
-		} else if (event.getNewItems().containsKey(slot)) {
-
-			holder.getOffers().set(offerIndex, holder.getOffers().createItemOffer(event.getNewItems().get(slot).clone()));
+            holder.getOffers().set(offerIndex, (newItem == null)? null : holder.getOffers().createItemOffer(newItem));
 
             // Cancels the other players accept if he had accepted
-            holder.getOtherTrader().cancelAccept();
+            new DenyAction(holder.getTransaction().getTransactionProvoker(), holder.getTrader(), DenyAction.Reason.OFFER_CHANGED).execute();
 
-			MirrorSlot.updateMirrors(holder.getOtherHolder(), true, offerIndex);
+            MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
 
-		}
+        } else {
 
-	}
+            offer.onClick(event, offerIndex);
 
-	@Override
-	public void update(TransactionHolder holder) {
+        }
 
-		final Offer offer = getSlotContents(holder);
+    }
 
-		if (offer != null) {
-			holder.getInventory().setItem(slot, offer.createItem(holder));
-		} else {
-			holder.getInventory().setItem(slot, null);
-		}
+    @Override
+    public void onDrag(InventoryDragEvent event) {
 
-	}
+        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-	public static void updateTradeSlots(TransactionHolder holder, boolean nextTick, int... offerIndex) {
+        final Offer offer = getSlotContents(holder);
 
-		final Set<TradeSlot> slots = holder.getLayout().getSlotsOfType(TradeSlot.class);
+        if (offer != null) {
+            offer.onDrag(event, offerIndex, slot);
+        } else if (event.getNewItems().containsKey(slot)) {
 
-		final Iterator<TradeSlot> iterator = slots.iterator();
+            holder.getOffers().set(offerIndex, holder.getOffers().createItemOffer(event.getNewItems().get(slot).clone()));
 
-		while (iterator.hasNext()) {
+            // Cancels the other players accept if he had accepted
+            new DenyAction(holder.getTransaction().getTransactionProvoker(), holder.getTrader(), DenyAction.Reason.OFFER_CHANGED).execute();
+
+            MirrorSlot.updateMirrors(holder.getOtherHolder(), true, offerIndex);
+
+        }
+
+    }
+
+    @Override
+    public void update(TransactionHolder holder) {
+
+        final Offer offer = getSlotContents(holder);
+
+        if (offer != null) {
+            holder.getInventory().setItem(slot, offer.createItem(holder));
+        } else {
+            holder.getInventory().setItem(slot, null);
+        }
+
+    }
+
+    public static void updateTradeSlots(TransactionHolder holder, boolean nextTick, int... offerIndex) {
+
+        final Set<TradeSlot> slots = holder.getLayout().getSlotsOfType(TradeSlot.class);
+
+        final Iterator<TradeSlot> iterator = slots.iterator();
+
+        while (iterator.hasNext()) {
 
             final TradeSlot slot = iterator.next();
 
@@ -130,27 +131,27 @@ public class TradeSlot extends Slot {
                 iterator.remove();
             }
 
-		}
+        }
 
-		if (nextTick && !slots.isEmpty()) {
-			Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(holder, slots));
-		}
+        if (nextTick && !slots.isEmpty()) {
+            Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(holder, slots));
+        }
 
-	}
+    }
 
-	public static void updateTradeSlots(TransactionHolder holder, boolean nextTick) {
+    public static void updateTradeSlots(TransactionHolder holder, boolean nextTick) {
 
-		final Set<TradeSlot> slots = holder.getLayout().getSlotsOfType(TradeSlot.class);
+        final Set<TradeSlot> slots = holder.getLayout().getSlotsOfType(TradeSlot.class);
 
-		if (!nextTick) {
-			for (Slot slot : slots) {
-				slot.update(holder);
-			}
-		} else if (!slots.isEmpty()) {
-			Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(holder, slots));
-		}
+        if (!nextTick) {
+            for (Slot slot : slots) {
+                slot.update(holder);
+            }
+        } else if (!slots.isEmpty()) {
+            Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(holder, slots));
+        }
 
-	}
+    }
 
 
 }
