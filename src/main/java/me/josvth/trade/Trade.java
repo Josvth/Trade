@@ -112,6 +112,19 @@ public class Trade extends JavaPlugin {
         return requestManager;
     }
 
+    public ConventYamlConfiguration getGeneralConfiguration() {
+        return generalConfiguration;
+    }
+
+    public ConventYamlConfiguration getLayoutConfiguration() {
+        return layoutConfiguration;
+    }
+
+    public ConventYamlConfiguration getMessageConfiguration() {
+        return messageConfiguration;
+    }
+
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 

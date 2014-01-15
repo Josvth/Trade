@@ -6,16 +6,16 @@ import me.josvth.trade.transaction.inventory.slot.StatusSlot;
 
 public class AcceptAction extends TraderAction {
 
-    private final Method method;
+    private final Reason reason;
 
     public AcceptAction(ActionProvoker provoker, Trader trader) {
         super(provoker, trader);
-        method = Method.GENERIC;
+        reason = Reason.GENERIC;
     }
 
-    public AcceptAction(Trader trader, Method method) {
+    public AcceptAction(Trader trader, Reason reason) {
         super(trader, trader);  // TODO Correctly handle provoker
-        this.method = method;
+        this.reason = reason;
     }
 
     @Override
@@ -25,12 +25,15 @@ public class AcceptAction extends TraderAction {
 
             getTrader().setAccepted(true);
 
-            getTrader().sendFormattedMessage(method.messagePath, false);
-            getOtherTrader().sendFormattedMessage(method.mirrorMessagePath, false, "%player%", getTrader().getName());
+            getTrader().getFormattedMessage(reason.messagePath).send(getTrader().getPlayer());
+            getOtherTrader().getFormattedMessage(reason.mirrorMessagePath).send(getTrader().getPlayer(), "%player%", getTrader().getName());
 
             if (getTrader().getHolder().hasViewers()) {
                 AcceptSlot.updateAcceptSlots(getTrader().getHolder(), true);
-                StatusSlot.updateStatusSlots(getTrader().getHolder().getOtherHolder(), true);
+            }
+
+            if (getOtherTrader().getHolder().hasViewers()) {
+                StatusSlot.updateStatusSlots(getOtherTrader().getHolder(), true);
             }
 
             if (getTransaction().useLogging()) {
@@ -45,16 +48,16 @@ public class AcceptAction extends TraderAction {
 
     }
 
-    public enum Method {
+    public enum Reason {
 
-        GENERIC ("accept.message", "accept.mirror"),
-        BUTTON ("accept.message", "accept.mirror"),
-        COMMAND ("accept.message", "accept.mirror");
+        GENERIC ("accept.generic.message", "accept.generic.mirror"),
+        BUTTON ("accept.generic.message", "accept.generic.mirror"),
+        COMMAND ("accept.generic.message", "accept.generic.mirror");
 
         public final String messagePath;
         public final String mirrorMessagePath;
 
-        Method(String messagePath, String mirrorMessagePath) {
+        Reason(String messagePath, String mirrorMessagePath) {
             this.messagePath = messagePath;
             this.mirrorMessagePath = mirrorMessagePath;
         }

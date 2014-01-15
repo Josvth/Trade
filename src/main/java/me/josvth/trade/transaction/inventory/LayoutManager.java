@@ -161,6 +161,7 @@ public class LayoutManager {
         layout.getOfferDescriptions().putAll(getOfferDescriptionsFromSection(section.getConfigurationSection("offers")));
 
         // Load messages
+        layout.setKeyWhenMissing(plugin.getGeneralConfiguration().getBoolean("debug-mode", false));
         layout.getMessages().putAll(getMessagesFromSection(section.getConfigurationSection("messages")));
 
         layouts.put(layout.getName(), layout);

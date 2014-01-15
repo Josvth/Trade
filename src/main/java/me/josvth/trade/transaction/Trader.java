@@ -95,13 +95,8 @@ public class Trader implements ActionProvoker {
         getPlayer().closeInventory();
     }
 
-    public void sendFormattedMessage(String key, boolean keyWhenMissing, String... arguments) {
-        keyWhenMissing = true; // TODO REMOVE THIS DEBUG LINE!!
-        if (getLayout().hasMessage(key)) {
-            getLayout().getMessage(key).send(getPlayer(), arguments);
-        } else if (keyWhenMissing) {
-            getPlayer().sendMessage(key);
-        }
+    public FormattedMessage getFormattedMessage(String key) {
+        return layout.getMessage(key);
     }
 
     public void setState(State state) {

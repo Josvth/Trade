@@ -16,11 +16,16 @@ public abstract class TraderAction extends Action {
         return trader;
     }
 
+    public Player getPlayer() {
+        return getTrader().getPlayer();
+    }
+
     public Trader getOtherTrader() {
         return getTrader().getOtherTrader();
     }
 
-    public Player getPlayer() {
-        return getTrader().getPlayer();
+    public Player getOtherPlayer() {
+        return getOtherTrader().getPlayer();
     }
+
 }

@@ -24,8 +24,8 @@ public class DenyAction extends TraderAction {
 
             getTrader().setAccepted(false);
 
-            getTrader().sendFormattedMessage(reason.messagePath, false);
-            getOtherTrader().sendFormattedMessage(reason.mirrorMessagePath, false, "%player%", getTrader().getName());
+            getTrader().getFormattedMessage(reason.messagePath).send(getPlayer());
+            getOtherTrader().getFormattedMessage(reason.mirrorMessagePath).send(getOtherPlayer(), "%player%", getTrader().getName());
 
             if (getTrader().getHolder().hasViewers()) {
                 AcceptSlot.updateAcceptSlots(getTrader().getHolder(), true);
@@ -46,7 +46,7 @@ public class DenyAction extends TraderAction {
     public enum Reason {
 
         GENERIC ("deny.generic.message", "deny.generic.mirror"),
-        BUTTON ("deny.button.message", "deny.generic.mirror"),
+        BUTTON ("deny.generic.message", "deny.generic.mirror"),
         OFFER_CHANGED ("deny.offer-changed.message", "deny.offer-changed.mirror"),
         COMMAND ("deny.generic.message", "deny.generic.mirror");
 

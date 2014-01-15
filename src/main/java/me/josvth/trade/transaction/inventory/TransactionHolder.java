@@ -89,25 +89,9 @@ public class TransactionHolder implements InventoryHolder {
 
 			if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
 
-				final Iterator<Map.Entry<Integer, ItemOffer>> iterator = getOffers().getOfClass(ItemOffer.class).entrySet().iterator();
-
-				// TODO make this not use getOffers().add()
-//				final ItemOffer itemTradeable = new ItemOffer(event.getCurrentItem());
-//
-//				final HashMap<Integer, Offer> remaining = trader.getOffers().add(itemTradeable); // TODO Clone item here?
-//
-//				if (remaining.get(0) != null)
-//					event.setCurrentItem(remaining.get(0).getDisplayItem());
-//				else
-//					event.setCurrentItem(null);
-
-				// TODO Do this in the offer list?
-				TradeSlot.updateTradeSlots(this, true);
-				MirrorSlot.updateMirrors(this, true);
+                getOffers().addOffer(getOffers().createItemOffer(event.getCurrentItem().clone()));
 
 				event.setCancelled(true);
-
-				// TODO Test this.
 
 			}
 

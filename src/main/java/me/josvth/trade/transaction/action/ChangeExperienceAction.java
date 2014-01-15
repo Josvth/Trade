@@ -21,7 +21,7 @@ public class ChangeExperienceAction extends TraderAction {
             final ExperienceManager expManager = new ExperienceManager(getPlayer());
 
             if (!expManager.hasExp(amount)) {
-                getTrader().sendFormattedMessage("experience.insufficient", false, "%experience%", String.valueOf(amount));
+                getTrader().getFormattedMessage("experience.insufficient").send(getPlayer(), "%experience%", String.valueOf(amount));
                 return;
             }
 
@@ -33,8 +33,8 @@ public class ChangeExperienceAction extends TraderAction {
 
             expManager.changeExp(-1 * added);
 
-            getTrader().sendFormattedMessage("experience.added.self", false, "%experience%", String.valueOf(added));
-            getOtherTrader().sendFormattedMessage("experience.added.other", false, "%experience%", String.valueOf(added));
+            getTrader().getFormattedMessage("experience.added.self").send(getPlayer(), "%experience%", String.valueOf(added));
+            getOtherTrader().getFormattedMessage("experience.added.other").send(getOtherPlayer(), "%experience%", String.valueOf(added));
 
             new DenyAction(getTransaction().getTransactionProvoker(), getTrader(), DenyAction.Reason.OFFER_CHANGED).execute();
 
@@ -49,8 +49,8 @@ public class ChangeExperienceAction extends TraderAction {
             // Give the player experience
             new ExperienceManager(getPlayer()).changeExp(removed);
 
-            getTrader().sendFormattedMessage("experience.removed.self", false, "%experience%", String.valueOf(removed));
-            getOtherTrader().sendFormattedMessage("experience.removed.other", false, "%experience%", String.valueOf(removed));
+            getTrader().getFormattedMessage("experience.removed.self").send(getPlayer(), "%experience%", String.valueOf(removed));
+            getOtherTrader().getFormattedMessage("experience.removed.other").send(getOtherPlayer(), "%experience%", String.valueOf(removed));
 
             new DenyAction(getTransaction().getTransactionProvoker(), getTrader(), DenyAction.Reason.OFFER_CHANGED).execute();
 

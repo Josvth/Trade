@@ -27,6 +27,11 @@ public class EndAction extends Action {
             throw new IllegalStateException("Cannot stop an ended transaction");
         }
 
+        getTransaction().stop();
+
+        getTransaction().getTraderA().closeInventory();
+        getTransaction().getTraderB().closeInventory();
+
         if (reason == Reason.ACCEPT) {
             getTransaction().getTraderA().getOffers().grant(getTransaction().getTraderB());
             getTransaction().getTraderB().getOffers().grant(getTransaction().getTraderA());
@@ -35,21 +40,16 @@ public class EndAction extends Action {
             getTransaction().getTraderB().getOffers().grant(getTransaction().getTraderB());
         }
 
-        getTransaction().getTraderA().sendFormattedMessage(reason.messagePath, false);
-        getTransaction().getTraderB().sendFormattedMessage(reason.messagePath, false);
-
-        getTransaction().getTraderA().closeInventory();
-        getTransaction().getTraderB().closeInventory();
-
-        getTransaction().stop();
+        getTransaction().getTraderA().getFormattedMessage(reason.messagePath).send(getTransaction().getTraderA().getPlayer());
+        getTransaction().getTraderB().getFormattedMessage(reason.messagePath).send(getTransaction().getTraderB().getPlayer());
 
     }
 
     public enum Reason {
 
-        GENERIC (""),
-        ACCEPT (""),
-        REFUSE (""),
+        GENERIC (null),
+        ACCEPT (null),
+        REFUSE (null),
         RELOAD ("cancelled.reload");
 
         public final String messagePath;

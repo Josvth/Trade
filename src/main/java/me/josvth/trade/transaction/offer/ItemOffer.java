@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
-import sun.plugin.dom.exception.InvalidStateException;
 
 public class ItemOffer extends StackableOffer {
 
@@ -53,7 +52,7 @@ public class ItemOffer extends StackableOffer {
     public void setAmount(int amount) {
 
         if (item == null) {
-            throw new InvalidStateException("Cannot set amount if item is zero");
+            throw new IllegalArgumentException("Cannot set amount if item is zero");
         }
 
         item.setAmount(amount);
@@ -72,13 +71,8 @@ public class ItemOffer extends StackableOffer {
 
 	@Override
 	public void grant(final Trader trader) {
-		Bukkit.getScheduler().runTask(Trade.getInstance(), new Runnable() {
-			@Override
-			public void run() {
-				trader.getPlayer().getInventory().addItem(item);
-			}
-		});
-	}
+        trader.getPlayer().getInventory().addItem(item);
+    }
 
 
 	public ItemStack getItem() {

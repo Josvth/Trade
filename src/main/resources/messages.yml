@@ -1,23 +1,27 @@
 commands:
   invalid-usage: That's not the way you use this command. Try %usage%.
 trading:
-  accepted:
-    message: "You accepted the trade."
-    mirror: "%player% accepted the trade."
-  denied:
+  accept:
+    generic:
+      message: "You accepted the trade."
+      mirror: "%player% accepted the trade."
+  deny:
     generic:
       message: "You denied the trade."
       mirror: "%player% denied the trade."
     offer-changed:
       message: "Your accept was cancelled because you changed your offer."
       mirror: "Your accept was cancelled because %player% changed their offer."
-  refused:
+  refuse:
     generic:
       message: "You refused the trade."
       mirror: "%player% refused the trade."
     disconnect:
       message: "You refused the trade because you disconnected."
       mirror: "%player% refused the trade because they disconnected."
+    closed:
+      message: "You refused the trade because you closed the inventory."
+      mirror: "%player% refused the trade because they closed their inventory."
   experience:
     added:
       self: Added %experience% experience to the trade.

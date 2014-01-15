@@ -31,9 +31,9 @@ public class AcceptSlot extends Slot {
         final Trader trader = holder.getTrader();
 
         if (trader.hasAccepted()) {
-            new AcceptAction(trader, AcceptAction.Method.BUTTON).execute();
-        } else {
             new DenyAction(trader, DenyAction.Reason.BUTTON).execute();
+        } else {
+            new AcceptAction(trader, AcceptAction.Reason.BUTTON).execute();
         }
 
 		event.setCancelled(true);

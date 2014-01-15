@@ -17,8 +17,8 @@ public class RefuseAction extends TraderAction {
 
             getTrader().setRefused(true);
 
-            getTrader().sendFormattedMessage(reason.messagePath, false);
-            getOtherTrader().sendFormattedMessage(reason.mirrorMessagePath, false, "%player%", getTrader().getName());
+            getTrader().getFormattedMessage(reason.messagePath).send(getPlayer());
+            getOtherTrader().getFormattedMessage(reason.mirrorMessagePath).send(getOtherPlayer(), "%player%", getTrader().getName());
 
             if (getTransaction().useLogging()) {
                 getTransaction().logAction(this);
@@ -31,11 +31,11 @@ public class RefuseAction extends TraderAction {
 
     public enum Reason {
 
-        GENERIC ("refused.generic.message", "refused.generic.mirror"),
-        BUTTON ("refused.generic.message", "refused.generic.mirror"),
-        COMMAND ("refused.generic.message", "refused.generic.mirror"),
-        DISCONNECT ("refused.disconnected.message", "refused.disconnected.mirror"),
-        CLOSE("refused.closed.message", "refused.closed.mirror");
+        GENERIC ("refuse.generic.message", "refuse.generic.mirror"),
+        BUTTON ("refuse.generic.message", "refuse.generic.mirror"),
+        COMMAND ("refuse.generic.message", "refuse.generic.mirror"),
+        DISCONNECT ("refuse.disconnected.message", "refuse.disconnected.mirror"),
+        CLOSE("refuse.closed.message", "refuse.closed.mirror");
 
         public final String messagePath;
         public final String mirrorMessagePath;
