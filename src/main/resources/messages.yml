@@ -19,7 +19,7 @@ trading:
     disconnect:
       message: "You refused the trade because you disconnected."
       mirror: "%player% refused the trade because they disconnected."
-    closed:
+    close:
       message: "You refused the trade because you closed the inventory."
       mirror: "%player% refused the trade because they closed their inventory."
   experience:

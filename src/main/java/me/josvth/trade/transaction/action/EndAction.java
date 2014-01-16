@@ -29,6 +29,11 @@ public class EndAction extends Action {
 
         getTransaction().stop();
 
+        if (reason.messagePath != null) {
+            getTransaction().getTraderA().getFormattedMessage(reason.messagePath).send(getTransaction().getTraderA().getPlayer());
+            getTransaction().getTraderB().getFormattedMessage(reason.messagePath).send(getTransaction().getTraderB().getPlayer());
+        }
+
         getTransaction().getTraderA().closeInventory();
         getTransaction().getTraderB().closeInventory();
 
@@ -40,8 +45,7 @@ public class EndAction extends Action {
             getTransaction().getTraderB().getOffers().grant(getTransaction().getTraderB());
         }
 
-        getTransaction().getTraderA().getFormattedMessage(reason.messagePath).send(getTransaction().getTraderA().getPlayer());
-        getTransaction().getTraderB().getFormattedMessage(reason.messagePath).send(getTransaction().getTraderB().getPlayer());
+        getTransaction().remove();
 
     }
 

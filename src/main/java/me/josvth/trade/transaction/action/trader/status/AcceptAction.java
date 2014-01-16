@@ -1,30 +1,34 @@
-package me.josvth.trade.transaction.action;
+package me.josvth.trade.transaction.action.trader.status;
 
 import me.josvth.trade.transaction.Trader;
+import me.josvth.trade.transaction.action.ActionProvoker;
+import me.josvth.trade.transaction.action.EndAction;
+import me.josvth.trade.transaction.action.trader.TraderAction;
 import me.josvth.trade.transaction.inventory.slot.AcceptSlot;
 import me.josvth.trade.transaction.inventory.slot.StatusSlot;
 
-public class DenyAction extends TraderAction {
+public class AcceptAction extends TraderAction {
 
     private final Reason reason;
 
-    public DenyAction(Trader trader, Reason reason) {
-        this(trader, trader, reason);
+    public AcceptAction(ActionProvoker provoker, Trader trader) {
+        super(provoker, trader);
+        reason = Reason.GENERIC;
     }
 
-    public DenyAction(ActionProvoker provoker, Trader trader, Reason reason) {
-        super(provoker, trader);
+    public AcceptAction(Trader trader, Reason reason) {
+        super(trader, trader);  // TODO Correctly handle provoker
         this.reason = reason;
     }
 
     @Override
     public void execute() {
 
-        if (getTrader().hasAccepted()) {
+        if (!getTrader().hasAccepted()) {
 
-            getTrader().setAccepted(false);
+            getTrader().setAccepted(true);
 
-            getTrader().getFormattedMessage(reason.messagePath).send(getPlayer());
+            getTrader().getFormattedMessage(reason.messagePath).send(getTrader().getPlayer());
             getOtherTrader().getFormattedMessage(reason.mirrorMessagePath).send(getOtherPlayer(), "%player%", getTrader().getName());
 
             if (getTrader().getHolder().hasViewers()) {
@@ -39,16 +43,19 @@ public class DenyAction extends TraderAction {
                 getTransaction().logAction(this);
             }
 
+            if (getOtherTrader().hasAccepted()) {
+                new EndAction(getTransaction(), EndAction.Reason.ACCEPT).execute();
+            }
+
         }
 
     }
 
     public enum Reason {
 
-        GENERIC ("deny.generic.message", "deny.generic.mirror"),
-        BUTTON ("deny.generic.message", "deny.generic.mirror"),
-        OFFER_CHANGED ("deny.offer-changed.message", "deny.offer-changed.mirror"),
-        COMMAND ("deny.generic.message", "deny.generic.mirror");
+        GENERIC ("accept.generic.message", "accept.generic.mirror"),
+        BUTTON ("accept.generic.message", "accept.generic.mirror"),
+        COMMAND ("accept.generic.message", "accept.generic.mirror");
 
         public final String messagePath;
         public final String mirrorMessagePath;

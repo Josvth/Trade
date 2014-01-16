@@ -1,6 +1,6 @@
 package me.josvth.trade.transaction.offer;
 
-import me.josvth.trade.transaction.action.ChangeExperienceAction;
+import me.josvth.trade.transaction.action.trader.offer.ChangeExperienceAction;
 import me.josvth.trade.transaction.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
@@ -83,9 +83,9 @@ public class ExperienceOffer extends StackableOffer {
 		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
         if (event.isLeftClick()) {
-            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), event.isShiftClick() ? getDescription(holder.getTrader()).getLargeModifier() : getDescription(holder.getTrader()).getSmallModifier());
+            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), event.isShiftClick() ? getDescription(holder.getTrader()).getLargeModifier() : getDescription(holder.getTrader()).getSmallModifier()).execute();
         } else if (event.isRightClick()) {
-            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), -1*(event.isShiftClick() ? getDescription(holder.getTrader()).getLargeModifier() : getDescription(holder.getTrader()).getSmallModifier()));
+            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), -1*(event.isShiftClick() ? getDescription(holder.getTrader()).getLargeModifier() : getDescription(holder.getTrader()).getSmallModifier())).execute();
         }
 
     }

@@ -1,6 +1,6 @@
 package me.josvth.trade.transaction.inventory.slot;
 
-import me.josvth.trade.transaction.action.RefuseAction;
+import me.josvth.trade.transaction.action.trader.status.RefuseAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;

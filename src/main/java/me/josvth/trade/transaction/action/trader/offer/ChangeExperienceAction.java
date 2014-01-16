@@ -1,16 +1,30 @@
-package me.josvth.trade.transaction.action;
+package me.josvth.trade.transaction.action.trader.offer;
 
 import me.josvth.trade.transaction.Trader;
+import me.josvth.trade.transaction.action.ActionProvoker;
+import me.josvth.trade.transaction.action.trader.status.DenyAction;
 import me.josvth.trade.transaction.offer.ExperienceOffer;
+import me.josvth.trade.transaction.offer.Offer;
+import me.josvth.trade.transaction.offer.OfferResponse;
 import me.josvth.trade.util.ExperienceManager;
 
-public class ChangeExperienceAction extends TraderAction {
+import java.util.HashMap;
+import java.util.Map;
+
+public class ChangeExperienceAction extends OfferAction {
 
     private final int amount;
+
+    private OfferResponse response;
 
     public ChangeExperienceAction(ActionProvoker provoker, Trader trader, int amount) {
         super(provoker, trader);
         this.amount = amount;
+    }
+
+    @Override
+    public Map<Integer, ? extends Offer> getChanges() {
+        return response.getChangedSlots();
     }
 
     @Override
@@ -27,7 +41,7 @@ public class ChangeExperienceAction extends TraderAction {
 
             final ExperienceOffer offer = getTrader().getLayout().getOfferDescription(ExperienceOffer.class).createOffer();
 
-            getTrader().getOffers().addOffer(offer);
+            response = getTrader().getOffers().addOffer(offer);
 
             final int added = amount - offer.getAmount();
 
@@ -35,8 +49,6 @@ public class ChangeExperienceAction extends TraderAction {
 
             getTrader().getFormattedMessage("experience.added.self").send(getPlayer(), "%experience%", String.valueOf(added));
             getOtherTrader().getFormattedMessage("experience.added.other").send(getOtherPlayer(), "%experience%", String.valueOf(added));
-
-            new DenyAction(getTransaction().getTransactionProvoker(), getTrader(), DenyAction.Reason.OFFER_CHANGED).execute();
 
         } else {
 
@@ -52,9 +64,9 @@ public class ChangeExperienceAction extends TraderAction {
             getTrader().getFormattedMessage("experience.removed.self").send(getPlayer(), "%experience%", String.valueOf(removed));
             getOtherTrader().getFormattedMessage("experience.removed.other").send(getOtherPlayer(), "%experience%", String.valueOf(removed));
 
-            new DenyAction(getTransaction().getTransactionProvoker(), getTrader(), DenyAction.Reason.OFFER_CHANGED).execute();
-
         }
+
+        super.execute();
 
     }
 

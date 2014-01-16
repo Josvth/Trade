@@ -1,7 +1,7 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.transaction.action.ChangeExperienceAction;
+import me.josvth.trade.transaction.action.trader.offer.ChangeExperienceAction;
 import me.josvth.trade.transaction.offer.ExperienceOffer;
 import me.josvth.trade.transaction.offer.OfferList;
 import me.josvth.trade.tasks.ExperienceSlotUpdateTask;
@@ -36,9 +36,9 @@ public class ExperienceSlot extends Slot {
         final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
         if (event.isLeftClick()) {
-            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), event.isShiftClick() ? smallModifier : largeModifier);
+            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), event.isShiftClick() ? smallModifier : largeModifier).execute();
         } else if (event.isRightClick()) {
-            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), -1*(event.isShiftClick() ? smallModifier : largeModifier));
+            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), -1*(event.isShiftClick() ? smallModifier : largeModifier)).execute();
         }
 
     }

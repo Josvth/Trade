@@ -101,11 +101,11 @@ public class Transaction {
     }
 
     public void stop() {
-
         stage = Transaction.Stage.POST;
+    }
 
+    public void remove() {
         manager.removeTransaction(this);
-
     }
 
     public boolean useLogging() {

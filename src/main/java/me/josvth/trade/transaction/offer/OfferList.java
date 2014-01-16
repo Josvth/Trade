@@ -95,23 +95,16 @@ public class OfferList {
 		}
 	}
 
-    public boolean addOffer(Offer offer) {
+    public OfferResponse addOffer(Offer offer) {
 
-        boolean complete = false;   // true if the whole amount could be added
+        final OfferResponse response = new OfferResponse(offer);
 
         if (offer instanceof StackableOffer) {
 
             StackableOffer stackableOffer = (StackableOffer) offer;
 
-            System.out.print(stackableOffer.getClass());
-
-            // We keep a list of changed offer indexes so we can update the slots later
-            final LinkedList<Integer> changedIndexes = new LinkedList<Integer>();
-
             // First we try and fill up existing offers
             final Iterator<? extends Map.Entry<Integer,? extends StackableOffer>> iterator = getOfClass(stackableOffer.getClass()).entrySet().iterator();
-
-            int currentAmount = 0;  // At the moment only used by experience items
 
             while (iterator.hasNext()) {
 
@@ -123,13 +116,13 @@ public class OfferList {
 
                     // If we have added something change the remaining levels and add this slot to the changed indexes
                     if (overflow < stackableOffer.getAmount()) {
-                        changedIndexes.add(entry.getKey());
+                        response.getChangedSlots().put(entry.getKey(), entry.getValue()); // We keep track of what we changed
                         stackableOffer.setAmount(overflow);
                     }
 
                 }
 
-                currentAmount += entry.getValue().getAmount();  // We count the total amount currently offered
+                response.setCurrentAmount(response.getCurrentAmount() + entry.getValue().getAmount()); // We count the total amount currently offered
 
             }
 
@@ -144,11 +137,14 @@ public class OfferList {
 
                     if (overflow <= 0) {
 
-                        set(firstEmpty, stackableOffer.clone());
-                        currentAmount += stackableOffer.getAmount();
+                        final StackableOffer clone = stackableOffer.clone();
+
+                        set(firstEmpty, clone);
+                        response.getChangedSlots().put(firstEmpty, clone); // We keep track of what we changed
+
+                        response.setCurrentAmount(response.getCurrentAmount() + stackableOffer.getAmount());
 
                         stackableOffer.setAmount(0); // Set the amount to 0 to make the user know there's nothing left
-                        complete = true;
 
                         firstEmpty = -1; // End the loop
 
@@ -159,40 +155,42 @@ public class OfferList {
                         fullStack.setAmount(stackableOffer.getMaxAmount());
 
                         set(firstEmpty, fullStack);
-                        currentAmount += fullStack.getMaxAmount();
+                        response.getChangedSlots().put(firstEmpty, fullStack); // We keep track of what we changed
+
+                        response.setCurrentAmount(response.getCurrentAmount() + fullStack.getMaxAmount());
 
                         stackableOffer.setAmount(-1 * overflow);
 
                         firstEmpty = getFirstEmpty();
 
+
                     }
 
-                    changedIndexes.add(firstEmpty);
 
                 }
 
             }
 
-            // If we changed anything we update the holder and mirror
-            if (!changedIndexes.isEmpty()) {
-
-                // We place our changed indexes into an array
-                final int[] indexesArray = new int[changedIndexes.size()];
-
-                int i = 0;
-                for (int index : changedIndexes) {
-                    indexesArray[i] = index;
-                    i++;
-                }
-
-                TradeSlot.updateTradeSlots(getHolder(), true, indexesArray);
-                MirrorSlot.updateMirrors(getHolder().getOtherHolder(), true, indexesArray);
-
-                if (stackableOffer instanceof ExperienceOffer) {
-                    ExperienceSlot.updateExperienceSlots(getHolder(), true, currentAmount);
-                }
-
-            }
+//            // If we changed anything we update the holder and mirror
+//            if (!changedIndexes.isEmpty()) {
+//
+//                // We place our changed indexes into an array
+//                final int[] indexesArray = new int[changedIndexes.size()];
+//
+//                int i = 0;
+//                for (int index : changedIndexes) {
+//                    indexesArray[i] = index;
+//                    i++;
+//                }
+//
+//                TradeSlot.updateTradeSlots(getHolder(), true, indexesArray);
+//                MirrorSlot.updateMirrors(getHolder().getOtherHolder(), true, indexesArray);
+//
+//                if (stackableOffer instanceof ExperienceOffer) {
+//                    ExperienceSlot.updateExperienceSlots(getHolder(), true, currentAmount);
+//                }
+//
+//            }
 
         } else {
 
@@ -200,14 +198,12 @@ public class OfferList {
 
             if (empty != -1) {
                 set(empty, offer);
-                TradeSlot.updateTradeSlots(getHolder(), true, empty);
-                MirrorSlot.updateMirrors(getHolder().getOtherHolder(), true, empty);
-                complete = true;
+                response.getChangedSlots().put(empty, offer);
             }
 
         }
 
-        return complete;
+        return response;
 
     }
 
@@ -293,6 +289,8 @@ public class OfferList {
         return complete;
 
     }
+
+
 
     public ItemOffer createItemOffer(ItemStack itemStack) {
         final ItemOffer offer = getTrader().getLayout().getOfferDescription(ItemOffer.class).createOffer();

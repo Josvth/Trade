@@ -1,12 +1,10 @@
 package me.josvth.trade.transaction.offer;
 
-import me.josvth.trade.Trade;
-import me.josvth.trade.transaction.action.DenyAction;
+import me.josvth.trade.transaction.action.trader.status.DenyAction;
 import me.josvth.trade.transaction.offer.description.ItemOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
-import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
@@ -101,7 +99,7 @@ public class ItemOffer extends StackableOffer {
                 holder.getOffers().set(offerIndex, null);
 
                 // Cancels the other players accept if he had accepted
-                new DenyAction(holder.getTransaction().getTransactionProvoker(), holder.getTrader(), DenyAction.Reason.OFFER_CHANGED).execute();
+                new DenyAction(holder.getTransaction().getTransactionProvoker(), holder.getTrader(), DenyAction.Reason.OWN_OFFER_CHANGED).execute();
 
 				break;
 			case PICKUP_HALF:
