@@ -1,6 +1,7 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
+import me.josvth.trade.transaction.action.trader.offer.SetOfferAction;
 import me.josvth.trade.transaction.action.trader.status.DenyAction;
 import me.josvth.trade.transaction.offer.ItemOffer;
 import me.josvth.trade.transaction.offer.Offer;
@@ -42,8 +43,6 @@ public class TradeSlot extends Slot {
         // If we have a offer on this slot we let the offer handle the event
         if (offer == null) {
 
-            // TODO An alternative would be to determine the new item in the update() method instead of during the event.
-
             ItemStack newItem = null;
 
             switch (event.getAction()) {
@@ -58,12 +57,7 @@ public class TradeSlot extends Slot {
                     throw new IllegalStateException("Not handled action: " + event.getAction().name());
             }
 
-            holder.getOffers().set(offerIndex, (newItem == null)? null : ItemOffer.create(holder.getTrader(), newItem));
-
-            // Cancels the other players accept if he had accepted
-            new DenyAction(holder.getTransaction().getTransactionProvoker(), holder.getOtherTrader(), DenyAction.Reason.OWN_OFFER_CHANGED).execute();
-
-            MirrorSlot.updateMirrors(holder.getOtherHolder(), true);
+            new SetOfferAction(holder.getTrader(), offerIndex, (newItem == null)? null : ItemOffer.create(holder.getTrader(), newItem)).execute();
 
         } else {
 
@@ -83,14 +77,7 @@ public class TradeSlot extends Slot {
         if (offer != null) {
             offer.onDrag(event, offerIndex, slot);
         } else if (event.getNewItems().containsKey(slot)) {
-
-            holder.getOffers().set(offerIndex, ItemOffer.create(holder.getTrader(), event.getNewItems().get(slot).clone()));
-
-            // Cancels the other players accept if he had accepted
-            new DenyAction(holder.getTransaction().getTransactionProvoker(), holder.getTrader(), DenyAction.Reason.OWN_OFFER_CHANGED).execute();
-
-            MirrorSlot.updateMirrors(holder.getOtherHolder(), true, offerIndex);
-
+            new SetOfferAction(holder.getTrader(), offerIndex, ItemOffer.create(holder.getTrader(), event.getNewItems().get(slot).clone())).execute();
         }
 
     }

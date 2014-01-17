@@ -21,8 +21,8 @@ public class ChangeOfferAction extends OfferAction {
     private boolean complete = false;
     private int remaining = 0;
 
-    public ChangeOfferAction(ActionProvoker provoker, Trader trader, Offer offer, boolean add) {
-        super(provoker, trader);
+    public ChangeOfferAction(Trader trader, Offer offer, boolean add) {
+        super(trader);
         this.offer = offer;
         this.add = add;
     }

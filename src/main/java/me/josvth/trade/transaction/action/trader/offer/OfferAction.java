@@ -19,8 +19,8 @@ import java.util.Set;
  */
 public abstract class OfferAction extends TraderAction {
 
-    public OfferAction(ActionProvoker provoker, Trader trader) {
-        super(provoker, trader);
+    public OfferAction(Trader trader) {
+        super(trader);
     }
 
     public abstract Map<Integer, ? extends Offer> getChanges();

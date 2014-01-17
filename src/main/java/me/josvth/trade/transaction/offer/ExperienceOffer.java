@@ -89,9 +89,9 @@ public class ExperienceOffer extends StackableOffer {
 		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
         if (event.isLeftClick()) {
-            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), event.isShiftClick() ? getDescription(holder.getTrader()).getLargeModifier() : getDescription(holder.getTrader()).getSmallModifier()).execute();
+            new ChangeExperienceAction(holder.getTrader(), event.isShiftClick() ? getDescription(holder.getTrader()).getLargeModifier() : getDescription(holder.getTrader()).getSmallModifier()).execute();
         } else if (event.isRightClick()) {
-            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), -1*(event.isShiftClick() ? getDescription(holder.getTrader()).getLargeModifier() : getDescription(holder.getTrader()).getSmallModifier())).execute();
+            new ChangeExperienceAction(holder.getTrader(), -1*(event.isShiftClick() ? getDescription(holder.getTrader()).getLargeModifier() : getDescription(holder.getTrader()).getSmallModifier())).execute();
         }
 
     }

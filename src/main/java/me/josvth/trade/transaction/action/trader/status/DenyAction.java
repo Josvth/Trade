@@ -11,11 +11,7 @@ public class DenyAction extends TraderAction {
     private final Reason reason;
 
     public DenyAction(Trader trader, Reason reason) {
-        this(trader, trader, reason);
-    }
-
-    public DenyAction(ActionProvoker provoker, Trader trader, Reason reason) {
-        super(provoker, trader);
+        super(trader);
         this.reason = reason;
     }
 

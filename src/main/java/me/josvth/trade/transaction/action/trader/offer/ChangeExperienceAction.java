@@ -8,8 +8,8 @@ import me.josvth.trade.util.ExperienceManager;
 
 public class ChangeExperienceAction extends ChangeOfferAction {
 
-    public ChangeExperienceAction(ActionProvoker provoker, Trader trader, int amount) {
-        super(provoker, trader, ExperienceOffer.create(trader, Math.abs(amount)), amount > 0);
+    public ChangeExperienceAction(Trader trader, int amount) {
+        super(trader, ExperienceOffer.create(trader, Math.abs(amount)), amount > 0);
     }
 
     @Override

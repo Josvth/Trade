@@ -36,9 +36,9 @@ public class ExperienceSlot extends Slot {
         final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
         if (event.isLeftClick()) {
-            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), event.isShiftClick() ? smallModifier : largeModifier).execute();
+            new ChangeExperienceAction(holder.getTrader(), event.isShiftClick() ? smallModifier : largeModifier).execute();
         } else if (event.isRightClick()) {
-            new ChangeExperienceAction(holder.getTrader(), holder.getTrader(), -1*(event.isShiftClick() ? smallModifier : largeModifier)).execute();
+            new ChangeExperienceAction(holder.getTrader(), -1*(event.isShiftClick() ? smallModifier : largeModifier)).execute();
         }
 
     }

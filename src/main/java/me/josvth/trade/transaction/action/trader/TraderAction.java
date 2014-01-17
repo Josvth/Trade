@@ -7,15 +7,12 @@ import org.bukkit.entity.Player;
 
 public abstract class TraderAction extends Action {
 
-    private final Trader trader;
-
-    public TraderAction(ActionProvoker provoker, Trader trader) {
-        super(provoker);
-        this.trader = trader;
+    public TraderAction(Trader trader) {
+        super(trader);
     }
 
     public Trader getTrader() {
-        return trader;
+        return (Trader) getProvoker();
     }
 
     public Player getPlayer() {

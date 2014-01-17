@@ -1,5 +1,6 @@
 package me.josvth.trade.transaction.offer;
 
+import me.josvth.trade.transaction.action.trader.offer.SetOfferAction;
 import me.josvth.trade.transaction.action.trader.status.DenyAction;
 import me.josvth.trade.transaction.offer.description.ItemOfferDescription;
 import me.josvth.trade.transaction.Trader;
@@ -102,11 +103,6 @@ public class ItemOffer extends StackableOffer {
 			case MOVE_TO_OTHER_INVENTORY:
 			case HOTBAR_MOVE_AND_READD:
 				item = null;
-                holder.getOffers().set(offerIndex, null);
-
-                // Cancels the other players accept if he had accepted
-                new DenyAction(holder.getTransaction().getTransactionProvoker(), holder.getTrader(), DenyAction.Reason.OWN_OFFER_CHANGED).execute();
-
 				break;
 			case PICKUP_HALF:
 				item.setAmount(item.getAmount() / 2);
@@ -127,8 +123,8 @@ public class ItemOffer extends StackableOffer {
 				throw new IllegalStateException("UNHANDLED ACTION: " + event.getAction().name());
 		}
 
-        // We only update the mirror because we assume the current view is showing the correct item stack
-        MirrorSlot.updateMirrors(((TransactionHolder)event.getInventory().getHolder()).getOtherHolder(), true, offerIndex);
+        new SetOfferAction(holder.getTrader(), offerIndex, null).execute();
+
 	}
 
 	@Override

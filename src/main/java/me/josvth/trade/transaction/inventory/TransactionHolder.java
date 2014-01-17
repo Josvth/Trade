@@ -1,6 +1,7 @@
 package me.josvth.trade.transaction.inventory;
 
 import me.josvth.trade.Trade;
+import me.josvth.trade.transaction.action.trader.offer.ChangeOfferAction;
 import me.josvth.trade.transaction.action.trader.status.CloseAction;
 import me.josvth.trade.transaction.action.trader.status.RefuseAction;
 import me.josvth.trade.transaction.offer.*;
@@ -87,7 +88,7 @@ public class TransactionHolder implements InventoryHolder {
 
             if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
 
-                getOffers().addOffer(ItemOffer.create(trader, event.getCurrentItem().clone()));
+                new ChangeOfferAction(getTrader(), ItemOffer.create(trader, event.getCurrentItem().clone()), true).execute();
 
                 event.setCancelled(true);
 

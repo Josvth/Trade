@@ -7,11 +7,7 @@ import me.josvth.trade.transaction.action.trader.TraderAction;
 public class CloseAction extends TraderAction {
 
     public CloseAction(Trader trader) {
-        super(trader, trader);
-    }
-
-    public CloseAction(ActionProvoker provoker, Trader trader) {
-        super(provoker, trader);
+        super(trader);
     }
 
     @Override

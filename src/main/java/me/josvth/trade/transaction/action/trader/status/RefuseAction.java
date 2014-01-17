@@ -9,7 +9,7 @@ public class RefuseAction extends TraderAction {
     private final Reason reason;
 
     public RefuseAction(Trader trader, Reason reason) {
-        super(trader, trader);
+        super(trader);
         this.reason = reason;
     }
 

@@ -11,13 +11,8 @@ public class AcceptAction extends TraderAction {
 
     private final Reason reason;
 
-    public AcceptAction(ActionProvoker provoker, Trader trader) {
-        super(provoker, trader);
-        reason = Reason.GENERIC;
-    }
-
     public AcceptAction(Trader trader, Reason reason) {
-        super(trader, trader);  // TODO Correctly handle provoker
+        super(trader);
         this.reason = reason;
     }
 
