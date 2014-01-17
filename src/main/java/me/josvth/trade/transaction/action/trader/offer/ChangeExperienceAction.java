@@ -2,71 +2,73 @@ package me.josvth.trade.transaction.action.trader.offer;
 
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.action.ActionProvoker;
-import me.josvth.trade.transaction.action.trader.status.DenyAction;
+import me.josvth.trade.transaction.inventory.slot.ExperienceSlot;
 import me.josvth.trade.transaction.offer.ExperienceOffer;
-import me.josvth.trade.transaction.offer.Offer;
-import me.josvth.trade.transaction.offer.OfferResponse;
 import me.josvth.trade.util.ExperienceManager;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class ChangeExperienceAction extends OfferAction {
-
-    private final int amount;
-
-    private OfferResponse response;
+public class ChangeExperienceAction extends ChangeOfferAction {
 
     public ChangeExperienceAction(ActionProvoker provoker, Trader trader, int amount) {
-        super(provoker, trader);
-        this.amount = amount;
-    }
-
-    @Override
-    public Map<Integer, ? extends Offer> getChanges() {
-        return response.getChangedSlots();
+        super(provoker, trader, ExperienceOffer.create(trader, Math.abs(amount)), amount > 0);
     }
 
     @Override
     public void execute() {
 
-        if (amount > 0) {
+        final ExperienceManager expManager = new ExperienceManager(getPlayer());
 
-            final ExperienceManager expManager = new ExperienceManager(getPlayer());
+        if (isAdd()) {
 
-            if (!expManager.hasExp(amount)) {
-                getTrader().getFormattedMessage("experience.insufficient").send(getPlayer(), "%experience%", String.valueOf(amount));
+            if (!expManager.hasExp(getInitialAmount())) {
+                getTrader().getFormattedMessage("experience.insufficient").send(getPlayer(), "%experience%", String.valueOf(getInitialAmount()));
                 return;
             }
 
-            final ExperienceOffer offer = getTrader().getLayout().getOfferDescription(ExperienceOffer.class).createOffer();
+        }
 
-            response = getTrader().getOffers().addOffer(offer);
+        // Execute super
+        super.execute();
 
-            final int added = amount - offer.getAmount();
+        if (isAdd()) {
 
-            expManager.changeExp(-1 * added);
+            // Take experience from player
+            final int added = getChangedAmount();
 
+            // Send messages
             getTrader().getFormattedMessage("experience.added.self").send(getPlayer(), "%experience%", String.valueOf(added));
-            getOtherTrader().getFormattedMessage("experience.added.other").send(getOtherPlayer(), "%experience%", String.valueOf(added));
+
+            if (added > 0) {
+
+                // Only send the other trader a message if something actually was changed
+                getOtherTrader().getFormattedMessage("experience.added.other").send(getOtherPlayer(), "%experience%", String.valueOf(added));
+                expManager.changeExp(-1 * added);
+
+                // Update experience slots //TODO update amount on offers as well
+                ExperienceSlot.updateExperienceSlots(getTrader().getHolder(), true, getCurrentAmount());
+
+            }
 
         } else {
 
-            final ExperienceOffer offer = getTrader().getLayout().getOfferDescription(ExperienceOffer.class).createOffer();
+            // Grant experience
+            final int removed = getChangedAmount();
 
-            getTrader().getOffers().removeOffer(offer);
-
-            final int removed = -1 * amount - offer.getAmount();
-
-            // Give the player experience
-            new ExperienceManager(getPlayer()).changeExp(removed);
-
+            // Send messages
             getTrader().getFormattedMessage("experience.removed.self").send(getPlayer(), "%experience%", String.valueOf(removed));
-            getOtherTrader().getFormattedMessage("experience.removed.other").send(getOtherPlayer(), "%experience%", String.valueOf(removed));
+
+            if (removed > 0) {
+
+                expManager.changeExp(removed);
+
+                // Only send the other trader a message if something actually was changed
+                getOtherTrader().getFormattedMessage("experience.removed.other").send(getOtherPlayer(), "%experience%", String.valueOf(removed));
+
+                // Update experience slots //TODO update amount on offers as well
+                ExperienceSlot.updateExperienceSlots(getTrader().getHolder(), true, getCurrentAmount());
+
+            }
 
         }
-
-        super.execute();
 
     }
 

@@ -87,7 +87,7 @@ public class TransactionHolder implements InventoryHolder {
 
             if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
 
-                getOffers().addOffer(getOffers().createItemOffer(event.getCurrentItem().clone()));
+                getOffers().addOffer(ItemOffer.create(trader, event.getCurrentItem().clone()));
 
                 event.setCancelled(true);
 

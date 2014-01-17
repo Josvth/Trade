@@ -2,6 +2,7 @@ package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.action.trader.status.DenyAction;
+import me.josvth.trade.transaction.offer.ItemOffer;
 import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
@@ -57,7 +58,7 @@ public class TradeSlot extends Slot {
                     throw new IllegalStateException("Not handled action: " + event.getAction().name());
             }
 
-            holder.getOffers().set(offerIndex, (newItem == null)? null : holder.getOffers().createItemOffer(newItem));
+            holder.getOffers().set(offerIndex, (newItem == null)? null : ItemOffer.create(holder.getTrader(), newItem));
 
             // Cancels the other players accept if he had accepted
             new DenyAction(holder.getTransaction().getTransactionProvoker(), holder.getOtherTrader(), DenyAction.Reason.OWN_OFFER_CHANGED).execute();
@@ -83,7 +84,7 @@ public class TradeSlot extends Slot {
             offer.onDrag(event, offerIndex, slot);
         } else if (event.getNewItems().containsKey(slot)) {
 
-            holder.getOffers().set(offerIndex, holder.getOffers().createItemOffer(event.getNewItems().get(slot).clone()));
+            holder.getOffers().set(offerIndex, ItemOffer.create(holder.getTrader(), event.getNewItems().get(slot).clone()));
 
             // Cancels the other players accept if he had accepted
             new DenyAction(holder.getTransaction().getTransactionProvoker(), holder.getTrader(), DenyAction.Reason.OWN_OFFER_CHANGED).execute();

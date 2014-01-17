@@ -20,6 +20,12 @@ public class ExperienceOffer extends StackableOffer {
         this.experience = experience;
     }
 
+    public static ExperienceOffer create(Trader trader, int amount) {
+        final ExperienceOffer offer = trader.getLayout().getOfferDescription(ExperienceOffer.class).createOffer();
+        offer.setAmount(amount);
+        return offer;
+    }
+
     @Override
     public String getType() {
         return null;
@@ -94,5 +100,6 @@ public class ExperienceOffer extends StackableOffer {
     public String toString() {
         return "EXP: " + experience;
     }
+
 
 }

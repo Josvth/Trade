@@ -34,4 +34,6 @@ public abstract class Offer {
 
 	}
 
+    public abstract Offer clone();
+
 }

@@ -21,6 +21,12 @@ public class ItemOffer extends StackableOffer {
 		this.item = item;
 	}
 
+    public static ItemOffer create(Trader trader, ItemStack itemStack) {
+        final ItemOffer offer = trader.getLayout().getOfferDescription(ItemOffer.class).createOffer();
+        offer.setItem(itemStack);
+        return offer;
+    }
+
     @Override
     public String getType() {
         return "item";
