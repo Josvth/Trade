@@ -1,5 +1,6 @@
 commands:
   invalid-usage: That's not the way you use this command. Try %usage%.
+  player-only: "Only players can use this command."
 trading:
   accept:
     generic:
@@ -9,9 +10,12 @@ trading:
     generic:
       message: "You denied the trade."
       mirror: "%player% denied the trade."
-    offer-changed:
-      message: "Your accept was cancelled because you changed your offer."
-      mirror: "Your accept was cancelled because %player% changed their offer."
+    own-offer-changed:
+      message: "You denied because you changed your offer."
+      mirror: "%player% denied because they changed their offer."
+    others-offer-changed:
+      message: "Your accept was cancelled because %player% changed their offer."
+      mirror: "%player% denied because you changed your offer."
   refuse:
     generic:
       message: "You refused the trade."

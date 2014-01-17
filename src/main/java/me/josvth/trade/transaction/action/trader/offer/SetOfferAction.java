@@ -8,11 +8,17 @@ import java.util.Map;
 
 public class SetOfferAction extends OfferAction {
 
-    final Map<Integer, Offer> changes = new HashMap<Integer, Offer>();
+    final Map<Integer, Offer> changes;
 
     public SetOfferAction(Trader trader, int offerIndex, Offer offer) {
         super(trader);
+        changes = new HashMap<Integer, Offer>();
         changes.put(offerIndex, offer);
+    }
+
+    public SetOfferAction(Trader trader, Map<Integer, Offer> changes) {
+        super(trader);
+        this.changes = changes;
     }
 
     @Override

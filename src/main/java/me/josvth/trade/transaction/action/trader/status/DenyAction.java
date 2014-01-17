@@ -22,7 +22,7 @@ public class DenyAction extends TraderAction {
 
             getTrader().setAccepted(false);
 
-            getTrader().getFormattedMessage(reason.messagePath).send(getPlayer());
+            getTrader().getFormattedMessage(reason.messagePath).send(getPlayer(), "%player%", getOtherTrader().getName());
             getOtherTrader().getFormattedMessage(reason.mirrorMessagePath).send(getOtherPlayer(), "%player%", getTrader().getName());
 
             if (getTrader().getHolder().hasViewers()) {

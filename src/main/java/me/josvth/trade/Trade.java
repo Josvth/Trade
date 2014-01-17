@@ -29,6 +29,7 @@ public class Trade extends JavaPlugin {
     private LayoutManager layoutManager;
     private TransactionManager transactionManager;
     private RequestManager requestManager;
+    private CommandManager commandManager;
 
     public Trade() {
 
@@ -39,6 +40,8 @@ public class Trade extends JavaPlugin {
 
         transactionManager = new TransactionManager(this);
         requestManager = new RequestManager(this, messageManager.getMessageHolder(), transactionManager);
+
+        commandManager = new CommandManager(this);
 
     }
 
@@ -76,6 +79,8 @@ public class Trade extends JavaPlugin {
 
         requestManager.load(generalConfiguration.getConfigurationSection("requesting"));
 
+        commandManager.load();
+
     }
 
     @Override
@@ -94,10 +99,6 @@ public class Trade extends JavaPlugin {
 
     public MessageManager getMessageManager() {
         return messageManager;
-    }
-
-    public MessageHolder getMessageHolder() {
-        return getMessageManager().getMessageHolder();
     }
 
     public LayoutManager getLayoutManager() {
@@ -122,83 +123,6 @@ public class Trade extends JavaPlugin {
 
     public ConventYamlConfiguration getMessageConfiguration() {
         return messageConfiguration;
-    }
-
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
-        if (!(sender instanceof Player)) {
-            return true;
-        }
-
-        Player player = (Player) sender;
-
-        if (args.length < 1) {
-            getMessageHolder().getMessage("command.invalid-usage").send(player, "%usage%", "/trade <sub command> or /trade <player>");
-            return true;
-        }
-
-        if ("open".equalsIgnoreCase(args[0])) {
-
-            Transaction transaction = transactionManager.getTransaction(player.getName());
-
-            if (transaction != null) {
-                transaction.getTrader(player.getName()).openInventory();
-            } else {
-                player.sendMessage("NOT TRADING!");
-            }
-
-            return true;
-
-        }
-
-        if ("request".equalsIgnoreCase(args[0])) {
-
-            if (args.length < 2) {
-                getMessageHolder().getMessage("command.invalid-usage").send(player, "%usage%", "/trade request <player>");
-                return true;
-            }
-
-            final RequestResponse response = requestManager.submit(new Request(player.getName(), args[1], RequestMethod.COMMAND));
-
-            final RequestRestriction restriction = response.getRequestRestriction();
-
-            if (response.getTransaction() != null) {
-                response.getTransaction().start();
-                // TODO add messages
-
-            } else {
-                if (restriction == RequestRestriction.METHOD) {
-                    getMessageHolder().getMessage(RequestMethod.COMMAND.messagePath).send(player);
-                } else {
-                    getMessageHolder().getMessage(restriction.requestMessagePath).send(player, "%player%", args[1]);
-                }
-            }
-
-            return true;
-
-        }
-
-        // /trade <player>
-        final RequestResponse response = requestManager.submit(new Request(player.getName(), args[0], RequestMethod.COMMAND));
-
-        final RequestRestriction restriction = response.getRequestRestriction();
-
-        if (response.getTransaction() != null) {
-            response.getTransaction().start();
-            // TODO add messages
-
-        } else {
-            if (restriction == RequestRestriction.METHOD) {
-                getMessageHolder().getMessage(RequestMethod.COMMAND.messagePath).send(player);
-            } else {
-                getMessageHolder().getMessage(restriction.requestMessagePath).send(player, "%player%", args[0]);
-            }
-        }
-
-        return true;
-
     }
 
 }
