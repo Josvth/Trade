@@ -4,15 +4,21 @@ import me.josvth.trade.transaction.Transaction;
 
 public class RequestResponse {
 
+    private final Request request;
 	private final RequestRestriction requestRestriction;
 	private final Transaction transaction;
 
-	public RequestResponse(RequestRestriction requestRestriction, Transaction transaction) {
-		this.requestRestriction = requestRestriction;
+	public RequestResponse(Request request, RequestRestriction requestRestriction, Transaction transaction) {
+		this.request = request;
+        this.requestRestriction = requestRestriction;
 		this.transaction = transaction;
 	}
 
-	public RequestRestriction getRequestRestriction() {
+    public Request getRequest() {
+        return request;
+    }
+
+    public RequestRestriction getRequestRestriction() {
 		return requestRestriction;
 	}
 

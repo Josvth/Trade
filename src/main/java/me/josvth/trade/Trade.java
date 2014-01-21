@@ -9,10 +9,12 @@ import me.josvth.trade.request.*;
 import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.TransactionManager;
 import me.josvth.trade.transaction.inventory.LayoutManager;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -20,6 +22,7 @@ import java.io.File;
 public class Trade extends JavaPlugin {
 
     private static Trade instance;
+
     // Configurations
     private ConventYamlConfiguration generalConfiguration;
     private ConventYamlConfiguration layoutConfiguration;
@@ -50,7 +53,7 @@ public class Trade extends JavaPlugin {
     }
 
     @Override
-    public void onLoad() {
+    public void onEnable() {
 
         // Load configurations
         generalConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "config.yml"), getDescription().getVersion());
@@ -79,14 +82,9 @@ public class Trade extends JavaPlugin {
 
         requestManager.load(generalConfiguration.getConfigurationSection("requesting"));
 
-        commandManager.load();
-
-    }
-
-    @Override
-    public void onEnable() {
         transactionManager.initialize();
         requestManager.initialize();
+        commandManager.initialize();
     }
 
     @Override
@@ -95,6 +93,18 @@ public class Trade extends JavaPlugin {
         transactionManager.unload();
         layoutManager.unload();
         messageManager.unload();
+    }
+
+    public void onReload() {
+        getServer().getPluginManager().disablePlugin(this);
+        getServer().getPluginManager().enablePlugin(this);
+    }
+
+    public boolean hasPermission(CommandSender sender, String permission) {
+        if (getGeneralConfiguration().getBoolean("use-permissions", true)) {
+            return sender.hasPermission(permission);
+        }
+        return (getServer().getPluginManager().getPermission(permission).getDefault() == PermissionDefault.OP && sender.isOp()) || getServer().getPluginManager().getPermission(permission).getDefault() != PermissionDefault.OP;
     }
 
     public MessageManager getMessageManager() {

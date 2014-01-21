@@ -46,6 +46,7 @@ trading:
 requesting:
   timeout: "Your request to trade with %player% timed out."
   requested-by: "You have been requested to trade by %player%."
+  not-requested: "You have not been requested by anyone."
   restriction:
     allow: You requested %player% to trade.
     offline: "You can't request %player% because he or she is offline."

@@ -4,3 +4,46 @@ version: ${project.version}
 author: Josvth
 commands:
   trade:
+    aliases: [tr]
+    default: op
+permissions:
+  trade.*:
+    description: Grants permission to all features.
+    default: op
+    children:
+      trade.reload: true
+      trade.request.*: true
+      trade.allow.*: true
+  trade.reload:
+    description: Grants permission to reload Trade.
+    default: op
+  trade.allow.*:
+    description: Grants permission to all default restrictions.
+    default: op
+    children:
+      trade.allow.cross-game-mode: true
+      trade.allow.cross-world: true
+  trade.request.*:
+    description: Grants permission to all requesting features.
+    default: false
+    children:
+      trade.request.command: true
+      trade.request.right-click: true
+      trade.request.shift-right-click: true
+      trade.request.left-click: true
+      trade.request.shift-left-click: true
+  trade.request.command:
+    description: Grants permission to request by command.
+    default: false
+  trade.request.right-click:
+    description: Grants permission to request by right clicking.
+    default: false
+  trade.request.shift-right-click:
+    description: Grants permission to request by shift right clicking.
+    default: false
+  trade.request.left-click:
+    description: Grants permission to request by left clicking.
+    default: false
+  trade.request.shift-left-click:
+    description: Grants permission to request by shift left clicking.
+    default: false

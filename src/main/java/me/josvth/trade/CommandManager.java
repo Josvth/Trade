@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class CommandManager implements CommandExecutor {
 
@@ -19,7 +20,7 @@ public class CommandManager implements CommandExecutor {
         this.plugin = plugin;
     }
 
-    public void load() {
+    public void initialize() {
         getPlugin().getCommand("trade").setExecutor(this);
         getPlugin().getCommand("tr").setExecutor(this);
     }
@@ -36,9 +37,14 @@ public class CommandManager implements CommandExecutor {
             return true;
         }
 
-        // /trade open
-        if ("open".equalsIgnoreCase(args[0])) {
-            return executeOpenCommand(commandSender, Arrays.copyOfRange(args, 1, args.length));
+        // /trade reload
+        if ("reload".equalsIgnoreCase(args[0])) {
+            return executeReloadCommand(commandSender, Arrays.copyOfRange(args, 1, args.length));
+        }
+
+        // /trade ignore
+        if ("ignore".equalsIgnoreCase(args[0])) {
+            return executeIgnoreCommand(commandSender, Arrays.copyOfRange(args, 1, args.length));
         }
 
         // /trade request <player>
@@ -46,8 +52,55 @@ public class CommandManager implements CommandExecutor {
             return executeRequestCommand(commandSender, Arrays.copyOfRange(args, 1, args.length));
         }
 
+        // /trade accept [player]
+        if ("accept".equalsIgnoreCase(args[0])) {
+            if (args.length == 2) {
+                return executeRequestCommand(commandSender, args[1]);
+            } else {
+                return executeRequestCommand(commandSender);
+            }
+        }
+
+        // /trade open
+        if ("open".equalsIgnoreCase(args[0])) {
+            return executeOpenCommand(commandSender, Arrays.copyOfRange(args, 1, args.length));
+        }
+
         // /trade <player>
         return executeRequestCommand(commandSender, args[0]);
+
+    }
+
+    private boolean executeReloadCommand(CommandSender commandSender, String[] args) {
+
+        if (!plugin.hasPermission(commandSender, "trade.reload")) {
+            getMessageHolder().getMessage("commands.no-permission").send(commandSender);
+            return true;
+        }
+
+        getPlugin().onReload();
+
+        return true;
+
+    }
+
+    private boolean executeIgnoreCommand(CommandSender commandSender, String[] strings) {
+
+        if (!(commandSender instanceof Player)) {
+            getMessageHolder().getMessage("commands.player-only").send(commandSender);
+            return true;
+        }
+
+        final Player player = (Player) commandSender;
+
+        if (!plugin.hasPermission(player, "trade.request.ignore")) {
+            getMessageHolder().getMessage("commands.no-permission").send(commandSender);
+            return true;
+        }
+
+        getPlugin().getRequestManager().toggleIgnoring(player.getName());
+
+        return true;
 
     }
 
@@ -83,6 +136,10 @@ public class CommandManager implements CommandExecutor {
 
     }
 
+    private boolean executeRequestCommand(CommandSender commandSender) {
+        return executeRequestCommand(commandSender, "");
+    }
+
     private boolean executeRequestCommand(CommandSender commandSender, String requested) {
 
         if (!(commandSender instanceof Player)) {
@@ -91,6 +148,16 @@ public class CommandManager implements CommandExecutor {
         }
 
         final Player player = (Player) commandSender;
+
+        if ("".equalsIgnoreCase(requested)) {
+            final List<Request> requests = getRequestManager().getActiveRequests(player.getName());
+            if (requests.isEmpty()) {
+                getMessageHolder().getMessage("requesting.not-requested").send(commandSender);
+                return true;
+            } else {
+                requested = requests.get(0).getRequester();
+            }
+        }
 
         final RequestResponse response = getRequestManager().submit(new Request(player.getName(), requested, RequestMethod.COMMAND));
 
@@ -103,6 +170,9 @@ public class CommandManager implements CommandExecutor {
                 getMessageHolder().getMessage(RequestMethod.COMMAND.messagePath).send(player);
             } else {
                 getMessageHolder().getMessage(restriction.requestMessagePath).send(player, "%player%", requested);
+                if (restriction == RequestRestriction.ALLOW) {
+                    getMessageHolder().getMessage("requesting.requested-by").send(response.getRequest().getRequestedPlayer(), "%player%", player.getName());
+                }
             }
         }
 

@@ -125,7 +125,7 @@ public class RequestManager {
 
     private boolean mayUseMethod(Player player, RequestMethod method) {
         if (options.usePermissions())
-            return player.hasPermission(method.permission);
+            return plugin.hasPermission(player, method.permission);
         switch (method) {
             case COMMAND:
                 return options.allowCommandRequest();
@@ -143,7 +143,7 @@ public class RequestManager {
 
     private boolean hasExclusion(Player player, RequestRestriction restriction) {
         if (!options.usePermissions()) return false;
-        return player.hasPermission(restriction.excludePermission);
+        return plugin.hasPermission(player, restriction.excludePermission);
     }
 
     private boolean isRequested(String player, String by) {
@@ -224,7 +224,7 @@ public class RequestManager {
 
     }
 
-    private List<Request> getActiveRequests(String player) {
+    public List<Request> getActiveRequests(String player) {
         return activeRequests.get(player.toLowerCase());
     }
 
@@ -252,7 +252,7 @@ public class RequestManager {
 
                 final Transaction transaction = transactionManager.createTransaction(counterRequest.getRequester(), counterRequest.getRequested());
 
-                return new RequestResponse(restriction, transaction);
+                return new RequestResponse(request, restriction, transaction);
 
             }
 
@@ -264,7 +264,7 @@ public class RequestManager {
         }
 
         // In all other cases we return only the restriction
-        return new RequestResponse(restriction, null);
+        return new RequestResponse(request, restriction, null);
 
     }
 
