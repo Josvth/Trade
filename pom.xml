@@ -38,7 +38,7 @@
         <repository>
             <id>cloudbees-snapshot-repo</id>
             <name>Cloudbees Snapshot Repo</name>
-            <url>http://repository-josvth.forge.cloudbees.com/snapshot/</url>
+            <url>http://repository-josvthfoss.forge.cloudbees.com/snapshot/</url>
         </repository>
     </repositories>
 
