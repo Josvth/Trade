@@ -58,29 +58,8 @@ public class RequestListener implements Listener {
 
     private void handleEvent(Cancellable event, Player requester, Player requested, RequestMethod method) {
 
-        final RequestResponse response = requestManager.submit(new Request(requester.getName(), requested.getName(), method));
-
-        final RequestRestriction restriction = response.getRequestRestriction();
-
-        if (restriction == RequestRestriction.ALLOW) {
+        if (requestManager.submit(new Request(requester.getName(), requested.getName(), method)).getRequestRestriction() == RequestRestriction.ALLOW) {
             event.setCancelled(true);
-        }
-
-        if (response.getTransaction() != null) {
-            response.getTransaction().start();
-            // TODO add messages
-
-        } else {
-
-            if (restriction == RequestRestriction.METHOD && messageHolder.hasMessage(method.messagePath)) {
-                messageHolder.getMessage(method.messagePath).send(requester);
-            } else {
-                messageHolder.getMessage(restriction.requestMessagePath).send(requester, "%player%", requested.getName());
-                if (restriction == RequestRestriction.ALLOW) {
-                    messageHolder.getMessage("requesting.requested-by").send(requested, "%player%", requester.getName());
-                }
-            }
-
         }
 
     }

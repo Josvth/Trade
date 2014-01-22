@@ -159,24 +159,10 @@ public class CommandManager implements CommandExecutor {
             }
         }
 
-        final RequestResponse response = getRequestManager().submit(new Request(player.getName(), requested, RequestMethod.COMMAND));
-
-        final RequestRestriction restriction = response.getRequestRestriction();
-
-        if (response.getTransaction() != null) {
-            response.getTransaction().start();
-        } else {
-            if (restriction == RequestRestriction.METHOD) {
-                getMessageHolder().getMessage(RequestMethod.COMMAND.messagePath).send(player);
-            } else {
-                getMessageHolder().getMessage(restriction.requestMessagePath).send(player, "%player%", requested);
-                if (restriction == RequestRestriction.ALLOW) {
-                    getMessageHolder().getMessage("requesting.requested-by").send(response.getRequest().getRequestedPlayer(), "%player%", player.getName());
-                }
-            }
-        }
+        getRequestManager().submit(new Request(player.getName(), requested, RequestMethod.COMMAND));
 
         return true;
+
     }
 
 

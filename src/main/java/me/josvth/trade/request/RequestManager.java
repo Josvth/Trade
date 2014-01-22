@@ -5,6 +5,7 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.tasks.RequestTimeOutTask;
 import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.TransactionManager;
+import me.josvth.trade.transaction.action.StartAction;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -252,6 +253,8 @@ public class RequestManager {
 
                 final Transaction transaction = transactionManager.createTransaction(counterRequest.getRequester(), counterRequest.getRequested());
 
+                new StartAction(transaction).execute();
+
                 return new RequestResponse(request, restriction, transaction);
 
             }
@@ -261,6 +264,16 @@ public class RequestManager {
             request.setSubmitDate(System.currentTimeMillis());
             Bukkit.getScheduler().runTaskLater(plugin, new RequestTimeOutTask(this, request), options.getTimeoutMillis() / 50);
 
+            // And send a message to the requested
+            messageHolder.getMessage("requesting.requested-by").send(request.getRequestedPlayer(), "%player%", request.getRequester());
+
+        }
+
+        // Send message to requester
+        if (restriction == RequestRestriction.METHOD && messageHolder.hasMessage(request.getMethod().messagePath)) {
+            messageHolder.getMessage(request.getMethod().messagePath).send(request.getRequesterPlayer());
+        } else {
+            messageHolder.getMessage(restriction.requestMessagePath).send(request.getRequesterPlayer(), "%player%", request.getRequested());
         }
 
         // In all other cases we return only the restriction
