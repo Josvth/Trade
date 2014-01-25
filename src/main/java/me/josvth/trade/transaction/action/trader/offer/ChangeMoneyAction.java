@@ -21,7 +21,7 @@ public class ChangeMoneyAction extends ChangeOfferAction {
         if (isAdd()) {
 
             if (!getEconomy().has(getTrader().getName(), getInitialAmount() / 100)) {
-                getTrader().getFormattedMessage("money.insufficient").send(getPlayer(), "%money%", getEconomy().format(getInitialAmount()/100));
+                getTrader().getFormattedMessage("money.insufficient").send(getPlayer(), "%money%", getEconomy().format(getInitialAmount() / 100));
                 return;
             }
 
@@ -34,15 +34,19 @@ public class ChangeMoneyAction extends ChangeOfferAction {
 
             // Take money from player
             final int added = getChangedAmount();
+            final double addedDouble = added / 100;
 
             // Send messages
-            getTrader().getFormattedMessage("money.added.self").send(getPlayer(), "%money%", getEconomy().format(added/100));
+            getTrader().getFormattedMessage("money.added.self").send(getPlayer(), "%money%", getEconomy().format(addedDouble));
 
             if (added > 0) {
 
                 // Only send the other trader a message if something actually was changed
-                getOtherTrader().getFormattedMessage("money.added.other").send(getOtherPlayer(), "%player%", getTrader().getName(), "%money%", String.valueOf(added));
-                getEconomy().withdrawPlayer(getTrader().getName(), added);
+                if (getOtherTrader().hasFormattedMessage("money.added.other")) {
+                    getOtherTrader().getFormattedMessage("money.added.other").send(getOtherPlayer(), "%player%", getTrader().getName(), "%money%", getEconomy().format(addedDouble));
+                }
+
+                getEconomy().withdrawPlayer(getTrader().getName(), addedDouble);
 
             }
 
@@ -50,16 +54,17 @@ public class ChangeMoneyAction extends ChangeOfferAction {
 
             // Deposit money
             final int removed = getChangedAmount();
+            final double removedDouble = removed / 100;
 
             // Send messages
-            getTrader().getFormattedMessage("money.removed.self").send(getPlayer(), "%money%", String.valueOf(removed));
+            getTrader().getFormattedMessage("money.removed.self").send(getPlayer(), "%money%", getEconomy().format(removedDouble));
 
             if (removed > 0) {
 
-                getEconomy().depositPlayer(getTrader().getName(), removed);
+                getEconomy().depositPlayer(getTrader().getName(), removedDouble);
 
                 // Only send the other trader a message if something actually was changed
-                getOtherTrader().getFormattedMessage("money.removed.other").send(getOtherPlayer(), "%player%", getTrader().getName(), "%money%", String.valueOf(removed));
+                getOtherTrader().getFormattedMessage("money.removed.other").send(getOtherPlayer(), "%player%", getTrader().getName(), "%money%", getEconomy().format(removedDouble));
 
             }
 

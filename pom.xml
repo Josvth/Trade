@@ -57,7 +57,7 @@
         <dependency>
             <groupId>me.josvth</groupId>
             <artifactId>bukkitformatlibrary</artifactId>
-            <version>1.6-SNAPSHOT</version>
+            <version>1.6.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>

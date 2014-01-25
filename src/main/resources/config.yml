@@ -32,5 +32,18 @@ trading:
         display-name: "%player% offers %experience% experience."
       small-modifier: 1
       large-modifier: 5
+    money:
+      money-item:
+        material: 266
+        display-name: "You added %money%."
+        lore:
+          - "Left click to add %small%"
+          - "Right click to remove %small%"
+          - "Shift left click to add %large%"
+          - "Shift right click to remove %large%"
+      money-item-mirror:
+        material: 226
+        display-name: "%player% offers %money%."
+      small-modifier: 1
+      large-modifier: 5
     item: {}
-    money: {}

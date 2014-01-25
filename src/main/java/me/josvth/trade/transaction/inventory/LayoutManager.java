@@ -6,6 +6,7 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.transaction.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.transaction.offer.description.ItemOfferDescription;
+import me.josvth.trade.transaction.offer.description.MoneyOfferDescription;
 import me.josvth.trade.transaction.offer.description.OfferDescription;
 import me.josvth.trade.transaction.inventory.slot.*;
 import me.josvth.trade.util.ItemStackUtils;
@@ -208,7 +209,12 @@ public class LayoutManager {
                     description.setExperienceItemMirror(ItemStackUtils.fromSection(offerSection.getConfigurationSection("experience-item-mirror"), messageManager));
                     offerDescriptions.put(description.getOfferClass(), description);
                 } else if ("money".equalsIgnoreCase(offerKey)) {
-                    // TODO This
+                    final MoneyOfferDescription description = new MoneyOfferDescription();
+                    description.setSmallModifier(offerSection.getInt("small-modifier"));
+                    description.setLargeModifier(offerSection.getInt("large-modifier"));
+                    description.setMoneyItem(ItemStackUtils.fromSection(offerSection.getConfigurationSection("money-item"), messageManager));
+                    description.setMoneyItemMirror(ItemStackUtils.fromSection(offerSection.getConfigurationSection("money-item-mirror"), messageManager));
+                    offerDescriptions.put(description.getOfferClass(), description);
                 }
 
             }

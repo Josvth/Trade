@@ -95,6 +95,10 @@ public class Trader implements ActionProvoker {
         getPlayer().closeInventory();
     }
 
+    public boolean hasFormattedMessage(String key) {
+        return layout.hasMessage(key);
+    }
+
     public FormattedMessage getFormattedMessage(String key) {
         return layout.getMessage(key);
     }
@@ -106,6 +110,8 @@ public class Trader implements ActionProvoker {
     public State getState() {
         return state;
     }
+
+
 
     public enum State {
         IN_GUI, ROAMING;
