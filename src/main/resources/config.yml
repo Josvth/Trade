@@ -16,20 +16,21 @@ requesting:
     shift-left-click: false
 trading:
   allow-inventory-closing: false
-offers:
-  experience:
-    experience-item:
-      material: 384
-      display-name: "You added %experience% experience."
-      lore:
-        - "Left click to add %small% level(s)"
-        - "Right click to remove %small% level(s)"
-        - "Shift left click to add %large% experience"
-        - "Shift right click to remove %large% experience"
-    experience-item-mirror:
-      material: 384
-      display-name: "%player% offers %experience% experience."
-    small-modifier: 1
-    large-modifier: 5
-  item: {}
-  money: {}
+  use-economy: true
+  offers:
+    experience:
+      experience-item:
+        material: 384
+        display-name: "You added %experience% experience."
+        lore:
+          - "Left click to add %small% level(s)"
+          - "Right click to remove %small% level(s)"
+          - "Shift left click to add %large% experience"
+          - "Shift right click to remove %large% experience"
+      experience-item-mirror:
+        material: 384
+        display-name: "%player% offers %experience% experience."
+      small-modifier: 1
+      large-modifier: 5
+    item: {}
+    money: {}

@@ -35,10 +35,16 @@ public class ExperienceSlot extends Slot {
 
         final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
+        final int amount = event.isShiftClick() ? largeModifier : smallModifier;
+
+        if (amount <= 0) { // If amount is smaller or equal to 0 we do nothing to allow disabling of shift clicking
+            return;
+        }
+
         if (event.isLeftClick()) {
-            new ChangeExperienceAction(holder.getTrader(), event.isShiftClick() ? largeModifier : smallModifier).execute();
+            new ChangeExperienceAction(holder.getTrader(), amount).execute();
         } else if (event.isRightClick()) {
-            new ChangeExperienceAction(holder.getTrader(), -1*(event.isShiftClick() ? largeModifier : smallModifier)).execute();
+            new ChangeExperienceAction(holder.getTrader(), -1*amount).execute();
         }
 
     }

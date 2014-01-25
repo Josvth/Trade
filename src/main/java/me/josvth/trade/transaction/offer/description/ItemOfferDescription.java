@@ -6,6 +6,12 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemOfferDescription extends OfferDescription<ItemOffer> {
 
+    private ItemStack experienceItem;
+    private ItemStack experienceItemMirror;
+
+    private int smallModifier;
+    private int largeModifier;
+
     @Override
     public ItemStack createItem(ItemOffer offer) {
         if (offer.getItem() != null && offer.getItem() .getAmount() != 0) {

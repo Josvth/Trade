@@ -63,6 +63,22 @@ default:
         add: "Added %experience% experience to the trade."
         remove: "Removed %experience% experience from the trade."
         insufficient: "You don't have %experience% experience!"
+    10:
+      type: money
+      money-item:
+        material: 266
+        display-name: "You added %money%."
+        lore:
+          - "Left click to add %small%"
+          - "Right click to remove %small%"
+          - "Shift left click to add %large%"
+          - "Shift right click to remove %large%"
+      small-modifier: 1
+      large-modifier: 5
+      messages:
+        add: "Added %money% to the trade."
+        remove: "Removed %money% from the trade."
+        insufficient: "You don't have %money%!"
     13:
       type: close
       close-item:

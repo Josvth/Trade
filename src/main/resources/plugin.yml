@@ -2,6 +2,7 @@ main: me.josvth.trade.Trade
 name: ${project.name}
 version: ${project.version}
 author: Josvth
+softdepend: [Vault]
 commands:
   trade:
     aliases: [tr]

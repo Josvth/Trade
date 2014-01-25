@@ -129,12 +129,14 @@ public class LayoutManager {
                             slotSection.getInt("slot", 0)
                     );
                 } else if ("money".equalsIgnoreCase(type)) {
-                    slot = new MoneySlot(
-                            slotID,
-                            ItemStackUtils.fromSection(slotSection.getConfigurationSection("money-item"), messageManager),
-                            slotSection.getInt("small-modifier", 5),
-                            slotSection.getInt("large-modifier", 10)
-                    );
+                    if (plugin.useEconomy()) {
+                        slot = new MoneySlot(
+                                slotID,
+                                ItemStackUtils.fromSection(slotSection.getConfigurationSection("money-item"), messageManager),
+                                slotSection.getInt("small-modifier", 5),
+                                slotSection.getInt("large-modifier", 10)
+                        );
+                    }
                 } else if ("experience".equalsIgnoreCase(type)) {
                     slot = new ExperienceSlot(
                             slotID,
@@ -142,11 +144,6 @@ public class LayoutManager {
                             slotSection.getInt("small-modifier", 1),
                             slotSection.getInt("large-modifier", 5)
                     );
-                }
-
-                if (slot == null) {
-                    // TODO add message
-                    continue;
                 }
 
                 slots[slotID] = slot;

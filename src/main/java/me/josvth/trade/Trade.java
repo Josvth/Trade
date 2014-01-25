@@ -9,12 +9,14 @@ import me.josvth.trade.request.*;
 import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.TransactionManager;
 import me.josvth.trade.transaction.inventory.LayoutManager;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -27,12 +29,16 @@ public class Trade extends JavaPlugin {
     private ConventYamlConfiguration generalConfiguration;
     private ConventYamlConfiguration layoutConfiguration;
     private ConventYamlConfiguration messageConfiguration;
+
     // Managers
     private YamlMessageManager messageManager;
     private LayoutManager layoutManager;
     private TransactionManager transactionManager;
     private RequestManager requestManager;
     private CommandManager commandManager;
+
+    // Dependencies
+    private Economy economy;
 
     public Trade() {
 
@@ -56,6 +62,21 @@ public class Trade extends JavaPlugin {
     public void onEnable() {
 
         // Load configurations
+        loadConfigurations();
+
+        // Load managers
+        loadManagers();
+
+        // Load dependencies
+        loadDependencies();
+
+        transactionManager.initialize();
+        requestManager.initialize();
+        commandManager.initialize();
+    }
+
+
+    private void loadConfigurations() {
         generalConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "config.yml"), getDescription().getVersion());
         generalConfiguration.setDefaults(getResource("config.yml"));
         generalConfiguration.load();
@@ -67,8 +88,10 @@ public class Trade extends JavaPlugin {
         layoutConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "layouts.yml"), getDescription().getVersion());
         layoutConfiguration.setDefaults(getResource("layouts.yml"));
         layoutConfiguration.load();
+    }
 
-        // Load managers
+    private void loadManagers() {
+
         if (generalConfiguration.isConfigurationSection("formatters")) {
             messageManager.loadFormatters(generalConfiguration.getConfigurationSection("formatters"));
         }
@@ -76,15 +99,27 @@ public class Trade extends JavaPlugin {
         messageManager.loadMessages(messageConfiguration);
         messageManager.getFormatterHolder().addFormatter(new ColorFormatter("default"));
 
-        layoutManager.load(layoutConfiguration, messageConfiguration.getConfigurationSection("trading"), generalConfiguration.getConfigurationSection("offers"));
+        layoutManager.load(layoutConfiguration, messageConfiguration.getConfigurationSection("trading"), generalConfiguration.getConfigurationSection("trading.offers"));
 
         transactionManager.load(generalConfiguration.getConfigurationSection("trading"));
 
         requestManager.load(generalConfiguration.getConfigurationSection("requesting"));
 
-        transactionManager.initialize();
-        requestManager.initialize();
-        commandManager.initialize();
+
+
+    }
+
+    private void loadDependencies() {
+
+        // Load vault economy
+        if (getServer().getPluginManager().getPlugin("Vault") != null) {
+            RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+            if (rsp != null) {
+                economy = rsp.getProvider();
+            }
+        }
+
+
     }
 
     @Override
@@ -133,6 +168,14 @@ public class Trade extends JavaPlugin {
 
     public ConventYamlConfiguration getMessageConfiguration() {
         return messageConfiguration;
+    }
+
+    public boolean useEconomy() {
+        return getGeneralConfiguration().getBoolean("trading.use-economy", true) && getEconomy() != null;
+    }
+
+    public Economy getEconomy() {
+        return economy;
     }
 
 }

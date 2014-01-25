@@ -88,10 +88,16 @@ public class ExperienceOffer extends StackableOffer {
 
 		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
+        final int amount = event.isShiftClick() ? getDescription(holder.getTrader()).getLargeModifier() : getDescription(holder.getTrader()).getSmallModifier();
+
+        if (amount <= 0) {  // If amount is smaller or equal to 0 we do nothing to allow disabling of shift clicking
+            return;
+        }
+
         if (event.isLeftClick()) {
-            new ChangeExperienceAction(holder.getTrader(), event.isShiftClick() ? getDescription(holder.getTrader()).getLargeModifier() : getDescription(holder.getTrader()).getSmallModifier()).execute();
+            new ChangeExperienceAction(holder.getTrader(), amount).execute();
         } else if (event.isRightClick()) {
-            new ChangeExperienceAction(holder.getTrader(), -1*(event.isShiftClick() ? getDescription(holder.getTrader()).getLargeModifier() : getDescription(holder.getTrader()).getSmallModifier())).execute();
+            new ChangeExperienceAction(holder.getTrader(), -1*amount).execute();
         }
 
     }
@@ -100,6 +106,5 @@ public class ExperienceOffer extends StackableOffer {
     public String toString() {
         return "EXP: " + experience;
     }
-
 
 }
