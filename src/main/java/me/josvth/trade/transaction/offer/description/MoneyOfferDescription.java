@@ -34,6 +34,18 @@ public class MoneyOfferDescription extends OfferDescription<MoneyOffer> {
     }
 
     @Override
+    public ItemStack createMirrorItem(MoneyOffer offer, TransactionHolder holder) {
+        final ItemStack itemStack;
+        if (moneyItemMirror != null) {
+            itemStack = moneyItemMirror.clone();
+            itemStack.setAmount(offer.getAmount());
+        } else {
+            itemStack = null;
+        }
+        return ItemStackUtils.argument(itemStack, "%money%", Trade.getInstance().getEconomy().format(offer.getAmount() / Math.pow(10, holder.getEconomy().fractionalDigits())));
+    }
+
+    @Override
     public MoneyOffer createOffer() {
         return new MoneyOffer();
     }

@@ -2,6 +2,9 @@ package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.transaction.action.trader.offer.ChangeMoneyAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
+import me.josvth.trade.transaction.offer.MoneyOffer;
+import me.josvth.trade.transaction.offer.OfferList;
+import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -41,9 +44,31 @@ public class MoneySlot extends Slot {
 
     }
 
-	@Override
-	public void update(TransactionHolder holder) {
-		setSlot(holder, moneyItem);
-	}
+
+    @Override
+    public void update(TransactionHolder holder) {
+        update(holder, getMoney(holder.getOffers()));
+    }
+
+    private static int getMoney(OfferList offers) {
+        int money = 0;
+        for (MoneyOffer tradeable : offers.getOfClass(MoneyOffer.class).values()) {
+            money += tradeable.getAmount();
+        }
+        return money;
+    }
+
+    public void update(TransactionHolder holder, int money) {
+        final double divider = Math.pow(10, holder.getEconomy().fractionalDigits());
+        setSlot(
+                holder,
+                ItemStackUtils.argument(
+                        moneyItem.clone(),
+                        "%money%", holder.getEconomy().format(money / divider),
+                        "%small%", holder.getEconomy().format(smallModifier / divider),
+                        "%large%", holder.getEconomy().format(largeModifier / divider)
+                )
+        );
+    }
 
 }

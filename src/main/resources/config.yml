@@ -43,7 +43,7 @@ trading:
           - "Shift right click to remove %large%"
       money-item-mirror:
         material: 226
-        display-name: "%player% offers %money%."
+        display-name: "%money%"
       small-modifier: 1
       large-modifier: 5
     item: {}
