@@ -10,15 +10,15 @@ import org.bukkit.inventory.ItemStack;
 
 public class MoneyOffer extends StackableOffer {
 
-	private double amount = 0;
+    private int amount = 0;
 
-	public MoneyOffer() {
-		this(0.0);
-	}
+    public MoneyOffer() {
+        this(0);
+    }
 
-	public MoneyOffer(double amount) {
-		this.amount = amount;
-	}
+    public MoneyOffer(int amount) {
+        this.amount = amount;
+    }
 
     @Override
     public String getType() {
@@ -40,27 +40,23 @@ public class MoneyOffer extends StackableOffer {
         return getDescription(holder.getTrader()).createMirrorItem(this, holder);
     }
 
-	@Override
-	public int getAmount() {
-		return (int) (getDoubleAmount() * 100);
-	}
+    @Override
+    public int getAmount() {
+        return amount;
+    }
 
     @Override
     public void setAmount(int amount) {
-        setDoubleAmount(amount / 100);
+        this.amount = amount;
     }
 
     @Override
     public int getMaxAmount() {
-        return -1;
+        return 64;
     }
 
-    public void setDoubleAmount(double amount) {
-		this.amount = amount;
-	}
-
     public double getDoubleAmount() {
-        return amount;
+        return amount/100;
     }
 
 	@Override

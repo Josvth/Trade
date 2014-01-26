@@ -34,6 +34,14 @@ trading:
       self: Removed %experience% experience from the trade.
       other: "%player% removed %experience% experience from the trade."
     insufficient: "You don't have %experience% experience!"
+  money:
+    added:
+      self: Added %money% to the trade.
+      other: "%player% added %money% to the trade."
+    removed:
+      self: Removed %money% from the trade.
+      other: "%player% removed %money% from the trade."
+    insufficient: "You don't have %money%!"
   disconnect:
     self: "Your trade was cancelled because you disconnected."
     other: "Your trade was cancelled because %player% disconnected."

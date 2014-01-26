@@ -24,9 +24,9 @@ public class MoneyOfferDescription extends OfferDescription<MoneyOffer> {
         }
         return ItemStackUtils.argument(
                 itemStack,
-                "%experience%", Trade.getInstance().getEconomy().format(offer.getAmount() / 100),
-                "%small%", Trade.getInstance().getEconomy().format(smallModifier / 100),
-                "%large%", Trade.getInstance().getEconomy().format(largeModifier / 100)
+                "%money%", Trade.getInstance().getEconomy().format(((double)offer.getAmount()) / 100),
+                "%small%", Trade.getInstance().getEconomy().format(((double)smallModifier) / 100),
+                "%large%", Trade.getInstance().getEconomy().format(((double)largeModifier) / 100)
         );
     }
 
