@@ -61,14 +61,14 @@ public class Trade extends JavaPlugin {
     @Override
     public void onEnable() {
 
+        // Load dependencies
+        loadDependencies();
+
         // Load configurations
         loadConfigurations();
 
         // Load managers
         loadManagers();
-
-        // Load dependencies
-        loadDependencies();
 
         transactionManager.initialize();
         requestManager.initialize();
@@ -104,8 +104,6 @@ public class Trade extends JavaPlugin {
         transactionManager.load(generalConfiguration.getConfigurationSection("trading"));
 
         requestManager.load(generalConfiguration.getConfigurationSection("requesting"));
-
-
 
     }
 
