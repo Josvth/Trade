@@ -20,7 +20,7 @@ public class ChangeMoneyAction extends ChangeOfferAction {
 
         if (isAdd()) {
 
-            final double moneyToAdd = (double)getInitialAmount() / 100;
+            final double moneyToAdd = (double)getInitialAmount() / Math.pow(10, getEconomy().fractionalDigits());
 
             if (!getEconomy().has(getTrader().getName(), moneyToAdd)) {
                 getTrader().getFormattedMessage("money.insufficient").send(getPlayer(), "%money%", getEconomy().format(moneyToAdd));
@@ -36,7 +36,7 @@ public class ChangeMoneyAction extends ChangeOfferAction {
 
             // Take money from player
             final int added = getChangedAmount();
-            final double addedDouble = (double)added / 100;
+            final double addedDouble = added / Math.pow(10, getEconomy().fractionalDigits());
 
             // Send messages
             getTrader().getFormattedMessage("money.added.self").send(getPlayer(), "%money%", getEconomy().format(addedDouble));
@@ -56,7 +56,7 @@ public class ChangeMoneyAction extends ChangeOfferAction {
 
             // Deposit money
             final int removed = getChangedAmount();
-            final double removedDouble = (double)removed / 100;
+            final double removedDouble = (double)removed / Math.pow(10, getEconomy().fractionalDigits());
 
             // Send messages
             getTrader().getFormattedMessage("money.removed.self").send(getPlayer(), "%money%", getEconomy().format(removedDouble));

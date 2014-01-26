@@ -38,7 +38,7 @@ public class ExperienceOffer extends StackableOffer {
 
     @Override
     public ItemStack createItem(TransactionHolder holder) {
-        return getDescription(holder.getTrader()).createItem(this);
+        return getDescription(holder.getTrader()).createItem(this, holder);
     }
 
     @Override

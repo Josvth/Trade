@@ -10,10 +10,10 @@ We use OfferDescriptions to make sure that if a layout is changed mid trade all 
  */
 public abstract class OfferDescription <T extends Offer>{
 
-    public abstract ItemStack createItem(T offer);
+    public abstract ItemStack createItem(T offer, TransactionHolder holder);
 
     public ItemStack createMirrorItem(T offer, TransactionHolder holder) {
-        return createItem(offer);
+        return createItem(offer, holder);
     }
 
     public abstract T createOffer();

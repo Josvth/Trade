@@ -15,7 +15,7 @@ public class ExperienceOfferDescription extends OfferDescription<ExperienceOffer
     private int largeModifier;
 
     @Override
-    public ItemStack createItem(ExperienceOffer offer) {
+    public ItemStack createItem(ExperienceOffer offer, TransactionHolder holder) {
         final ItemStack itemStack;
         if (experienceItem != null) {
             itemStack = experienceItem.clone();

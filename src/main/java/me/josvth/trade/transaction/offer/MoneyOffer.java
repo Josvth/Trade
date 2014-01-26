@@ -32,7 +32,7 @@ public class MoneyOffer extends StackableOffer {
 
     @Override
     public ItemStack createItem(TransactionHolder holder) {
-        return getDescription(holder.getTrader()).createItem(this);
+        return getDescription(holder.getTrader()).createItem(this, holder);
     }
 
     @Override
@@ -53,10 +53,6 @@ public class MoneyOffer extends StackableOffer {
     @Override
     public int getMaxAmount() {
         return 64;
-    }
-
-    public double getDoubleAmount() {
-        return amount/100;
     }
 
 	@Override

@@ -10,6 +10,7 @@ import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.inventory.slot.TradeSlot;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -173,6 +174,10 @@ public class TransactionHolder implements InventoryHolder {
 
     public boolean hasViewers() {
         return (getInventory().getViewers() != null && getInventory().getViewers().size() > 0);
+    }
+
+    public Economy getEconomy() {
+        return getTransaction().getPlugin().getEconomy();
     }
 }
 
