@@ -43,7 +43,7 @@ public class ChangeExperienceAction extends ChangeOfferAction {
                 getOtherTrader().getFormattedMessage("experience.added.other").send(getOtherPlayer(), "%player%", getTrader().getName(), "%experience%", String.valueOf(added));
                 expManager.changeExp(-1 * added);
 
-                // Update experience slots //TODO update amount on offers as well
+                // Update experience slots
                 ExperienceSlot.updateExperienceSlots(getTrader().getHolder(), true, getCurrentAmount());
 
             }
@@ -63,7 +63,7 @@ public class ChangeExperienceAction extends ChangeOfferAction {
                 // Only send the other trader a message if something actually was changed
                 getOtherTrader().getFormattedMessage("experience.removed.other").send(getOtherPlayer(), "%player%", getTrader().getName(), "%experience%", String.valueOf(removed));
 
-                // Update experience slots //TODO update amount on offers as well
+                // Update experience slots
                 ExperienceSlot.updateExperienceSlots(getTrader().getHolder(), true, getCurrentAmount());
 
             }

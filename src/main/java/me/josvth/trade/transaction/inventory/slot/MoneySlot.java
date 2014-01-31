@@ -1,12 +1,18 @@
 package me.josvth.trade.transaction.inventory.slot;
 
+import me.josvth.trade.Trade;
+import me.josvth.trade.tasks.ExperienceSlotUpdateTask;
+import me.josvth.trade.tasks.MoneySlotUpdateTask;
 import me.josvth.trade.transaction.action.trader.offer.ChangeMoneyAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.offer.MoneyOffer;
 import me.josvth.trade.transaction.offer.OfferList;
 import me.josvth.trade.util.ItemStackUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Set;
 
 public class MoneySlot extends Slot {
 
@@ -71,4 +77,15 @@ public class MoneySlot extends Slot {
         );
     }
 
+    public static void updateMoneySlots(TransactionHolder holder, boolean nextTick, int money) {
+        final Set<MoneySlot> slots = holder.getLayout().getSlotsOfType(MoneySlot.class);
+
+        if (!nextTick) {
+            for (MoneySlot slot : slots) {
+                slot.update(holder, money);
+            }
+        } else if (!slots.isEmpty()) {
+            Bukkit.getScheduler().runTask(Trade.getInstance(), new MoneySlotUpdateTask(holder, slots, money));
+        }
+    }
 }

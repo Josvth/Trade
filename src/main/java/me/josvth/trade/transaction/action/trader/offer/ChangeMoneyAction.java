@@ -2,6 +2,7 @@ package me.josvth.trade.transaction.action.trader.offer;
 
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.slot.ExperienceSlot;
+import me.josvth.trade.transaction.inventory.slot.MoneySlot;
 import me.josvth.trade.transaction.offer.MoneyOffer;
 import net.milkbowl.vault.economy.Economy;
 
@@ -50,6 +51,9 @@ public class ChangeMoneyAction extends ChangeOfferAction {
 
                 getEconomy().withdrawPlayer(getTrader().getName(), addedDouble);
 
+                // Update money slots
+                MoneySlot.updateMoneySlots(getTrader().getHolder(), true, getCurrentAmount());
+
             }
 
         } else {
@@ -67,6 +71,9 @@ public class ChangeMoneyAction extends ChangeOfferAction {
 
                 // Only send the other trader a message if something actually was changed
                 getOtherTrader().getFormattedMessage("money.removed.other").send(getOtherPlayer(), "%player%", getTrader().getName(), "%money%", getEconomy().format(removedDouble));
+
+                // Update money slots
+                MoneySlot.updateMoneySlots(getTrader().getHolder(), true, getCurrentAmount());
 
             }
 
