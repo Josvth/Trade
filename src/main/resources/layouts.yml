@@ -1,6 +1,6 @@
 default:
-  rows: 2
-  offer-size: 3
+  rows: 3
+  offer-size: 7
   title: "You%spaces%%other%"
   slots:
     0:
@@ -48,6 +48,34 @@ default:
       type: mirror
       slot: 2
     9:
+      type: trade
+      slot: 3
+    10:
+      type: trade
+      slot: 4
+    11:
+      type: trade
+      slot: 5
+    12:
+      type: trade
+      slot: 6
+    13:
+      type: dummy
+      dummy-item:
+        material: 280
+    14:
+      type: mirror
+      slot: 3
+    15:
+      type: mirror
+      slot: 4
+    16:
+      type: mirror
+      slot: 5
+    17:
+      type: mirror
+      slot: 6
+    18:
       type: experience
       experience-item:
         material: 384
@@ -63,7 +91,7 @@ default:
         add: "Added %experience% experience to the trade."
         remove: "Removed %experience% experience from the trade."
         insufficient: "You don't have %experience% experience!"
-    10:
+    19:
       type: money
       money-item:
         material: 266
@@ -79,7 +107,7 @@ default:
         add: "Added %money% to the trade."
         remove: "Removed %money% from the trade."
         insufficient: "You don't have %money%!"
-    13:
+    22:
       type: close
       close-item:
         material: 352

@@ -20,8 +20,6 @@ public class TransactionListener implements Listener {
 
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
-        ((Player)event.getWhoClicked()).sendMessage(event.getRawSlots().toString());
-
         if (event.getInventory().getHolder() instanceof TransactionHolder) {
             ((TransactionHolder) event.getInventory().getHolder()).onDrag(event);
         }

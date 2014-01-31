@@ -145,6 +145,11 @@ public class LayoutManager {
                             slotSection.getInt("small-modifier", 1),
                             slotSection.getInt("large-modifier", 5)
                     );
+                } else if ("dummy".equalsIgnoreCase(type)) {
+                    slot = new DummySlot(
+                            slotID,
+                            ItemStackUtils.fromSection(slotSection.getConfigurationSection("dummy-item"), messageManager)
+                    );
                 }
 
                 slots[slotID] = slot;

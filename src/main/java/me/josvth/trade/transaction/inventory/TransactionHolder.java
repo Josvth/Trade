@@ -85,15 +85,13 @@ public class TransactionHolder implements InventoryHolder {
             return;
         }
 
+        if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) { // TODO MAKE THIS WORK
+            event.setCancelled(true);
+            return;
+        }
+
         if (event.getRawSlot() >= getLayout().getInventorySize()) { // Player is clicking lower inventory of InventoryView
 
-            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-
-                new ChangeOfferAction(getTrader(), ItemOffer.create(trader, event.getCurrentItem().clone()), true).execute();
-
-                event.setCancelled(true);
-
-            }
 
         } else if (event.getRawSlot() != -999) {	// Player is clicking upper inventory of InventoryView (our inventory)
 
