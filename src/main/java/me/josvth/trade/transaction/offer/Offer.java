@@ -17,7 +17,7 @@ public abstract class Offer {
 
     public abstract ItemStack createItem(TransactionHolder holder);
 
-    public abstract ItemStack createMirror(TransactionHolder holder);
+    public abstract ItemStack createMirrorItem(TransactionHolder holder);
 
 	public abstract void grant(Trader trader);
 

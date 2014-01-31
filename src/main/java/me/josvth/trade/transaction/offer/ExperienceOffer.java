@@ -42,7 +42,7 @@ public class ExperienceOffer extends StackableOffer {
     }
 
     @Override
-    public ItemStack createMirror(TransactionHolder holder) {
+    public ItemStack createMirrorItem(TransactionHolder holder) {
         return getDescription(holder.getTrader()).createMirrorItem(this, holder);
     }
 

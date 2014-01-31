@@ -42,7 +42,7 @@ trading:
           - "Shift left click to add %large%"
           - "Shift right click to remove %large%"
       money-item-mirror:
-        material: 226
+        material: 266
         display-name: "%money%"
       small-modifier: 1
       large-modifier: 5
