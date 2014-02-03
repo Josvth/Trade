@@ -98,6 +98,7 @@ public class Trade extends JavaPlugin {
 
         messageManager.loadMessages(messageConfiguration);
         messageManager.getFormatterHolder().addFormatter(new ColorFormatter("default"));
+        messageManager.getMessageHolder().setKeyWhenMissing(generalConfiguration.getBoolean("debug-mode", false));
 
         layoutManager.load(layoutConfiguration, messageConfiguration.getConfigurationSection("trading"), generalConfiguration.getConfigurationSection("trading.offers"));
 

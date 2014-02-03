@@ -1,7 +1,6 @@
 package me.josvth.trade.transaction.offer;
 
-import me.josvth.trade.transaction.action.trader.offer.SetOfferAction;
-import me.josvth.trade.transaction.action.trader.status.DenyAction;
+import me.josvth.trade.transaction.action.trader.offer.OfferAction;
 import me.josvth.trade.transaction.offer.description.ItemOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
@@ -123,7 +122,7 @@ public class ItemOffer extends StackableOffer {
 				throw new IllegalStateException("UNHANDLED ACTION: " + event.getAction().name());
 		}
 
-        new SetOfferAction(holder.getTrader(), offerIndex, null).execute();
+        OfferAction.create(holder.getTrader(), offerIndex, null).execute();
 
 	}
 

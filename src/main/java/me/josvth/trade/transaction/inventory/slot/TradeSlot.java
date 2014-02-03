@@ -1,8 +1,7 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.transaction.action.trader.offer.SetOfferAction;
-import me.josvth.trade.transaction.action.trader.status.DenyAction;
+import me.josvth.trade.transaction.action.trader.offer.OfferAction;
 import me.josvth.trade.transaction.offer.ItemOffer;
 import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.tasks.SlotUpdateTask;
@@ -57,7 +56,7 @@ public class TradeSlot extends Slot {
                     throw new IllegalStateException("Not handled action: " + event.getAction().name());
             }
 
-            new SetOfferAction(holder.getTrader(), offerIndex, (newItem == null)? null : ItemOffer.create(holder.getTrader(), newItem)).execute();
+            OfferAction.create(holder.getTrader(), offerIndex, (newItem == null)? null : ItemOffer.create(holder.getTrader(), newItem)).execute();
 
         } else {
 
@@ -77,7 +76,7 @@ public class TradeSlot extends Slot {
         if (offer != null) {
             offer.onDrag(event, offerIndex, slot);
         } else if (event.getNewItems().containsKey(slot)) {
-            new SetOfferAction(holder.getTrader(), offerIndex, ItemOffer.create(holder.getTrader(), event.getNewItems().get(slot).clone())).execute();
+            OfferAction.create(holder.getTrader(), offerIndex, ItemOffer.create(holder.getTrader(), event.getNewItems().get(slot).clone())).execute();
         }
 
     }

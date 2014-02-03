@@ -80,6 +80,18 @@ public class RequestManager {
             return RequestRestriction.OFFLINE;
         }
 
+        RequestRestriction restriction = RequestRestriction.ALLOW;
+
+        // We check method first
+        if (!mayUseMethod(requesterPlayer, method)) {
+            restriction = RequestRestriction.METHOD;
+        }
+
+        // We directly check for exclusion
+        if (!hasExclusion(requestedPlayer, restriction)) {
+            return restriction;
+        }
+
         if (!hasExclusion(requesterPlayer, RequestRestriction.PERMISSION) && options.usePermissions()) {
             return RequestRestriction.PERMISSION;
         }
@@ -100,42 +112,38 @@ public class RequestManager {
             return RequestRestriction.FLOOD;
         }
 
-        RequestRestriction restriction = RequestRestriction.ALLOW;
-
-        if (!requesterPlayer.getWorld().equals(requestedPlayer.getWorld()) && !options.allowCrossWorld())
+        if (!requesterPlayer.getWorld().equals(requestedPlayer.getWorld()) && !options.allowCrossWorld()) {
             restriction = RequestRestriction.CROSS_WORLD;
-        else if (!requesterPlayer.getGameMode().equals(requestedPlayer.getGameMode()) && !options.allowCrossGameMode())
+        } else if (!requesterPlayer.getGameMode().equals(requestedPlayer.getGameMode()) && !options.allowCrossGameMode()) {
             restriction = RequestRestriction.CROSS_GAME_MODE;
-        else if (!requesterPlayer.canSee(requestedPlayer) && !options.mustSee())
+        } else if (!requesterPlayer.canSee(requestedPlayer) && !options.mustSee()) {
             restriction = RequestRestriction.VISION;
-        else if (requesterPlayer.getLocation().distance(requestedPlayer.getPlayer().getLocation()) > options.getMaxDistance())
+        } else if (requesterPlayer.getLocation().distance(requestedPlayer.getPlayer().getLocation()) > options.getMaxDistance()) {
             restriction = RequestRestriction.DISTANCE;
-        else if (options.getDisabledWorlds() != null && options.getDisabledWorlds().contains(requesterPlayer.getWorld().getName()))
+        } else if (options.getDisabledWorlds() != null && options.getDisabledWorlds().contains(requesterPlayer.getWorld().getName())) {
             restriction = RequestRestriction.WORLD;
-        // TODO ADD REGION CHECK
+        }// TODO ADD REGION CHECK
 
-        if (!mayUseMethod(requesterPlayer, method))
-            restriction = RequestRestriction.METHOD;
-
-        if (restriction != RequestRestriction.ALLOW && hasExclusion(requestedPlayer, restriction))
+        if (restriction != RequestRestriction.ALLOW && hasExclusion(requestedPlayer, restriction)) {
             return RequestRestriction.ALLOW;
-        else
-            return restriction;
+        }
+
+        return restriction;
 
     }
 
     private boolean mayUseMethod(Player player, RequestMethod method) {
-        if (options.usePermissions())
+        if (getOptions().usePermissions())
             return plugin.hasPermission(player, method.permission);
         switch (method) {
             case COMMAND:
-                return options.allowCommandRequest();
+                return getOptions().allowCommandRequest();
             case LEFT_CLICK:
-                return options.allowLeftClickRequest();
+                return getOptions().allowLeftClickRequest();
             case SHIFT_LEFT_CLICK:
-                return options.allowLeftShiftClickRequest();
+                return getOptions().allowLeftShiftClickRequest();
             case RIGHT_CLICK:
-                return options.allowRightClickRequest();
+                return getOptions().allowRightClickRequest();
             case SHIFT_RIGHT_CLICK:
                 return options.allowRightShiftClickRequest();
         }
@@ -143,7 +151,7 @@ public class RequestManager {
     }
 
     private boolean hasExclusion(Player player, RequestRestriction restriction) {
-        if (!options.usePermissions()) return false;
+        if (!getOptions().usePermissions()) return false;
         return plugin.hasPermission(player, restriction.excludePermission);
     }
 

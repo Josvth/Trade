@@ -16,7 +16,6 @@ public class ChangeOfferAction extends OfferAction {
     private final Offer offer;
     private final boolean add;
 
-    private final TreeMap<Integer, Offer> changes = new TreeMap<Integer, Offer>();
     private int currentAmount = 0;
     private boolean complete = false;
     private int remaining = 0;
@@ -25,11 +24,7 @@ public class ChangeOfferAction extends OfferAction {
         super(trader);
         this.offer = offer;
         this.add = add;
-    }
-
-    @Override
-    public Map<Integer, ? extends Offer> getChanges() {
-        return changes;
+        setUpdateOffers(false);
     }
 
     public final Offer getOffer() {
@@ -67,6 +62,8 @@ public class ChangeOfferAction extends OfferAction {
     @Override
     public void execute() {
 
+        setChanges(new TreeMap<Integer, Offer>());
+
         if (add) {
 
             if (offer instanceof StackableOffer) {
@@ -86,7 +83,7 @@ public class ChangeOfferAction extends OfferAction {
         }
 
         // Execute super if we changed something
-        if (!changes.isEmpty()) {
+        if (!getChanges().isEmpty()) {
             super.execute();
         }
 
@@ -111,7 +108,7 @@ public class ChangeOfferAction extends OfferAction {
 
                 // If we have added something change the remaining levels and add this slot to the changed indexes
                 if (overflow < remaining) {
-                    changes.put(entry.getKey(), entry.getValue()); // We keep track of what we changed
+                    getChanges().put(entry.getKey(), entry.getValue()); // We keep track of what we changed
                     remaining = overflow;
                 }
 
@@ -135,7 +132,7 @@ public class ChangeOfferAction extends OfferAction {
                     final StackableOffer clone = offer.clone();
 
                     offerList.set(firstEmpty, clone);
-                    changes.put(firstEmpty, clone); // We keep track of what we changed
+                    getChanges().put(firstEmpty, clone); // We keep track of what we changed
 
                     currentAmount += remaining;
 
@@ -151,7 +148,7 @@ public class ChangeOfferAction extends OfferAction {
                     fullStack.setAmount(offer.getMaxAmount());
 
                     offerList.set(firstEmpty, fullStack);
-                    changes.put(firstEmpty, fullStack); // We keep track of what we changed
+                    getChanges().put(firstEmpty, fullStack); // We keep track of what we changed
 
                     currentAmount += fullStack.getMaxAmount();
 
@@ -179,7 +176,7 @@ public class ChangeOfferAction extends OfferAction {
 
         if (empty != -1) {
             offerList.set(empty, offer.clone());
-            changes.put(empty, offer.clone());
+            getChanges().put(empty, offer.clone());
             complete = true;
         }
 
@@ -193,7 +190,7 @@ public class ChangeOfferAction extends OfferAction {
 
         if (!current.isEmpty()) {
             offerList.set(current.lastKey(), null);
-            changes.put(current.lastKey(), null);
+            getChanges().put(current.lastKey(), null);
             complete = true;
         }
 
@@ -222,9 +219,9 @@ public class ChangeOfferAction extends OfferAction {
 
                     if (entry.getValue().getAmount() == 0) {    // If the amount of the changed offer is 0 we remove it
                         offerList.set(entry.getKey(), null);
-                        changes.put(entry.getKey(), null);
+                        getChanges().put(entry.getKey(), null);
                     } else {
-                        changes.put(entry.getKey(), entry.getValue());
+                        getChanges().put(entry.getKey(), entry.getValue());
                     }
 
                 }
