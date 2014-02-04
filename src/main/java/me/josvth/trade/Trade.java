@@ -81,6 +81,7 @@ public class Trade extends JavaPlugin {
         generalConfiguration.setDefaults(getResource("config.yml"));
         generalConfiguration.load();
 
+
         messageConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "messages.yml"), getDescription().getVersion());
         messageConfiguration.setDefaults(getResource("messages.yml"));
         messageConfiguration.load();
