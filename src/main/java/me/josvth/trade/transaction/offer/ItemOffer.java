@@ -83,6 +83,17 @@ public class ItemOffer extends StackableOffer {
         });
     }
 
+    @Override
+    public void grant(final Trader trader, int amount) {
+        final ItemStack clone = item.clone();
+        clone.setAmount(amount);
+        Bukkit.getScheduler().runTask(Trade.getInstance(), new Runnable() {         //TODO Make this nicer
+            @Override
+            public void run() {
+                trader.getPlayer().getInventory().addItem(clone);
+            }
+        });
+    }
 
     public ItemStack getItem() {
         return item;
@@ -93,7 +104,7 @@ public class ItemOffer extends StackableOffer {
     }
 
     public ItemOffer clone() {
-        return new ItemOffer(item);
+        return new ItemOffer(item.clone());
     }
 
     @Override

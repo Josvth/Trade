@@ -82,7 +82,7 @@ public class ExperienceOffer extends StackableOffer {
         grant(trader, experience);
     }
 
-    public static void grant(Trader trader, int experience) {
+    public void grant(Trader trader, int experience) {
         new ExperienceManager(trader.getPlayer()).changeExp(experience);
     }
 

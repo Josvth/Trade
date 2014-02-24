@@ -68,6 +68,11 @@ public class MoneyOffer extends StackableOffer {
 
     @Override
 	public void grant(Trader trader) {
+        grant(trader, amount);
+    }
+
+    @Override
+    public void grant(Trader trader, int amount) {
         Trade.getInstance().getEconomy().depositPlayer(trader.getName(), amount/100);
     }
 

@@ -132,7 +132,7 @@ public class TransactionHolder implements InventoryHolder {
         // If we didn't click a slot or have a cursor offer we handle the event here
         switch (event.getAction()) {
             case PICKUP_ALL:
-                setCursorOffer(new ItemOffer(event.getCurrentItem()));
+                setCursorOffer(new ItemOffer(event.getCurrentItem().clone()));
                 break;
             case PICKUP_HALF:
                 setCursorOffer(new ItemOffer(ItemStackUtils.split(event.getCurrentItem())[0]));
