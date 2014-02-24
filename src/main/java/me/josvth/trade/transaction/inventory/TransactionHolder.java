@@ -1,7 +1,6 @@
 package me.josvth.trade.transaction.inventory;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.transaction.action.trader.offer.ChangeOfferAction;
 import me.josvth.trade.transaction.action.trader.status.CloseAction;
 import me.josvth.trade.transaction.action.trader.status.RefuseAction;
 import me.josvth.trade.transaction.offer.*;
@@ -10,8 +9,10 @@ import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.inventory.slot.TradeSlot;
+import me.josvth.trade.util.ItemStackUtils;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -29,6 +30,8 @@ public class TransactionHolder implements InventoryHolder {
 
     private Inventory inventory;
 
+    private Offer cursorOffer;
+
     public TransactionHolder(Trade trade, Trader trader) {
         this.plugin = trade;
         this.trader = trader;
@@ -38,12 +41,10 @@ public class TransactionHolder implements InventoryHolder {
         return trader;
     }
 
-    //TODO THIS METHOD IS USE A LOT!
     public Trader getOtherTrader() {
         return trader.getOtherTrader();
     }
 
-    //TODO THIS METHOD IS USE A LOT!
     public TransactionHolder getOtherHolder() {
         return getOtherTrader().getHolder();
     }
@@ -58,6 +59,25 @@ public class TransactionHolder implements InventoryHolder {
 
     public OfferList getOffers() {
         return trader.getOffers();
+    }
+
+    public Offer getCursorOffer() {
+        return cursorOffer;
+    }
+
+    public void setCursorOffer(final Offer offer) {
+
+        this.cursorOffer = offer;
+
+        final TransactionHolder holder = this;
+
+        Bukkit.getScheduler().runTask(getTransaction().getPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                getTrader().getPlayer().setItemOnCursor((offer == null)? null : offer.createItem(holder));
+            }
+        });
+
     }
 
     @Override
@@ -78,85 +98,107 @@ public class TransactionHolder implements InventoryHolder {
     // Event handling
     public void onClick(InventoryClickEvent event) {
 
-        if (event.getAction() == InventoryAction.UNKNOWN || event.getAction() == InventoryAction.NOTHING) return;
-
         if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {  // TODO MAKE THIS WORK
             event.setCancelled(true);
             return;
         }
 
-        if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) { // TODO MAKE THIS WORK
-            event.setCancelled(true);
-            return;
-        }
+        if (event.getRawSlot() < getLayout().getInventorySize() && event.getRawSlot() != -999) {
 
-        if (event.getRawSlot() >= getLayout().getInventorySize()) { // Player is clicking lower inventory of InventoryView
+            // If the player clicked a transaction slot we let that slot handle the event
+            final Slot clickedSlot = getLayout().getSlots()[event.getSlot()];
 
-
-        } else if (event.getRawSlot() != -999) {	// Player is clicking upper inventory of InventoryView (our inventory)
-
-            Slot slot = getLayout().getSlots()[event.getSlot()];
-
-            if (slot != null) {
-                slot.onClick(event);
+            if (clickedSlot != null) {
+                clickedSlot.onClick(event);
             } else {
                 event.setCancelled(true);
             }
 
+            ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
+
+            return;
+
         }
+
+        // If we have a cursor offer we let that handle the event
+        if (getCursorOffer() != null) {
+            getCursorOffer().onCursorClick(event, null);
+
+            ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
+
+            return;
+        }
+
+        // If we didn't click a slot or have a cursor offer we handle the event here
+        switch (event.getAction()) {
+            case PICKUP_ALL:
+                setCursorOffer(new ItemOffer(event.getCurrentItem()));
+                break;
+            case PICKUP_HALF:
+                setCursorOffer(new ItemOffer(ItemStackUtils.split(event.getCurrentItem())[0]));
+            case NOTHING:
+                break;
+            default:
+                event.setCancelled(true);
+                throw new IllegalStateException("UNHANDLED ACTION: " + event.getAction().name());
+        }
+
+        ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
 
     }
 
     public void onDrag(InventoryDragEvent event) {
 
-        // First we check in which parts of the inventory the player tries to drag items
-        boolean upper = false;
-        boolean lower = false;
+        event.setCancelled(true);
 
-        final Iterator<Integer> iterator = event.getRawSlots().iterator();
-        while (!(upper && lower) && iterator.hasNext()) {
-            if (iterator.next() >= getLayout().getInventorySize()) {
-                lower = true;
-            } else {
-                upper = true;
-            }
-        }
-
-        // We don't support dragging in both upper and lower inventories
-        if (upper && lower) {
-            event.setCancelled(true);
-            return;
-        }
-
-        // However dragging in the lower part is just fine
-        if (lower) {
-            return;
-        }
-
-        for (int slotIndex : event.getInventorySlots() ) {
-
-            final Slot slot = getLayout().getSlots()[slotIndex];
-
-            // Cancel if the slot is empty or not a trade slot
-            if (slot == null || !(slot instanceof TradeSlot)) {
-                event.setCancelled(true);
-                return;
-            }
-
-            final Offer offer = ((TradeSlot) slot).getSlotContents(this);
-
-            // Return if this offer does not support drag events
-            if (offer != null && !offer.isDraggable()) {
-                event.setCancelled(true);
-                return;
-            }
-
-        }
-
-        for (int s : event.getInventorySlots()) {
-            final Slot slot = getLayout().getSlots()[s];
-            slot.onDrag(event);
-        }
+//        // First we check in which parts of the inventory the player tries to drag items
+//        boolean upper = false;
+//        boolean lower = false;
+//
+//        final Iterator<Integer> iterator = event.getRawSlots().iterator();
+//        while (!(upper && lower) && iterator.hasNext()) {
+//            if (iterator.next() >= getLayout().getInventorySize()) {
+//                lower = true;
+//            } else {
+//                upper = true;
+//            }
+//        }
+//
+//        // We don't support dragging in both upper and lower inventories
+//        if (upper && lower) {
+//            event.setCancelled(true);
+//            return;
+//        }
+//
+//        // However dragging in the lower part is just fine
+//        if (lower) {
+//            return;
+//        }
+//
+//        for (int slotIndex : event.getInventorySlots() ) {
+//
+//            final Slot slot = getLayout().getSlots()[slotIndex];
+//
+//            // Cancel if the slot is empty or not a trade slot
+//            if (slot == null || !(slot instanceof TradeSlot)) {
+//                event.setCancelled(true);
+//                return;
+//            }
+//
+//            final Offer offer = ((TradeSlot) slot).getSlotContents(this);
+//
+//            // Return if this offer does not support drag events
+//            if (offer != null && !offer.isDraggable()) {
+//                event.setCancelled(true);
+//                return;
+//            }
+//
+//        }
+//
+//        for (int s : event.getInventorySlots()) {
+//            final Slot slot = getLayout().getSlots()[s];
+//            slot.onDrag(event);
+//        }
 
     }
 
@@ -177,5 +219,7 @@ public class TransactionHolder implements InventoryHolder {
     public Economy getEconomy() {
         return getTransaction().getPlugin().getEconomy();
     }
+
+
 }
 

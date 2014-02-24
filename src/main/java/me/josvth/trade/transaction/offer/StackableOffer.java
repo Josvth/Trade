@@ -1,6 +1,15 @@
 package me.josvth.trade.transaction.offer;
 
 
+import me.josvth.trade.transaction.action.trader.offer.ChangeOfferAction;
+import me.josvth.trade.transaction.action.trader.offer.SetOfferAction;
+import me.josvth.trade.transaction.inventory.TransactionHolder;
+import me.josvth.trade.transaction.inventory.slot.Slot;
+import me.josvth.trade.transaction.inventory.slot.TradeSlot;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+
 public abstract class StackableOffer extends Offer {
 
     public abstract int getAmount();
@@ -48,4 +57,36 @@ public abstract class StackableOffer extends Offer {
 
     public abstract StackableOffer clone();
 
+    public abstract boolean isSimilar(StackableOffer contents);
+
+    //TODO Cleanup offer creation and cloning
+    public static <T extends StackableOffer> T split(T offer) {
+
+        final int total = offer.getAmount();
+
+        final T clone = (T) offer.clone();
+
+        offer.setAmount(total / 2);
+
+        clone.setAmount(total - offer.getAmount());
+
+        return clone;
+
+    }
+
+    public static <T extends StackableOffer> T takeOne(T offer) {
+
+        if (offer.getAmount() == 1) {
+            throw new IllegalArgumentException("StackableOffer must have an amount greater than 1");
+        }
+
+        final T clone = (T) offer.clone();
+
+        offer.setAmount(offer.getAmount() - 1);
+
+        clone.setAmount(1);
+
+        return clone;
+
+    }
 }

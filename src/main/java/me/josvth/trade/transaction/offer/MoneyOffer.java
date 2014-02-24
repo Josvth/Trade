@@ -2,6 +2,7 @@ package me.josvth.trade.transaction.offer;
 
 import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.action.trader.offer.ChangeMoneyAction;
+import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.offer.description.MoneyOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
@@ -60,31 +61,14 @@ public class MoneyOffer extends StackableOffer {
 		return new MoneyOffer(amount);
 	}
 
-	@Override
-	public void grant(Trader trader) {
-        Trade.getInstance().getEconomy().depositPlayer(trader.getName(), amount/100);
+    @Override
+    public boolean isSimilar(StackableOffer stackableOffer) {
+        return stackableOffer instanceof MoneyOffer;
     }
 
     @Override
-    public void onClick(InventoryClickEvent event, int offerIndex) {
-
-        // We always cancel the event.
-        event.setCancelled(true);
-
-        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-
-        final int amount = event.isShiftClick() ? getDescription(holder.getTrader()).getLargeModifier() : getDescription(holder.getTrader()).getSmallModifier();
-
-        if (amount <= 0) {  // If amount is smaller or equal to 0 we do nothing to allow disabling of shift clicking
-            return;
-        }
-
-        if (event.isLeftClick()) {
-            new ChangeMoneyAction(holder.getTrader(), amount).execute();
-        } else if (event.isRightClick()) {
-            new ChangeMoneyAction(holder.getTrader(), -1*amount).execute();
-        }
-
+	public void grant(Trader trader) {
+        Trade.getInstance().getEconomy().depositPlayer(trader.getName(), amount/100);
     }
 
     public static MoneyOffer create(Trader trader, int amount) {
@@ -92,4 +76,5 @@ public class MoneyOffer extends StackableOffer {
         offer.setAmount(amount);
         return offer;
     }
+
 }

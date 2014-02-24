@@ -9,7 +9,9 @@ import net.milkbowl.vault.economy.Economy;
 public class ChangeMoneyAction extends ChangeOfferAction {
 
     public ChangeMoneyAction(Trader trader, int amount) {
-        super(trader, MoneyOffer.create(trader, Math.abs(amount)), amount > 0);
+        super(trader);
+        setOffer(MoneyOffer.create(trader, Math.abs(amount)));
+        setAddition(amount > 0);
     }
 
     private Economy getEconomy() {

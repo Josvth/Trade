@@ -1,19 +1,17 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.transaction.action.trader.offer.OfferAction;
-import me.josvth.trade.transaction.offer.ItemOffer;
 import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Iterator;
 import java.util.Set;
 
+// TODO Maybe make slots bound to a holder?
 public class TradeSlot extends Slot {
 
     private final int offerIndex;
@@ -23,12 +21,16 @@ public class TradeSlot extends Slot {
         this.offerIndex = offerIndex;
     }
 
-    public Offer getSlotContents(TransactionHolder holder) {
-        return holder.getOffers().get(offerIndex);
-    }
-
     public int getOfferIndex() {
         return offerIndex;
+    }
+
+    public void setContents(TransactionHolder holder, Offer offer) {
+        holder.getOffers().set(getOfferIndex(), offer);
+    }
+
+    public Offer getContents(TransactionHolder holder) {
+        return holder.getOffers().get(getOfferIndex());
     }
 
     // Event handling
@@ -37,54 +39,42 @@ public class TradeSlot extends Slot {
 
         final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-        final Offer offer = getSlotContents(holder);
+        if (holder.getCursorOffer() != null) {
+            holder.getCursorOffer().onCursorClick(event, this);
+            return;
+        }
+
+       final Offer offer = getContents(holder);
 
         // If we have a offer on this slot we let the offer handle the event
-        if (offer == null) {
-
-            ItemStack newItem = null;
-
-            switch (event.getAction()) {
-                case PLACE_ALL:
-                    newItem = event.getCursor().clone();
-                    break;
-                case PLACE_ONE:
-                    newItem = event.getCursor().clone();
-                    newItem.setAmount(1);
-                    break;
-                default:
-                    throw new IllegalStateException("Not handled action: " + event.getAction().name());
-            }
-
-            OfferAction.create(holder.getTrader(), offerIndex, (newItem == null)? null : ItemOffer.create(holder.getTrader(), newItem)).execute();
-
-        } else {
-
-            offer.onClick(event, offerIndex);
-
+        if (offer != null) {
+            offer.onSlotClick(event, this);
+            return;
         }
+
+        event.setCancelled(true);
 
     }
 
     @Override
     public void onDrag(InventoryDragEvent event) {
 
-        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-
-        final Offer offer = getSlotContents(holder);
-
-        if (offer != null) {
-            offer.onDrag(event, offerIndex, slot);
-        } else if (event.getNewItems().containsKey(slot)) {
-            OfferAction.create(holder.getTrader(), offerIndex, ItemOffer.create(holder.getTrader(), event.getNewItems().get(slot).clone())).execute();
-        }
+//        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+//
+//        final Offer offer = getContents(holder);
+//
+//        if (offer != null) {
+//            offer.onDrag(event, offerIndex, slot);
+//        } else if (event.getNewItems().containsKey(slot)) {
+//            SetOfferAction.create(holder.getTrader(), offerIndex, ItemOffer.create(holder.getTrader(), event.getNewItems().get(slot).clone())).execute();
+//        }
 
     }
 
     @Override
     public void update(TransactionHolder holder) {
 
-        final Offer offer = getSlotContents(holder);
+        final Offer offer = getContents(holder);
 
         if (offer != null) {
             holder.getInventory().setItem(slot, offer.createItem(holder));

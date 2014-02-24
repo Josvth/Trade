@@ -23,9 +23,9 @@ public class StatusSlot extends Slot{
 	@Override
 	public void update(TransactionHolder holder) {
 		if (holder.getOtherTrader().hasAccepted()) {
-			setSlot(holder, ItemStackUtils.argument(acceptedItem.clone(), "%player%", holder.getOtherTrader().getName()));
+			setItem(holder, ItemStackUtils.argument(acceptedItem.clone(), "%player%", holder.getOtherTrader().getName()));
 		} else {
-			setSlot(holder, ItemStackUtils.argument(consideringItem.clone(),  "%player%", holder.getOtherTrader().getName()));
+			setItem(holder, ItemStackUtils.argument(consideringItem.clone(), "%player%", holder.getOtherTrader().getName()));
 		}
 	}
 

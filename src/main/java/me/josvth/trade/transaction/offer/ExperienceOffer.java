@@ -1,6 +1,7 @@
 package me.josvth.trade.transaction.offer;
 
 import me.josvth.trade.transaction.action.trader.offer.ChangeExperienceAction;
+import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
@@ -12,18 +13,18 @@ public class ExperienceOffer extends StackableOffer {
 
     private int experience = 0;
 
+    public static ExperienceOffer create(Trader trader, int amount) {
+        final ExperienceOffer offer = trader.getLayout().getOfferDescription(ExperienceOffer.class).createOffer();
+        offer.setAmount(amount);
+        return offer;
+    }
+
     public ExperienceOffer() {
         this(0);
     }
 
     public ExperienceOffer(int experience) {
         this.experience = experience;
-    }
-
-    public static ExperienceOffer create(Trader trader, int amount) {
-        final ExperienceOffer offer = trader.getLayout().getOfferDescription(ExperienceOffer.class).createOffer();
-        offer.setAmount(amount);
-        return offer;
     }
 
     @Override
@@ -72,34 +73,17 @@ public class ExperienceOffer extends StackableOffer {
     }
 
     @Override
+    public boolean isSimilar(StackableOffer contents) {
+        return contents instanceof ExperienceOffer;
+    }
+
+    @Override
     public void grant(Trader trader) {
         grant(trader, experience);
     }
 
     public static void grant(Trader trader, int experience) {
         new ExperienceManager(trader.getPlayer()).changeExp(experience);
-    }
-
-    @Override
-    public void onClick(InventoryClickEvent event, int offerIndex) {
-
-		// We always cancel the event.
-		event.setCancelled(true);
-
-		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-
-        final int amount = event.isShiftClick() ? getDescription(holder.getTrader()).getLargeModifier() : getDescription(holder.getTrader()).getSmallModifier();
-
-        if (amount <= 0) {  // If amount is smaller or equal to 0 we do nothing to allow disabling of shift clicking
-            return;
-        }
-
-        if (event.isLeftClick()) {
-            new ChangeExperienceAction(holder.getTrader(), amount).execute();
-        } else if (event.isRightClick()) {
-            new ChangeExperienceAction(holder.getTrader(), -1*amount).execute();
-        }
-
     }
 
     @Override

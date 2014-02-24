@@ -1,7 +1,6 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.tasks.ExperienceSlotUpdateTask;
 import me.josvth.trade.tasks.MoneySlotUpdateTask;
 import me.josvth.trade.transaction.action.trader.offer.ChangeMoneyAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
@@ -66,7 +65,7 @@ public class MoneySlot extends Slot {
 
     public void update(TransactionHolder holder, int money) {
         final double divider = Math.pow(10, holder.getEconomy().fractionalDigits());
-        setSlot(
+        setItem(
                 holder,
                 ItemStackUtils.argument(
                         moneyItem.clone(),

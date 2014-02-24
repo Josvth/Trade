@@ -55,7 +55,7 @@ public class ExperienceSlot extends Slot {
     }
 
     public void update(TransactionHolder holder, int experience) {
-        setSlot(holder, ItemStackUtils.argument(experienceItem.clone(), "%experience%", String.valueOf(experience), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier)));
+        setItem(holder, ItemStackUtils.argument(experienceItem.clone(), "%experience%", String.valueOf(experience), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier)));
     }
 
     private static int getExperience(OfferList list) {

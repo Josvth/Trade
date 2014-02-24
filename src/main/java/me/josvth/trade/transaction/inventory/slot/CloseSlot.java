@@ -26,7 +26,7 @@ public class CloseSlot extends Slot {
 
 	@Override
 	public void update(TransactionHolder holder) {
-		setSlot(holder, closeDescription);
+		setItem(holder, closeDescription);
 	}
 
 }

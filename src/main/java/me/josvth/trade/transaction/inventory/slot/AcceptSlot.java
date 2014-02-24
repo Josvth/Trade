@@ -57,9 +57,9 @@ public class AcceptSlot extends Slot {
 	public void update(TransactionHolder holder) {
 
 		if (holder.getTrader().hasAccepted()) {
-			setSlot(holder, pendingItem);
+			setItem(holder, pendingItem);
 		} else {
-			setSlot(holder, acceptItem);
+			setItem(holder, acceptItem);
 		}
 
 	}

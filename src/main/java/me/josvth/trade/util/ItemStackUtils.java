@@ -81,4 +81,15 @@ public class ItemStackUtils {
     }
 
 
+    public static ItemStack[] split(ItemStack currentItem) {
+        final ItemStack[] stacks = new ItemStack[2];
+        stacks[0] = currentItem.clone();
+        stacks[0].setAmount(currentItem.getAmount() / 2);
+        stacks[1] = currentItem.clone();
+        stacks[1].setAmount(currentItem.getAmount() / 2);
+        if (stacks[0].getAmount() + stacks[1].getAmount() < currentItem.getAmount()) {
+            stacks[0].setAmount(stacks[0].getAmount() + 1);
+        }
+        return stacks;
+    }
 }

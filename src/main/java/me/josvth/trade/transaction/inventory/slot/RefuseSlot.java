@@ -27,7 +27,7 @@ public class RefuseSlot extends Slot {
 
     @Override
     public void update(TransactionHolder holder) {
-        setSlot(holder, refuseItem);
+        setItem(holder, refuseItem);
     }
 
 }

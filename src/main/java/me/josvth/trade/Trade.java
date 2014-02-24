@@ -20,6 +20,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Trade extends JavaPlugin {
 
@@ -80,7 +82,6 @@ public class Trade extends JavaPlugin {
         generalConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "config.yml"), getDescription().getVersion());
         generalConfiguration.setDefaults(getResource("config.yml"));
         generalConfiguration.load();
-
 
         messageConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "messages.yml"), getDescription().getVersion());
         messageConfiguration.setDefaults(getResource("messages.yml"));

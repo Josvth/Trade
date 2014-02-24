@@ -14,6 +14,6 @@ public class DummySlot extends Slot {
 
     @Override
     public void update(TransactionHolder holder) {
-        setSlot(holder, dummyItem.clone());
+        setItem(holder, dummyItem.clone());
     }
 }

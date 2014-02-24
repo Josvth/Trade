@@ -1,7 +1,7 @@
 package me.josvth.trade.transaction.action.trader.offer;
 
 import me.josvth.trade.transaction.Trader;
-import me.josvth.trade.transaction.action.ActionProvoker;
+import me.josvth.trade.transaction.action.trader.TraderAction;
 import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.transaction.offer.OfferList;
 import me.josvth.trade.transaction.offer.StackableOffer;
@@ -13,37 +13,42 @@ import java.util.*;
  */
 public class ChangeOfferAction extends OfferAction {
 
-    private final Offer offer;
-    private final boolean add;
+    private Offer offer = null;
+    private boolean add = true;
 
     private int currentAmount = 0;
     private boolean complete = false;
     private int remaining = 0;
 
-    public ChangeOfferAction(Trader trader, Offer offer, boolean add) {
+    public ChangeOfferAction(Trader trader) {
         super(trader);
-        this.offer = offer;
-        this.add = add;
-        setUpdateOffers(false);
     }
 
-    public final Offer getOffer() {
+    public Offer getOffer() {
         return offer;
     }
 
-    public final boolean isAdd() {
+    public void setOffer(Offer offer) {
+        this.offer = offer;
+    }
+
+    public void setAddition(boolean add) {
+        this.add = add;
+    }
+
+    public boolean isAdd() {
         return add;
     }
 
-    public final int getCurrentAmount() {
+    public int getCurrentAmount() {
         return currentAmount;
     }
 
-    public final boolean isComplete() {
+    public boolean isComplete() {
         return complete;
     }
 
-    public final int getRemaining() {
+    public int getRemaining() {
         return remaining;
     }
 
@@ -62,7 +67,9 @@ public class ChangeOfferAction extends OfferAction {
     @Override
     public void execute() {
 
-        setChanges(new TreeMap<Integer, Offer>());
+        if (offer == null) {
+            throw new IllegalStateException("Offer may not be null on execute.");
+        }
 
         if (add) {
 
@@ -82,10 +89,12 @@ public class ChangeOfferAction extends OfferAction {
 
         }
 
-        // Execute super if we changed something
         if (!getChanges().isEmpty()) {
-            super.execute();
+            updateOffers();
+            updateSlots();
         }
+
+        denyAccepts();
 
     }
 

@@ -16,11 +16,11 @@ public abstract class Slot {
 		this.slot = slot;
 	}
 
-	protected void setSlot(TransactionHolder holder, ItemStack stack) {
+	protected void setItem(TransactionHolder holder, ItemStack stack) {
 		holder.getInventory().setItem(slot, stack);
 	}
 
-	protected ItemStack getSlot(TransactionHolder holder) {
+	protected ItemStack getItem(TransactionHolder holder) {
 		return holder.getInventory().getItem(slot);
 	}
 
