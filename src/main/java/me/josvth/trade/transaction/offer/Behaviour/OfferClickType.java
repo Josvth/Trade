@@ -1,4 +1,4 @@
-package me.josvth.trade.transaction.offer.click;
+package me.josvth.trade.transaction.offer.behaviour;
 
 public enum OfferClickType {
 
