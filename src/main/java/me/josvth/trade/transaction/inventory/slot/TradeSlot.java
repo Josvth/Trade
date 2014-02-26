@@ -4,6 +4,7 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
+import me.josvth.trade.transaction.offer.behaviour.ClickCategory;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -40,7 +41,7 @@ public class TradeSlot extends Slot {
         final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
         if (holder.getCursorOffer() != null) {
-            holder.getCursorOffer().onCursorClick(event, this);
+            holder.getCursorOffer().onClick(event, this, ClickCategory.CURSOR);
             return;
         }
 
@@ -48,7 +49,7 @@ public class TradeSlot extends Slot {
 
         // If we have a offer on this slot we let the offer handle the event
         if (offer != null) {
-            offer.onSlotClick(event, this);
+            offer.onClick(event, this, ClickCategory.SLOT);
             return;
         }
 

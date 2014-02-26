@@ -8,7 +8,7 @@ import me.josvth.trade.transaction.Trader;
 
 import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.inventory.slot.Slot;
-import me.josvth.trade.transaction.inventory.slot.TradeSlot;
+import me.josvth.trade.transaction.offer.behaviour.ClickCategory;
 import me.josvth.trade.util.ItemStackUtils;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -19,8 +19,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-
-import java.util.Iterator;
+import org.bukkit.inventory.ItemStack;
 
 public class TransactionHolder implements InventoryHolder {
 
@@ -65,19 +64,29 @@ public class TransactionHolder implements InventoryHolder {
         return cursorOffer;
     }
 
-    public void setCursorOffer(final Offer offer) {
-
+    public void setCursorOffer(Offer offer, boolean update) {
         this.cursorOffer = offer;
+        if (update) {
+            updateCursorOffer();
+        }
+    }
 
+    public void updateCursorOffer() {
         final TransactionHolder holder = this;
-
         Bukkit.getScheduler().runTask(getTransaction().getPlugin(), new Runnable() {
             @Override
             public void run() {
-                getTrader().getPlayer().setItemOnCursor((offer == null)? null : offer.createItem(holder));
+                if (getCursorOffer() == null) {
+                    getTrader().getPlayer().setItemOnCursor(null);
+                } else {
+                    final ItemStack cursorItem = getCursorOffer().createItem(holder);
+                    if (cursorItem == null) {
+                        setCursorOffer(null, false);
+                    }
+                    getTrader().getPlayer().setItemOnCursor(cursorItem);
+                }
             }
         });
-
     }
 
     @Override
@@ -122,7 +131,7 @@ public class TransactionHolder implements InventoryHolder {
 
         // If we have a cursor offer we let that handle the event
         if (getCursorOffer() != null) {
-            getCursorOffer().onCursorClick(event, null);
+            getCursorOffer().onClick(event, null, ClickCategory.CURSOR);
 
             ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
 
@@ -132,10 +141,10 @@ public class TransactionHolder implements InventoryHolder {
         // If we didn't click a slot or have a cursor offer we handle the event here
         switch (event.getAction()) {
             case PICKUP_ALL:
-                setCursorOffer(new ItemOffer(event.getCurrentItem().clone()));
+                setCursorOffer(new ItemOffer(event.getCurrentItem().clone()), true);
                 break;
             case PICKUP_HALF:
-                setCursorOffer(new ItemOffer(ItemStackUtils.split(event.getCurrentItem())[0]));
+                setCursorOffer(new ItemOffer(ItemStackUtils.split(event.getCurrentItem())[0]), true);
             case NOTHING:
                 break;
             default:

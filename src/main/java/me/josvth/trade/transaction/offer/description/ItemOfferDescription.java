@@ -9,7 +9,7 @@ public class ItemOfferDescription extends OfferDescription<ItemOffer> {
 
     @Override
     public ItemStack createItem(ItemOffer offer, TransactionHolder holder) {
-        if (offer.getItem() != null && offer.getItem() .getAmount() != 0) {
+        if (offer.getItem() != null && offer.getItem().getAmount() != 0) {
             return offer.getItem();
         }
         return null;
