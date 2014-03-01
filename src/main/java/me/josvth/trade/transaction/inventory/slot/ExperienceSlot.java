@@ -1,11 +1,11 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
+import me.josvth.trade.tasks.ExperienceSlotUpdateTask;
 import me.josvth.trade.transaction.action.trader.offer.ChangeExperienceAction;
+import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.offer.ExperienceOffer;
 import me.josvth.trade.transaction.offer.OfferList;
-import me.josvth.trade.tasks.ExperienceSlotUpdateTask;
-import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;

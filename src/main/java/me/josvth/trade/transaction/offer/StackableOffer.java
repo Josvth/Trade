@@ -2,7 +2,6 @@ package me.josvth.trade.transaction.offer;
 
 
 import me.josvth.trade.transaction.Trader;
-import me.josvth.trade.transaction.action.trader.offer.ChangeOfferAction;
 import me.josvth.trade.transaction.action.trader.offer.SetOfferAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.slot.Slot;
@@ -10,7 +9,6 @@ import me.josvth.trade.transaction.inventory.slot.TradeSlot;
 import me.josvth.trade.transaction.offer.behaviour.ClickBehaviour;
 import me.josvth.trade.transaction.offer.behaviour.ClickCategory;
 import me.josvth.trade.transaction.offer.behaviour.ClickTrigger;
-import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -39,12 +37,11 @@ public abstract class StackableOffer extends Offer {
                         final int available = (contents.getMaxAmount() == -1)? -1 : contents.getMaxAmount() - contents.getAmount();
                         if (available == -1) {
                             contents.add(stackableOffer.getAmount());
-                            stackableOffer.setAmount(0);
-
                             final SetOfferAction action = new SetOfferAction(holder.getTrader());
                             action.setOffer(((TradeSlot) slot).getOfferIndex(), contents);
                             action.execute();
 
+                            stackableOffer.setAmount(0);
                             holder.updateCursorOffer();
 
                             event.setCancelled(true);
@@ -52,13 +49,13 @@ public abstract class StackableOffer extends Offer {
                         }
                         if (available > 0) {
                             final int added = Math.min(available, stackableOffer.getAmount());
-                            contents.add(added);
-                            stackableOffer.remove(added);
 
+                            contents.add(added);
                             final SetOfferAction action = new SetOfferAction(holder.getTrader());
                             action.setOffer(((TradeSlot) slot).getOfferIndex(), contents);
                             action.execute();
 
+                            stackableOffer.remove(added);
                             holder.updateCursorOffer();
 
                             event.setCancelled(true);
@@ -82,7 +79,11 @@ public abstract class StackableOffer extends Offer {
                     final ItemStack currentItem = event.getCurrentItem();
                     if (currentItem == null) {
                         final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-                        ((StackableOffer) offer).grant(holder.getTrader(), 1);
+                        final StackableOffer stackableOffer = (StackableOffer) offer;
+
+                        stackableOffer.grant(holder.getTrader(), 1);
+
+                        stackableOffer.remove(1);
                         holder.updateCursorOffer();
 
                         event.setCancelled(true);
@@ -102,12 +103,11 @@ public abstract class StackableOffer extends Offer {
                     if (((TradeSlot) slot).getContents(holder) == null) {
                         final StackableOffer single = ((StackableOffer) offer).clone();
                         single.setAmount(1);
-                        ((StackableOffer) offer).remove(1);
-
                         final SetOfferAction action = new SetOfferAction(holder.getTrader());
                         action.setOffer(((TradeSlot) slot).getOfferIndex(), single);
                         action.execute();
 
+                        ((StackableOffer) offer).remove(1);
                         holder.updateCursorOffer();
 
                         event.setCancelled(true);
@@ -129,12 +129,11 @@ public abstract class StackableOffer extends Offer {
                         final StackableOffer stackableOffer = (StackableOffer) offer;
                         if ((stackableOffer.isSimilar(contents)) && (contents.getAmount() + 1 <= contents.getMaxAmount() && contents.getMaxAmount() != -1)) {
                             contents.add(1);
-                            stackableOffer.remove(1);
-
                             final SetOfferAction action = new SetOfferAction(holder.getTrader());
                             action.setOffer(((TradeSlot) slot).getOfferIndex(), contents);
                             action.execute();
 
+                            stackableOffer.remove(1);
                             holder.updateCursorOffer();
 
                             event.setCancelled(true);

@@ -2,9 +2,9 @@ package me.josvth.trade.transaction.inventory;
 
 import me.josvth.bukkitformatlibrary.message.FormattedMessage;
 import me.josvth.bukkitformatlibrary.message.MessageHolder;
+import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.transaction.offer.description.OfferDescription;
-import me.josvth.trade.transaction.inventory.slot.Slot;
 
 import java.util.HashMap;
 import java.util.HashSet;

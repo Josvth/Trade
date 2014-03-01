@@ -1,7 +1,6 @@
 package me.josvth.trade.transaction.action.trader.status;
 
 import me.josvth.trade.transaction.Trader;
-import me.josvth.trade.transaction.action.ActionProvoker;
 import me.josvth.trade.transaction.action.trader.TraderAction;
 
 public class CloseAction extends TraderAction {

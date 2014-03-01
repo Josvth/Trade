@@ -1,12 +1,12 @@
 package me.josvth.trade.transaction.action.trader.offer;
 
 import me.josvth.trade.transaction.Trader;
-import me.josvth.trade.transaction.action.trader.TraderAction;
 import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.transaction.offer.OfferList;
 import me.josvth.trade.transaction.offer.StackableOffer;
 
-import java.util.*;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Action that handles addition and subtraction of an offer to a offer list of a trader

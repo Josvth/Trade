@@ -1,9 +1,9 @@
 package me.josvth.trade.util;
 
+import org.bukkit.entity.Player;
+
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
-
-import org.bukkit.entity.Player;
 
 /**
  * @author desht

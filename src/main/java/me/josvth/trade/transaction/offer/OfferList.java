@@ -2,13 +2,8 @@ package me.josvth.trade.transaction.offer;
 
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.inventory.slot.ExperienceSlot;
-import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
-import me.josvth.trade.transaction.inventory.slot.TradeSlot;
-import me.josvth.trade.util.ExperienceManager;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.TreeMap;
 
 public class OfferList {
 

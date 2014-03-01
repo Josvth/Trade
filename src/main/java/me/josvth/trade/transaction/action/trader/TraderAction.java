@@ -2,7 +2,6 @@ package me.josvth.trade.transaction.action.trader;
 
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.action.Action;
-import me.josvth.trade.transaction.action.ActionProvoker;
 import org.bukkit.entity.Player;
 
 public abstract class TraderAction extends Action {

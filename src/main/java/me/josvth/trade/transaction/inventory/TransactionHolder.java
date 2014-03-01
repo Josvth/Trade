@@ -1,13 +1,14 @@
 package me.josvth.trade.transaction.inventory;
 
 import me.josvth.trade.Trade;
+import me.josvth.trade.transaction.Trader;
+import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.action.trader.status.CloseAction;
 import me.josvth.trade.transaction.action.trader.status.RefuseAction;
-import me.josvth.trade.transaction.offer.*;
-import me.josvth.trade.transaction.Trader;
-
-import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.inventory.slot.Slot;
+import me.josvth.trade.transaction.offer.ItemOffer;
+import me.josvth.trade.transaction.offer.Offer;
+import me.josvth.trade.transaction.offer.OfferList;
 import me.josvth.trade.transaction.offer.behaviour.ClickCategory;
 import me.josvth.trade.util.ItemStackUtils;
 import net.milkbowl.vault.economy.Economy;

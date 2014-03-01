@@ -1,16 +1,7 @@
 package me.josvth.trade.transaction.action.trader.offer;
 
 import me.josvth.trade.transaction.Trader;
-import me.josvth.trade.transaction.action.trader.status.DenyAction;
-import me.josvth.trade.transaction.action.trader.TraderAction;
-import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
-import me.josvth.trade.transaction.inventory.slot.TradeSlot;
 import me.josvth.trade.transaction.offer.Offer;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Represents an abstract action in which offers of a trader were changed

@@ -2,26 +2,18 @@ package me.josvth.trade;
 
 import com.conventnunnery.libraries.config.ConventYamlConfiguration;
 import me.josvth.bukkitformatlibrary.formatter.ColorFormatter;
-import me.josvth.bukkitformatlibrary.message.MessageHolder;
 import me.josvth.bukkitformatlibrary.message.managers.MessageManager;
 import me.josvth.bukkitformatlibrary.message.managers.YamlMessageManager;
-import me.josvth.trade.request.*;
-import me.josvth.trade.transaction.Transaction;
+import me.josvth.trade.request.RequestManager;
 import me.josvth.trade.transaction.TransactionManager;
 import me.josvth.trade.transaction.inventory.LayoutManager;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Trade extends JavaPlugin {
 

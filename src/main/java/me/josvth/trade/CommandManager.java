@@ -1,7 +1,9 @@
 package me.josvth.trade;
 
 import me.josvth.bukkitformatlibrary.message.MessageHolder;
-import me.josvth.trade.request.*;
+import me.josvth.trade.request.Request;
+import me.josvth.trade.request.RequestManager;
+import me.josvth.trade.request.RequestMethod;
 import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.TransactionManager;
 import org.bukkit.command.Command;

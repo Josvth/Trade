@@ -1,12 +1,9 @@
 package me.josvth.trade.transaction.offer;
 
-import me.josvth.trade.transaction.action.trader.offer.ChangeExperienceAction;
-import me.josvth.trade.transaction.inventory.slot.Slot;
-import me.josvth.trade.transaction.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
+import me.josvth.trade.transaction.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.util.ExperienceManager;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class ExperienceOffer extends StackableOffer {

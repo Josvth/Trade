@@ -29,7 +29,7 @@ public abstract class Offer {
 
         final LinkedList<ClickBehaviour> cursorLeftBehaviours = new LinkedList<ClickBehaviour>();
 
-        // Clicking an empty inventory slot with an offer (GRANT)
+        // Clicking an empty inventory slot with an offer (GRANT_ALL)
         cursorLeftBehaviours.add(new ClickBehaviour() {
             @Override
             public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
@@ -47,7 +47,7 @@ public abstract class Offer {
             }
         });
 
-        // Clicking an filled inventory slot with an offer (offer: GRANT, item: PICKUP_ALL)
+        // Clicking an filled inventory slot with an offer (offer: GRANT_ALL, item: PICKUP_ALL)
         cursorLeftBehaviours.add(new ClickBehaviour() {
             @Override
             public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {

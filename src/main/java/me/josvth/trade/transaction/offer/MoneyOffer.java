@@ -1,12 +1,9 @@
 package me.josvth.trade.transaction.offer;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.transaction.action.trader.offer.ChangeMoneyAction;
-import me.josvth.trade.transaction.inventory.slot.Slot;
-import me.josvth.trade.transaction.offer.description.MoneyOfferDescription;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import org.bukkit.event.inventory.InventoryClickEvent;
+import me.josvth.trade.transaction.offer.description.MoneyOfferDescription;
 import org.bukkit.inventory.ItemStack;
 
 public class MoneyOffer extends StackableOffer {

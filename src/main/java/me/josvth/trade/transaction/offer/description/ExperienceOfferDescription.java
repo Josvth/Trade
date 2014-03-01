@@ -1,8 +1,7 @@
 package me.josvth.trade.transaction.offer.description;
 
-import me.josvth.trade.transaction.offer.ExperienceOffer;
-import me.josvth.trade.transaction.offer.OfferList;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
+import me.josvth.trade.transaction.offer.ExperienceOffer;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.inventory.ItemStack;
 

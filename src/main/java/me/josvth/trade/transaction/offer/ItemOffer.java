@@ -1,22 +1,17 @@
 package me.josvth.trade.transaction.offer;
 
 import me.josvth.trade.Trade;
-import me.josvth.trade.transaction.action.trader.offer.SetOfferAction;
+import me.josvth.trade.transaction.Trader;
+import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.slot.Slot;
-import me.josvth.trade.transaction.inventory.slot.TradeSlot;
 import me.josvth.trade.transaction.offer.behaviour.ClickBehaviour;
 import me.josvth.trade.transaction.offer.behaviour.ClickCategory;
 import me.josvth.trade.transaction.offer.behaviour.ClickTrigger;
 import me.josvth.trade.transaction.offer.description.ItemOfferDescription;
-import me.josvth.trade.transaction.Trader;
-import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Item;
+import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -31,48 +26,45 @@ public class ItemOffer extends StackableOffer {
 
         final LinkedList<ClickBehaviour> cursorLeftBehaviours = new LinkedList<ClickBehaviour>();
 
-        // ADD_ALL, ADD_SOME
+        // PLACE_ALL
         cursorLeftBehaviours.add(new ClickBehaviour() {
             @Override
             public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-                if (slot instanceof TradeSlot) {
+                if (slot == null) {
                     final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-                    if (((TradeSlot) slot).getContents(holder) instanceof StackableOffer) {
-                        final StackableOffer contents = (StackableOffer) ((TradeSlot) slot).getContents(holder);
-                        final StackableOffer stackableOffer = (StackableOffer) offer;
-                        final int available = (contents.getMaxAmount() == -1)? -1 : contents.getMaxAmount() - contents.getAmount();
-                        if (available == -1) {
-                            contents.add(stackableOffer.getAmount());
-                            stackableOffer.setAmount(0);
+                    if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
+                        event.setCurrentItem(((ItemOffer) offer).getItem().clone());
 
-                            final SetOfferAction action = new SetOfferAction(holder.getTrader());
-                            action.setOffer(((TradeSlot) slot).getOfferIndex(), contents);
-                            action.execute();
+                        holder.setCursorOffer(null, true);
 
-                            holder.updateCursorOffer();
-
-                            event.setCancelled(true);
-                            return true;
-                        }
-                        if (available > 0) {
-                            final int added = Math.min(available, stackableOffer.getAmount());
-                            contents.add(added);
-                            stackableOffer.remove(added);
-
-                            final SetOfferAction action = new SetOfferAction(holder.getTrader());
-                            action.setOffer(((TradeSlot) slot).getOfferIndex(), contents);
-                            action.execute();
-
-                            holder.updateCursorOffer();
-
-                            event.setCancelled(true);
-                            return true;
-                        }
+                        event.setCancelled(true);
+                        return true;
                     }
                 }
                 return false;
             }
         });
+
+        // SWAP_WITH_CURSOR
+        final ClickBehaviour swapWithCursor = new ClickBehaviour() {
+            @Override
+            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
+                if (slot == null) {
+                    final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+                    if (event.getCurrentItem() != null) {
+                        holder.setCursorOffer(new ItemOffer(event.getCurrentItem().clone()), true);
+
+                        event.setCurrentItem(((ItemOffer) offer).getItem().clone());
+
+                        event.setCancelled(true);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+
+        cursorLeftBehaviours.add(swapWithCursor);
 
         DEFAULT_BEHAVIOURS.put(new ClickTrigger(ClickCategory.CURSOR, ClickType.LEFT), cursorLeftBehaviours);
 
@@ -86,8 +78,14 @@ public class ItemOffer extends StackableOffer {
                     final ItemStack currentItem = event.getCurrentItem();
                     if (currentItem == null) {
                         final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-                        ((StackableOffer) offer).grant(holder.getTrader(), 1);
+
+                        final ItemOffer itemOffer = (ItemOffer) offer;
+                        itemOffer.remove(1);
                         holder.updateCursorOffer();
+
+                        final ItemStack item = itemOffer.getItem().clone();
+                        item.setAmount(1);
+                        event.setCurrentItem(item);
 
                         event.setCancelled(true);
                         return true;
@@ -97,94 +95,21 @@ public class ItemOffer extends StackableOffer {
             }
         });
 
-        // PLACE_ONE
-        cursorRightBehaviours.add(new ClickBehaviour() {
-            @Override
-            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-                if (slot instanceof TradeSlot) {
-                    final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-                    if (((TradeSlot) slot).getContents(holder) == null) {
-                        final StackableOffer single = ((StackableOffer) offer).clone();
-                        single.setAmount(1);
-                        ((StackableOffer) offer).remove(1);
-
-                        final SetOfferAction action = new SetOfferAction(holder.getTrader());
-                        action.setOffer(((TradeSlot) slot).getOfferIndex(), single);
-                        action.execute();
-
-                        holder.updateCursorOffer();
-
-                        event.setCancelled(true);
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
-
-        // ADD_ONE
-        cursorRightBehaviours.add(new ClickBehaviour() {
-            @Override
-            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-                if (slot instanceof TradeSlot) {
-                    final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-                    if (((TradeSlot) slot).getContents(holder) instanceof StackableOffer) {
-                        final StackableOffer contents = (StackableOffer) ((TradeSlot) slot).getContents(holder);
-                        final StackableOffer stackableOffer = (StackableOffer) offer;
-                        if ((stackableOffer.isSimilar(contents)) && (contents.getAmount() + 1 <= contents.getMaxAmount() && contents.getMaxAmount() != -1)) {
-                            contents.add(1);
-                            stackableOffer.remove(1);
-
-                            final SetOfferAction action = new SetOfferAction(holder.getTrader());
-                            action.setOffer(((TradeSlot) slot).getOfferIndex(), contents);
-                            action.execute();
-
-                            holder.updateCursorOffer();
-
-                            event.setCancelled(true);
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-        });
+        cursorRightBehaviours.add(swapWithCursor);
 
         DEFAULT_BEHAVIOURS.put(new ClickTrigger(ClickCategory.CURSOR, ClickType.RIGHT), cursorRightBehaviours);
 
-        final LinkedList<ClickBehaviour> slotRightBehaviours = new LinkedList<ClickBehaviour>();
-
-        slotRightBehaviours.add(new ClickBehaviour() {
-            @Override
-            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-                if (slot instanceof TradeSlot) {
-                    final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-                    StackableOffer split = StackableOffer.split((StackableOffer) offer);
-                    holder.setCursorOffer(split, true);
-
-                    SetOfferAction offerAction = new SetOfferAction(holder.getTrader());
-                    offerAction.setOffer(((TradeSlot) slot).getOfferIndex(), offer);
-                    offerAction.execute();
-
-                    event.setCancelled(true);
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        DEFAULT_BEHAVIOURS.put(new ClickTrigger(ClickCategory.SLOT, ClickType.RIGHT), slotRightBehaviours);
     }
 
     private ItemStack item = null;
 
     public ItemOffer() {
         this(null);
-        addBehaviours(DEFAULT_BEHAVIOURS);
     }
 
     public ItemOffer(ItemStack item) {
         this.item = item;
+        addBehaviours(DEFAULT_BEHAVIOURS);
     }
 
     @Override
