@@ -5,22 +5,37 @@ import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Set;
 
 public class StatusSlot extends Slot{
 
-	private final ItemStack consideringItem;
-	private final ItemStack acceptedItem;
+	private ItemStack consideringItem;
+	private ItemStack acceptedItem;
 
-	public StatusSlot(int slot, ItemStack consideringItem, ItemStack acceptedItem) {
-		super(slot);
-		this.consideringItem = consideringItem;
-		this.acceptedItem = acceptedItem;
-	}
+	public StatusSlot(int slot, TransactionHolder holder) {
+        super(slot, holder);
+    }
 
-	@Override
+    public ItemStack getConsideringItem() {
+        return consideringItem;
+    }
+
+    public void setConsideringItem(ItemStack consideringItem) {
+        this.consideringItem = consideringItem;
+    }
+
+    public ItemStack getAcceptedItem() {
+        return acceptedItem;
+    }
+
+    public void setAcceptedItem(ItemStack acceptedItem) {
+        this.acceptedItem = acceptedItem;
+    }
+
+    @Override
 	public void update(TransactionHolder holder) {
 		if (holder.getOtherTrader().hasAccepted()) {
 			setItem(holder, ItemStackUtils.argument(acceptedItem.clone(), "%player%", holder.getOtherTrader().getName()));
@@ -31,7 +46,7 @@ public class StatusSlot extends Slot{
 
 	public static void updateStatusSlots(TransactionHolder holder, boolean nextTick) {
 
-		final Set<StatusSlot> slots = holder.getLayout().getSlotsOfType(StatusSlot.class);
+		final Set<StatusSlot> slots = holder.getSlotsOfType(StatusSlot.class);
 
 		if (!nextTick) {
 			for (Slot slot : slots) {
@@ -42,5 +57,12 @@ public class StatusSlot extends Slot{
 		}
 
 	}
+
+    public static StatusSlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
+        final StatusSlot slot = new StatusSlot(slotID, holder);
+        slot.setAcceptedItem(ItemStackUtils.fromSection(description.getConfiguration().getConfigurationSection("accepted-item"), Trade.getInstance().getMessageManager()));
+        slot.setConsideringItem(ItemStackUtils.fromSection(description.getConfiguration().getConfigurationSection("considering-item"), Trade.getInstance().getMessageManager()));
+        return slot;
+    }
 
 }

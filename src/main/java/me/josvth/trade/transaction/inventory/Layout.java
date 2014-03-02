@@ -3,8 +3,10 @@ package me.josvth.trade.transaction.inventory;
 import me.josvth.bukkitformatlibrary.message.FormattedMessage;
 import me.josvth.bukkitformatlibrary.message.MessageHolder;
 import me.josvth.trade.transaction.inventory.slot.Slot;
+import me.josvth.trade.transaction.inventory.slot.SlotDescription;
 import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.transaction.offer.description.OfferDescription;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,33 +19,38 @@ public class Layout extends MessageHolder {
 
     private final String name;
 
-    private int rows;
-    private Slot[] slots;
+    private final LayoutManager manager;
+
+    private int guiRows;
     private int offerSize = 4;
     private FormattedMessage title = new FormattedMessage("");
 
     // Offer descriptions
     private final Map<Class<? extends Offer>, OfferDescription> offerDescriptions = new HashMap<Class<? extends Offer>, OfferDescription>();
 
+    // Slot descriptions
+    private final Map<Integer, SlotDescription> slotDescriptions = new HashMap<Integer, SlotDescription>();
+
     // Layout options
     private int priority = -1;
     private String permission = null;
     private boolean shared = true;
 
-    public Layout(String name) {
+    public Layout(String name, LayoutManager manager) {
         this.name = name;
+        this.manager = manager;
     }
 
     public String getName() {
         return name;
     }
 
-    public int getRows() {
-        return rows;
+    public int getGuiRows() {
+        return guiRows;
     }
 
-    public void setRows(int rows) {
-        this.rows = rows;
+    public void setGuiRows(int rows) {
+        this.guiRows = rows;
     }
 
     public int getOfferSize() {
@@ -54,19 +61,8 @@ public class Layout extends MessageHolder {
         this.offerSize = size;
     }
 
-    public Slot[] getSlots() {
-        return slots;
-    }
-
-    public void setSlots(Slot[] slots) {
-        if (slots.length != rows * 9) {
-            throw new IllegalArgumentException("Array length (" + slots.length + ") does not match layout size (" + rows * 9 + ").");
-        }
-        this.slots = slots;
-    }
-
-    public int getInventorySize() {
-        return rows * 9;
+    public int getGuiSize() {
+        return guiRows * 9;
     }
 
     public String generateTitle(TransactionHolder holder) {
@@ -102,6 +98,11 @@ public class Layout extends MessageHolder {
         return offerDescriptions;
     }
 
+    // Slot descriptions
+    public Map<Integer, SlotDescription> getSlotDescriptions() {
+        return slotDescriptions;
+    }
+
     // Layout options
     public int getPriority() {
         return priority;
@@ -127,21 +128,36 @@ public class Layout extends MessageHolder {
         this.shared = shared;
     }
 
-    public <T extends Slot> Set<T> getSlotsOfType(Class<T> clazz) {
-
-        final Set<T> set = new HashSet<T>();
-
-        for (Slot slot : slots) {
-            if (clazz.isInstance(slot)) {
-                set.add((T) slot);
-            }
-        }
-
-        return set;
-
-    }
-
     public void setTitle(FormattedMessage title) {
         this.title = title;
     }
+
+    public Slot[] createSlots(TransactionHolder holder) {
+
+        final Slot[] slots = new Slot[getGuiSize() + LayoutManager.PLAYER_INVENTORY_SIZE];
+
+        for (Map.Entry<Integer, SlotDescription> entry : getSlotDescriptions().entrySet()) {
+
+            final Class<? extends Slot> slotClass = manager.getRegisteredSlots().get(entry.getValue().getType());
+
+            Slot slot = null;
+
+            try {
+                slot = (Slot) slotClass.getMethod("deserialize", int.class, TransactionHolder.class, SlotDescription.class).invoke(null, entry.getKey(), holder, entry.getValue());
+            } catch (Exception e) {
+                try {
+                    slot = slotClass.getConstructor(int.class).newInstance(entry.getKey(), holder);
+                } catch (Exception ignored) {
+
+                }
+            }
+
+            slots[entry.getKey()] = slot;
+
+        }
+
+        return slots;
+
+    }
+
 }

@@ -8,6 +8,7 @@ import me.josvth.trade.transaction.offer.ExperienceOffer;
 import me.josvth.trade.transaction.offer.OfferList;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -15,15 +16,36 @@ import java.util.Set;
 
 public class ExperienceSlot extends Slot {
 
-    private final ItemStack experienceItem;
+    private ItemStack experienceItem;
 
-    private final int smallModifier;
-    private final int largeModifier;
+    private int smallModifier = 1;
+    private int largeModifier = 5;
 
-    public ExperienceSlot(int slot, ItemStack experienceItem, int smallModifier, int largeModifier) {
-        super(slot);
+    public ExperienceSlot(int slot, TransactionHolder holder) {
+        super(slot, holder);
+    }
+
+    public ItemStack getExperienceItem() {
+        return experienceItem;
+    }
+
+    public void setExperienceItem(ItemStack experienceItem) {
         this.experienceItem = experienceItem;
+    }
+
+    public int getSmallModifier() {
+        return smallModifier;
+    }
+
+    public void setSmallModifier(int smallModifier) {
         this.smallModifier = smallModifier;
+    }
+
+    public int getLargeModifier() {
+        return largeModifier;
+    }
+
+    public void setLargeModifier(int largeModifier) {
         this.largeModifier = largeModifier;
     }
 
@@ -51,7 +73,7 @@ public class ExperienceSlot extends Slot {
 
     @Override
     public void update(TransactionHolder holder) {
-        update(holder, getExperience(holder.getOffers()));
+        update(holder, getExperience(holder.getOfferList()));
     }
 
     public void update(TransactionHolder holder, int experience) {
@@ -68,7 +90,7 @@ public class ExperienceSlot extends Slot {
 
     public static void updateExperienceSlots(TransactionHolder holder, boolean nextTick, int experience) {
 
-        final Set<ExperienceSlot> slots = holder.getLayout().getSlotsOfType(ExperienceSlot.class);
+        final Set<ExperienceSlot> slots = holder.getSlotsOfType(ExperienceSlot.class);
 
         if (!nextTick) {
             for (ExperienceSlot slot : slots) {
@@ -78,6 +100,14 @@ public class ExperienceSlot extends Slot {
             Bukkit.getScheduler().runTask(Trade.getInstance(), new ExperienceSlotUpdateTask(holder, slots, experience));
         }
 
+    }
+
+    public static ExperienceSlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
+        final ExperienceSlot slot = new ExperienceSlot(slotID, holder);
+        slot.setExperienceItem(ItemStackUtils.fromSection(description.getConfiguration().getConfigurationSection("experience-item"), Trade.getInstance().getMessageManager()));
+        slot.setSmallModifier(description.getConfiguration().getInt("small-modifier", 1));
+        slot.setLargeModifier(description.getConfiguration().getInt("large-modifier", 5));
+        return slot;
     }
 
 }

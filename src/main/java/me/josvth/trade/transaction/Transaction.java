@@ -95,6 +95,9 @@ public class Transaction {
 
         stage = Transaction.Stage.IN_PROGRESS;
 
+        traderA.getHolder().updateAllSlots();
+        traderB.getHolder().updateAllSlots();
+
         traderA.openInventory();
         traderB.openInventory();
 

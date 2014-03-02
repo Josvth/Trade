@@ -13,14 +13,20 @@ import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class LayoutManager {
 
+    public static final int PLAYER_INVENTORY_SIZE = InventoryType.PLAYER.getDefaultSize();
+
     private final Trade plugin;
     private final MessageManager messageManager;
+
+    private final Map<String, Class<? extends Slot>> registeredSlots = new HashMap<String, Class<? extends Slot>>();
 
     private final Map<String, Layout> layouts = new HashMap<String, Layout>();
 
@@ -35,7 +41,7 @@ public class LayoutManager {
         final Map<Class<? extends Offer>, OfferDescription> defaultOfferDescriptions = getOfferDescriptionsFromSection(offerSection);
 
         // First we load our default default layout
-        final Layout defaultLayout = new Layout("default");
+        final Layout defaultLayout = new Layout("default", this);
         loadLayout(defaultLayout, layoutSection.getDefaultSection().getConfigurationSection("default"), defaultMessages, defaultOfferDescriptions);
 
         // Then we loud the other layouts in the section. Overriding our default if necessary
@@ -45,7 +51,7 @@ public class LayoutManager {
                 if (layoutSection.isConfigurationSection(key)) {
                     Layout layout = layouts.get(key);
                     if (layout == null) {
-                        layout = new Layout(key);
+                        layout = new Layout(key, this);
                     }
 
                     loadLayout(layout, layoutSection.getConfigurationSection(key), defaultMessages, defaultOfferDescriptions);
@@ -67,7 +73,7 @@ public class LayoutManager {
         layout.getMessages().putAll(defaultMessages);
         layout.getOfferDescriptions().putAll(defaultOfferDescriptions);
 
-        layout.setRows(section.getInt("rows"));
+        layout.setGuiRows(section.getInt("rows"));
 
         layout.setOfferSize(section.getInt("offer-size", 4));
 
@@ -77,111 +83,52 @@ public class LayoutManager {
         layout.setPriority(section.getInt("priority", 0));
         layout.setShared(section.getBoolean("shared", true));
 
-        final int slotSize = layout.getRows() * 9;
+        final int slotSize = layout.getGuiSize() + PLAYER_INVENTORY_SIZE;
 
         // Load slots
         if (section.isConfigurationSection("slots")) {
-
-            final Slot[] slots = new Slot[slotSize];
 
             for (String slotKey : section.getConfigurationSection("slots").getKeys(false)) {
 
                 if (section.getConfigurationSection("slots").isConfigurationSection(slotKey)) {
 
-                    final int slotID;
-
                     try {
-                        slotID = Integer.parseInt(slotKey);
-                    } catch (NumberFormatException e) {
-                        // TODO add message
-                        continue;
-                    }
 
-                    if (slotID < 0 || slotID >= slotSize) {
-                        // TODO add message
-                        continue;
-                    }
+                        final int slotID = Integer.parseInt(slotKey);
 
-                    final ConfigurationSection slotSection = section.getConfigurationSection("slots." + slotKey);
+                        if (slotID >= 0 && slotID < slotSize) {
 
-                    final String type = slotSection.getString("type");
+                            final ConfigurationSection slotSection = section.getConfigurationSection("slots." + slotKey);
 
-                    Slot slot = null;
+                            if (slotSection != null && slotSection.isString("type")) {
+                                layout.getSlotDescriptions().put(slotID, new SlotDescription(slotSection.getString("type"), slotSection));
+                            }
 
-                    if ("accept".equalsIgnoreCase(type)) {
-                        slot = new AcceptSlot(
-                                slotID,
-                                ItemStackUtils.fromSection(slotSection.getConfigurationSection("accept-item"), messageManager),
-                                ItemStackUtils.fromSection(slotSection.getConfigurationSection("accepted-item"), messageManager)
-                        );
-                    } else if ("refuse".equalsIgnoreCase(type)) {
-                        slot = new RefuseSlot(
-                                slotID,
-                                ItemStackUtils.fromSection(slotSection.getConfigurationSection("refuse-item"), messageManager)
-                        );
-                    } else if ("close".equalsIgnoreCase(type)) {
-                        slot = new CloseSlot(
-                                slotID,
-                                ItemStackUtils.fromSection(slotSection.getConfigurationSection("close-item"), messageManager)
-                        );
-                    } else if ("status".equalsIgnoreCase(type)) {
-                        slot = new StatusSlot(
-                                slotID,
-                                ItemStackUtils.fromSection(slotSection.getConfigurationSection("considering-item"), messageManager),
-                                ItemStackUtils.fromSection(slotSection.getConfigurationSection("accepted-item"), messageManager)
-                        );
-                    } else if ("trade".equalsIgnoreCase(type)) {
-                        slot = new TradeSlot(
-                                slotID,
-                                slotSection.getInt("slot", 0)
-                        );
-                    } else if ("mirror".equalsIgnoreCase(type)) {
-                        slot = new MirrorSlot(
-                                slotID,
-                                slotSection.getInt("slot", 0)
-                        );
-                    } else if ("money".equalsIgnoreCase(type)) {
-                        if (plugin.useEconomy()) {
-                            slot = new MoneySlot(
-                                    slotID,
-                                    ItemStackUtils.fromSection(slotSection.getConfigurationSection("money-item"), messageManager),
-                                    slotSection.getInt("small-modifier", 5),
-                                    slotSection.getInt("large-modifier", 10)
-                            );
                         }
-                    } else if ("experience".equalsIgnoreCase(type)) {
-                        slot = new ExperienceSlot(
-                                slotID,
-                                ItemStackUtils.fromSection(slotSection.getConfigurationSection("experience-item"), messageManager),
-                                slotSection.getInt("small-modifier", 1),
-                                slotSection.getInt("large-modifier", 5)
-                        );
-                    } else if ("dummy".equalsIgnoreCase(type)) {
-                        slot = new DummySlot(
-                                slotID,
-                                ItemStackUtils.fromSection(slotSection.getConfigurationSection("dummy-item"), messageManager)
-                        );
-                    }
 
-                    slots[slotID] = slot;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                 }
 
             }
 
-            layout.setSlots(slots);
+            // Set inventory slots
+            for (int i = layout.getGuiSize(); i < layout.getGuiSize() + PLAYER_INVENTORY_SIZE; i++) {
+                layout.getSlotDescriptions().put(i, new SlotDescription("inventory", null));
+            }
+
+            // Load offer descriptions
+            layout.getOfferDescriptions().putAll(getOfferDescriptionsFromSection(section.getConfigurationSection("offers")));
+
+            // Load messages
+            layout.setKeyWhenMissing(plugin.getGeneralConfiguration().getBoolean("debug-mode", false));
+            layout.getMessages().putAll(getMessagesFromSection(section.getConfigurationSection("messages")));
+
+            layouts.put(layout.getName(), layout);
 
         }
-
-        // Load offer descriptions
-        layout.getOfferDescriptions().putAll(getOfferDescriptionsFromSection(section.getConfigurationSection("offers")));
-
-        // Load messages
-        layout.setKeyWhenMissing(plugin.getGeneralConfiguration().getBoolean("debug-mode", false));
-        layout.getMessages().putAll(getMessagesFromSection(section.getConfigurationSection("messages")));
-
-        layouts.put(layout.getName(), layout);
-
     }
 
     private Map<String, FormattedMessage> getMessagesFromSection(ConfigurationSection section) {
@@ -279,5 +226,9 @@ public class LayoutManager {
 
     public Layout getDefaultLayout() {
         return layouts.get("default");
+    }
+
+    public Map<String, Class<? extends Slot>> getRegisteredSlots() {
+        return registeredSlots;
     }
 }

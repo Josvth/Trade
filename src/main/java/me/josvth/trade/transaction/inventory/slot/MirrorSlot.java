@@ -5,26 +5,30 @@ import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.offer.Offer;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.Iterator;
 import java.util.Set;
 
 public class MirrorSlot extends Slot {
 
-	private final int offerIndex;
+	private int offerIndex = 1;
 
-	public MirrorSlot(int slot, int offerIndex) {
-   		super(slot);
-		this.offerIndex = offerIndex;
-	}
+	public MirrorSlot(int slot, TransactionHolder holder) {
+        super(slot, holder);
+    }
 
-	public int getOfferIndex() {
-		return offerIndex;
-	}
+    public int getOfferIndex() {
+        return offerIndex;
+    }
+
+    public void setOfferIndex(int offerIndex) {
+        this.offerIndex = offerIndex;
+    }
 
 	@Override
 	public void update(TransactionHolder holder) {
-		final Offer offer = holder.getOtherHolder().getOffers().get(offerIndex);
+		final Offer offer = holder.getOtherHolder().getOfferList().get(offerIndex);
 
 		if (offer != null) {
 			holder.getInventory().setItem(slot, offer.createMirrorItem(holder));
@@ -36,7 +40,7 @@ public class MirrorSlot extends Slot {
 
 	public static void updateMirrors(TransactionHolder holder, boolean nextTick, int... offerIndex) {
 
-		final Set<MirrorSlot> slots = holder.getLayout().getSlotsOfType(MirrorSlot.class);
+		final Set<MirrorSlot> slots = holder.getSlotsOfType(MirrorSlot.class);
 
 		final Iterator<MirrorSlot> iterator = slots.iterator();
 
@@ -66,7 +70,7 @@ public class MirrorSlot extends Slot {
 
 	public static void updateMirrors(TransactionHolder holder, boolean nextTick) {
 
-		final Set<MirrorSlot> slots = holder.getLayout().getSlotsOfType(MirrorSlot.class);
+		final Set<MirrorSlot> slots = holder.getSlotsOfType(MirrorSlot.class);
 
 		if (!nextTick) {
 			for (Slot slot : slots) {
@@ -77,5 +81,12 @@ public class MirrorSlot extends Slot {
 		}
 
 	}
+
+    public static MirrorSlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
+        final MirrorSlot slot = new MirrorSlot(slotID, holder);
+        slot.setOfferIndex(description.getConfiguration().getInt("offer-index", 0));
+        return slot;
+    }
+
 
 }

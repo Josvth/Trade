@@ -8,6 +8,7 @@ import me.josvth.trade.transaction.offer.MoneyOffer;
 import me.josvth.trade.transaction.offer.OfferList;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -15,17 +16,38 @@ import java.util.Set;
 
 public class MoneySlot extends Slot {
 
-	private final ItemStack moneyItem;
+    private ItemStack moneyItem;
 
-	private final int smallModifier;
-	private final int largeModifier;
+	private int smallModifier;
+	private int largeModifier;
 
-	public MoneySlot(int slot, ItemStack moneyItem, int smallModifier, int largeModifier) {
-		super(slot);
-		this.moneyItem = moneyItem;
-		this.smallModifier = smallModifier;
-		this.largeModifier = largeModifier;
-	}
+	public MoneySlot(int slot, TransactionHolder holder) {
+        super(slot, holder);
+    }
+
+    public ItemStack getMoneyItem() {
+        return moneyItem;
+    }
+
+    public void setMoneyItem(ItemStack moneyItem) {
+        this.moneyItem = moneyItem;
+    }
+
+    public int getSmallModifier() {
+        return smallModifier;
+    }
+
+    public void setSmallModifier(int smallModifier) {
+        this.smallModifier = smallModifier;
+    }
+
+    public int getLargeModifier() {
+        return largeModifier;
+    }
+
+    public void setLargeModifier(int largeModifier) {
+        this.largeModifier = largeModifier;
+    }
 
     @Override
     public void onClick(InventoryClickEvent event) {
@@ -52,7 +74,7 @@ public class MoneySlot extends Slot {
 
     @Override
     public void update(TransactionHolder holder) {
-        update(holder, getMoney(holder.getOffers()));
+        update(holder, getMoney(holder.getOfferList()));
     }
 
     private static int getMoney(OfferList offers) {
@@ -77,7 +99,7 @@ public class MoneySlot extends Slot {
     }
 
     public static void updateMoneySlots(TransactionHolder holder, boolean nextTick, int money) {
-        final Set<MoneySlot> slots = holder.getLayout().getSlotsOfType(MoneySlot.class);
+        final Set<MoneySlot> slots = holder.getSlotsOfType(MoneySlot.class);
 
         if (!nextTick) {
             for (MoneySlot slot : slots) {
@@ -87,4 +109,13 @@ public class MoneySlot extends Slot {
             Bukkit.getScheduler().runTask(Trade.getInstance(), new MoneySlotUpdateTask(holder, slots, money));
         }
     }
+
+    public static MoneySlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
+        final MoneySlot slot = new MoneySlot(slotID, holder);
+        slot.setMoneyItem(ItemStackUtils.fromSection(description.getConfiguration().getConfigurationSection("money-item"), Trade.getInstance().getMessageManager()));
+        slot.setSmallModifier(description.getConfiguration().getInt("small-modifier", 1));
+        slot.setLargeModifier(description.getConfiguration().getInt("large-modifier", 5));
+        return slot;
+    }
+
 }

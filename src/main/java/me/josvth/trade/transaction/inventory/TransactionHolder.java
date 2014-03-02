@@ -22,11 +22,17 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class TransactionHolder implements InventoryHolder {
 
     private final Trade plugin;
 
     private final Trader trader;
+    private final OfferList inventoryList;
+
+    private Slot[] slots;
 
     private Inventory inventory;
 
@@ -34,7 +40,13 @@ public class TransactionHolder implements InventoryHolder {
 
     public TransactionHolder(Trade trade, Trader trader) {
         this.plugin = trade;
+
         this.trader = trader;
+        this.inventoryList = new OfferList(trader, LayoutManager.PLAYER_INVENTORY_SIZE);
+
+        this.slots = getLayout().createSlots(this);
+
+        this.inventory = Bukkit.createInventory(this, getLayout().getGuiSize(), getLayout().generateTitle(this));
     }
 
     public Trader getTrader() {
@@ -55,10 +67,6 @@ public class TransactionHolder implements InventoryHolder {
 
     public Transaction getTransaction() {
         return trader.getTransaction();
-    }
-
-    public OfferList getOffers() {
-        return trader.getOffers();
     }
 
     public Offer getCursorOffer() {
@@ -90,70 +98,91 @@ public class TransactionHolder implements InventoryHolder {
         });
     }
 
+    public void updateAllSlots() {
+        for (Slot slot : slots) {
+            if (slot != null) {
+                slot.update(this);
+            }
+        }
+        updateCursorOffer();
+    }
+
     @Override
     public Inventory getInventory() {
+        return inventory;
+    }
 
-        if (inventory == null) {
-            inventory = Bukkit.createInventory(this, getLayout().getInventorySize(), getLayout().generateTitle(this));
+    public <T extends Slot> Set<T> getSlotsOfType(Class<T> clazz) {
 
-            for (Slot slot : getLayout().getSlots()) {
-                if (slot != null) slot.update(this);
+        final Set<T> set = new HashSet<T>();
+
+        for (Slot slot : slots) {
+            if (clazz.isInstance(slot)) {
+                set.add((T) slot);
             }
         }
 
-        return inventory;
+        return set;
 
+    }
+
+    public OfferList getOfferList() {
+        return trader.getOffers();
+    }
+
+    public OfferList getInventoryList() {
+        return inventoryList;
     }
 
     // Event handling
     public void onClick(InventoryClickEvent event) {
 
-        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {  // TODO MAKE THIS WORK
-            event.setCancelled(true);
-            return;
-        }
-
-        if (event.getRawSlot() < getLayout().getInventorySize() && event.getRawSlot() != -999) {
-
-            // If the player clicked a transaction slot we let that slot handle the event
-            final Slot clickedSlot = getLayout().getSlots()[event.getSlot()];
-
-            if (clickedSlot != null) {
-                clickedSlot.onClick(event);
-            } else {
-                event.setCancelled(true);
-            }
-
-            ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
-
-            return;
-
-        }
-
-        // If we have a cursor offer we let that handle the event
-        if (getCursorOffer() != null) {
-            getCursorOffer().onClick(event, null, ClickCategory.CURSOR);
-
-            ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
-
-            return;
-        }
-
-        // If we didn't click a slot or have a cursor offer we handle the event here
-        switch (event.getAction()) {
-            case PICKUP_ALL:
-                setCursorOffer(new ItemOffer(event.getCurrentItem().clone()), true);
-                break;
-            case PICKUP_HALF:
-                setCursorOffer(new ItemOffer(ItemStackUtils.split(event.getCurrentItem())[0]), true);
-            case NOTHING:
-                break;
-            default:
-                event.setCancelled(true);
-                throw new IllegalStateException("UNHANDLED ACTION: " + event.getAction().name());
-        }
-
-        ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
+//        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {  // TODO MAKE THIS WORK
+//            event.setCancelled(true);
+//            return;
+//        }
+//
+//        if (event.getRawSlot() < getLayout().getGuiSize() && event.getRawSlot() != -999) {
+//
+//            // If the player clicked a transaction slot we let that slot handle the event
+//            final Slot clickedSlot = getLayout().getSlots()[event.getSlot()];
+//
+//            if (clickedSlot != null) {
+//                clickedSlot.onClick(event);
+//            } else {
+//                event.setCancelled(true);
+//            }
+//
+//            ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
+//
+//            return;
+//
+//        }
+//
+//        // If we have a cursor offer we let that handle the event
+//        if (getCursorOffer() != null) {
+//            getCursorOffer().onClick(event, null, ClickCategory.CURSOR);
+//
+//            ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
+//
+//            return;
+//        }
+//
+//        // If we didn't click a slot or have a cursor offer we handle the event here
+//        switch (event.getAction()) {
+//            case PICKUP_ALL:
+//                setCursorOffer(new ItemOffer(event.getCurrentItem().clone()), true);
+//                break;
+//            case PICKUP_HALF:
+//                setCursorOffer(new ItemOffer(ItemStackUtils.split(event.getCurrentItem())[0]), true);
+//            case NOTHING:
+//                break;
+//            default:
+//                event.setCancelled(true);
+//                throw new IllegalStateException("UNHANDLED ACTION: " + event.getAction().name());
+//        }
+//
+//        ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
 
     }
 
@@ -167,7 +196,7 @@ public class TransactionHolder implements InventoryHolder {
 //
 //        final Iterator<Integer> iterator = event.getRawSlots().iterator();
 //        while (!(upper && lower) && iterator.hasNext()) {
-//            if (iterator.next() >= getLayout().getInventorySize()) {
+//            if (iterator.next() >= getLayout().getGuiSize()) {
 //                lower = true;
 //            } else {
 //                upper = true;

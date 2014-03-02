@@ -6,32 +6,35 @@ import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.transaction.offer.behaviour.ClickCategory;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 
 import java.util.Iterator;
 import java.util.Set;
 
-// TODO Maybe make slots bound to a holder?
 public class TradeSlot extends Slot {
 
-    private final int offerIndex;
+    private int offerIndex;
 
-    public TradeSlot(int slot, int offerIndex) {
-        super(slot);
-        this.offerIndex = offerIndex;
+    public TradeSlot(int slot, TransactionHolder holder) {
+        super(slot, holder);
     }
 
     public int getOfferIndex() {
         return offerIndex;
     }
 
+    public void setOfferIndex(int offerIndex) {
+        this.offerIndex = offerIndex;
+    }
+
     public void setContents(TransactionHolder holder, Offer offer) {
-        holder.getOffers().set(getOfferIndex(), offer);
+        holder.getOfferList().set(getOfferIndex(), offer);
     }
 
     public Offer getContents(TransactionHolder holder) {
-        return holder.getOffers().get(getOfferIndex());
+        return holder.getOfferList().get(getOfferIndex());
     }
 
     // Event handling
@@ -87,7 +90,7 @@ public class TradeSlot extends Slot {
 
     public static void updateTradeSlots(TransactionHolder holder, boolean nextTick, int... offerIndex) {
 
-        final Set<TradeSlot> slots = holder.getLayout().getSlotsOfType(TradeSlot.class);
+        final Set<TradeSlot> slots = holder.getSlotsOfType(TradeSlot.class);
 
         final Iterator<TradeSlot> iterator = slots.iterator();
 
@@ -117,20 +120,10 @@ public class TradeSlot extends Slot {
 
     }
 
-    public static void updateTradeSlots(TransactionHolder holder, boolean nextTick) {
-
-        final Set<TradeSlot> slots = holder.getLayout().getSlotsOfType(TradeSlot.class);
-
-        if (!nextTick) {
-            for (Slot slot : slots) {
-                slot.update(holder);
-            }
-        } else if (!slots.isEmpty()) {
-            Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(holder, slots));
-        }
-
+    public static TradeSlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
+        final TradeSlot slot = new TradeSlot(slotID, holder);
+        slot.setOfferIndex(description.getConfiguration().getInt("offer-index", 0));
+        return slot;
     }
-
-
 
 }

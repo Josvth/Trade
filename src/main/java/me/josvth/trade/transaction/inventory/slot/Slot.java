@@ -8,10 +8,12 @@ import org.bukkit.inventory.ItemStack;
 public abstract class Slot {
 
 	protected final int slot;
+    protected final TransactionHolder holder;
 
-	public Slot(int slot) {
-		this.slot = slot;
-	}
+	public Slot(int slot, TransactionHolder holder) {
+        this.slot = slot;
+        this.holder = holder;
+    }
 
 	protected void setItem(TransactionHolder holder, ItemStack stack) {
 		holder.getInventory().setItem(slot, stack);

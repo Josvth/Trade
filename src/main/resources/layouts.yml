@@ -7,13 +7,13 @@ default:
   slots:
     0:
       type: trade
-      slot: 0
+      offer-index: 0
     1:
       type: trade
-      slot: 1
+      offer-index: 1
     2:
       type: trade
-      slot: 2
+      offer-index: 2
     3:
       type: accept
       accept-item:
@@ -42,41 +42,41 @@ default:
         display-name: "&2%player% accepted"
     6:
       type: mirror
-      slot: 0
+      offer-index: 0
     7:
       type: mirror
-      slot: 1
+      offer-index: 1
     8:
       type: mirror
-      slot: 2
+      offer-index: 2
     9:
       type: trade
-      slot: 3
+      offer-index: 3
     10:
       type: trade
-      slot: 4
+      offer-index: 4
     11:
       type: trade
-      slot: 5
+      offer-index: 5
     12:
       type: trade
-      slot: 6
+      offer-index: 6
     13:
       type: dummy
       dummy-item:
         material: 280
     14:
       type: mirror
-      slot: 3
+      offer-index: 3
     15:
       type: mirror
-      slot: 4
+      offer-index: 4
     16:
       type: mirror
-      slot: 5
+      offer-index: 5
     17:
       type: mirror
-      slot: 6
+      offer-index: 6
     18:
       type: experience
       experience-item:
@@ -89,10 +89,6 @@ default:
           - "Shift right click to remove %large% experience"
       small-modifier: 1
       large-modifier: 5
-      messages:
-        add: "Added %experience% experience to the trade."
-        remove: "Removed %experience% experience from the trade."
-        insufficient: "You don't have %experience% experience!"
     19:
       type: money
       money-item:
@@ -105,10 +101,6 @@ default:
           - "Shift right click to remove %large%"
       small-modifier: 1
       large-modifier: 5
-      messages:
-        add: "Added %money% to the trade."
-        remove: "Removed %money% from the trade."
-        insufficient: "You don't have %money%!"
     22:
       type: close
       close-item:
