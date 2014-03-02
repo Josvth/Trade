@@ -3,7 +3,8 @@ package me.josvth.trade.transaction.inventory;
 import me.josvth.bukkitformatlibrary.message.FormattedMessage;
 import me.josvth.bukkitformatlibrary.message.managers.MessageManager;
 import me.josvth.trade.Trade;
-import me.josvth.trade.transaction.inventory.slot.*;
+import me.josvth.trade.transaction.inventory.slot.Slot;
+import me.josvth.trade.transaction.inventory.slot.SlotDescription;
 import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.transaction.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.transaction.offer.description.ItemOfferDescription;
@@ -15,7 +16,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 

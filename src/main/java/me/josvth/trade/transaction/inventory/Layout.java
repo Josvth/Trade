@@ -6,12 +6,9 @@ import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.inventory.slot.SlotDescription;
 import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.transaction.offer.description.OfferDescription;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

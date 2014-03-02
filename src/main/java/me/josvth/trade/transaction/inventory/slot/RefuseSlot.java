@@ -4,7 +4,6 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.action.trader.status.RefuseAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.util.ItemStackUtils;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 

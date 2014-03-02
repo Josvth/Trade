@@ -5,7 +5,6 @@ import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.offer.Offer;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.Iterator;
 import java.util.Set;

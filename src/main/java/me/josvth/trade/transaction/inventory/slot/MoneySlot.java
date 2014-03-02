@@ -8,7 +8,6 @@ import me.josvth.trade.transaction.offer.MoneyOffer;
 import me.josvth.trade.transaction.offer.OfferList;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
