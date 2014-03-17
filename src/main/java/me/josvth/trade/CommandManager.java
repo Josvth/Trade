@@ -23,8 +23,8 @@ public class CommandManager implements CommandExecutor {
     }
 
     public void initialize() {
-        getPlugin().getCommand("trade").setExecutor(this);
-        getPlugin().getCommand("tr").setExecutor(this);
+        plugin.getCommand("trade").setExecutor(this);
+        plugin.getCommand("tr").setExecutor(this);
     }
 
     public Trade getPlugin() {
