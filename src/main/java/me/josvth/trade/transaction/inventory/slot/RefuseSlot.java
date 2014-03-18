@@ -35,8 +35,8 @@ public class RefuseSlot extends Slot {
     }
 
     @Override
-    public void update(TransactionHolder holder) {
-        setItem(holder, refuseItem);
+    public void update() {
+        setGUIItem(refuseItem);
     }
 
     public static RefuseSlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {

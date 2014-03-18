@@ -1,9 +1,11 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 
+import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.LayoutManager;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.offer.Offer;
+import org.bukkit.Bukkit;
 
 public class InventorySlot extends ContentSlot {
 
@@ -29,6 +31,12 @@ public class InventorySlot extends ContentSlot {
     @Override
     public void setContents(Offer contents) {
         holder.getInventoryList().set(inventorySlot, contents);
+        Bukkit.getScheduler().runTask(holder.getTransaction().getPlugin(), new SlotUpdateTask(this));
+    }
+
+    @Override
+    public void update() {
+        setGUIItem(getContents().createItem(holder));
     }
 
     public static InventorySlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {

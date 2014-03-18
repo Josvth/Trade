@@ -35,11 +35,11 @@ public class StatusSlot extends Slot{
     }
 
     @Override
-	public void update(TransactionHolder holder) {
+	public void update() {
 		if (holder.getOtherTrader().hasAccepted()) {
-			setItem(holder, ItemStackUtils.argument(acceptedItem.clone(), "%player%", holder.getOtherTrader().getName()));
+			setGUIItem(ItemStackUtils.argument(acceptedItem.clone(), "%player%", holder.getOtherTrader().getName()));
 		} else {
-			setItem(holder, ItemStackUtils.argument(consideringItem.clone(), "%player%", holder.getOtherTrader().getName()));
+			setGUIItem(ItemStackUtils.argument(consideringItem.clone(), "%player%", holder.getOtherTrader().getName()));
 		}
 	}
 
@@ -49,10 +49,10 @@ public class StatusSlot extends Slot{
 
 		if (!nextTick) {
 			for (Slot slot : slots) {
-				slot.update(holder);
+				slot.update();
 			}
 		} else if (!slots.isEmpty()) {
-			Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(holder, slots));
+			Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(slots));
 		}
 
 	}

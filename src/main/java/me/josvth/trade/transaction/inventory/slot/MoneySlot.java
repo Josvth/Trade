@@ -72,8 +72,8 @@ public class MoneySlot extends Slot {
 
 
     @Override
-    public void update(TransactionHolder holder) {
-        update(holder, getMoney(holder.getOfferList()));
+    public void update() {
+        update(getMoney(holder.getOfferList()));
     }
 
     private static int getMoney(OfferList offers) {
@@ -84,10 +84,9 @@ public class MoneySlot extends Slot {
         return money;
     }
 
-    public void update(TransactionHolder holder, int money) {
+    public void update(int money) {
         final double divider = Math.pow(10, holder.getEconomy().fractionalDigits());
-        setItem(
-                holder,
+        setGUIItem(
                 ItemStackUtils.argument(
                         moneyItem.clone(),
                         "%money%", holder.getEconomy().format(money / divider),
@@ -102,10 +101,10 @@ public class MoneySlot extends Slot {
 
         if (!nextTick) {
             for (MoneySlot slot : slots) {
-                slot.update(holder, money);
+                slot.update(money);
             }
         } else if (!slots.isEmpty()) {
-            Bukkit.getScheduler().runTask(Trade.getInstance(), new MoneySlotUpdateTask(holder, slots, money));
+            Bukkit.getScheduler().runTask(Trade.getInstance(), new MoneySlotUpdateTask(slots, money));
         }
     }
 

@@ -15,11 +15,11 @@ public abstract class Slot {
         this.holder = holder;
     }
 
-	protected void setItem(TransactionHolder holder, ItemStack stack) {
+	protected void setGUIItem(ItemStack stack) {
 		holder.getInventory().setItem(slot, stack);
 	}
 
-	protected ItemStack getItem(TransactionHolder holder) {
+	protected ItemStack getGUIItem() {
 		return holder.getInventory().getItem(slot);
 	}
 
@@ -32,7 +32,7 @@ public abstract class Slot {
 		event.setCancelled(true);
 	}
 
-	public void update(TransactionHolder holder) {
+	public void update() {
 
 	}
 

@@ -71,12 +71,12 @@ public class ExperienceSlot extends Slot {
     }
 
     @Override
-    public void update(TransactionHolder holder) {
-        update(holder, getExperience(holder.getOfferList()));
+    public void update() {
+        update(getExperience(holder.getOfferList()));
     }
 
-    public void update(TransactionHolder holder, int experience) {
-        setItem(holder, ItemStackUtils.argument(experienceItem.clone(), "%experience%", String.valueOf(experience), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier)));
+    public void update(int experience) {
+        setGUIItem(ItemStackUtils.argument(experienceItem.clone(), "%experience%", String.valueOf(experience), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier)));
     }
 
     private static int getExperience(OfferList list) {
@@ -93,10 +93,10 @@ public class ExperienceSlot extends Slot {
 
         if (!nextTick) {
             for (ExperienceSlot slot : slots) {
-                slot.update(holder, experience);
+                slot.update(experience);
             }
         } else if (!slots.isEmpty()) {
-            Bukkit.getScheduler().runTask(Trade.getInstance(), new ExperienceSlotUpdateTask(holder, slots, experience));
+            Bukkit.getScheduler().runTask(Trade.getInstance(), new ExperienceSlotUpdateTask(slots, experience));
         }
 
     }

@@ -26,7 +26,7 @@ public class MirrorSlot extends Slot {
     }
 
 	@Override
-	public void update(TransactionHolder holder) {
+	public void update() {
 		final Offer offer = holder.getOtherHolder().getOfferList().get(offerIndex);
 
 		if (offer != null) {
@@ -50,7 +50,7 @@ public class MirrorSlot extends Slot {
             for (int i = 0; i < offerIndex.length && notUpdated; i++) {
                 if (slot.getOfferIndex() == offerIndex[i]) {
                     if (!nextTick) {
-                        slot.update(holder);
+                        slot.update();
                     }
                     notUpdated = false;
                 }
@@ -62,21 +62,7 @@ public class MirrorSlot extends Slot {
 		}
 
 		if (nextTick && !slots.isEmpty()) {
-			Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(holder, slots));
-		}
-
-	}
-
-	public static void updateMirrors(TransactionHolder holder, boolean nextTick) {
-
-		final Set<MirrorSlot> slots = holder.getSlotsOfType(MirrorSlot.class);
-
-		if (!nextTick) {
-			for (Slot slot : slots) {
-				slot.update(holder);
-			}
-		} else if (!slots.isEmpty()) {
-			Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(holder, slots));
+			Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(slots));
 		}
 
 	}

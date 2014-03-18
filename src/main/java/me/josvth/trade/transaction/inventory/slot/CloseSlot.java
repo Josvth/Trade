@@ -34,8 +34,8 @@ public class CloseSlot extends Slot {
 	}
 
 	@Override
-	public void update(TransactionHolder holder) {
-		setItem(holder, closeItem);
+	public void update() {
+		setGUIItem(closeItem);
 	}
 
     public static CloseSlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {

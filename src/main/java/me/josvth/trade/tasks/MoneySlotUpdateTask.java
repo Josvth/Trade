@@ -10,15 +10,15 @@ public class MoneySlotUpdateTask extends SlotUpdateTask {
 
     private final int money;
 
-    public MoneySlotUpdateTask(TransactionHolder holder, Set<MoneySlot> slots, int money) {
-        super(holder, slots);
+    public MoneySlotUpdateTask(Set<MoneySlot> slots, int money) {
+        super(slots);
         this.money = money;
     }
 
     @Override
     public void run() {
         for (Slot s : slot) {
-            ((MoneySlot)s).update(holder, money);
+            ((MoneySlot)s).update(money);
         }
     }
 

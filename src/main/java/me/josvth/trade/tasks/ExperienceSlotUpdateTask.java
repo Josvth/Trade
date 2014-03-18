@@ -10,15 +10,15 @@ public class ExperienceSlotUpdateTask extends SlotUpdateTask{
 
     private final int levels;
 
-    public ExperienceSlotUpdateTask(TransactionHolder holder, Set<? extends Slot> slots, int levels) {
-        super(holder, slots);
+    public ExperienceSlotUpdateTask(Set<? extends Slot> slots, int levels) {
+        super(slots);
         this.levels = levels;
     }
 
     @Override
     public void run() {
         for (Slot s : slot) {
-            ((ExperienceSlot)s).update(holder, levels);
+            ((ExperienceSlot)s).update(levels);
         }
     }
 

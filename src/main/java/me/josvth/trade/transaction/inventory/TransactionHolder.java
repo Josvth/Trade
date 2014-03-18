@@ -41,7 +41,6 @@ public class TransactionHolder implements InventoryHolder {
 
         this.slots = getLayout().createSlots(this);
 
-        this.inventory = Bukkit.createInventory(this, getLayout().getGuiSize(), getLayout().generateTitle(this));
     }
 
     public Trader getTrader() {
@@ -96,7 +95,7 @@ public class TransactionHolder implements InventoryHolder {
     public void updateAllSlots() {
         for (Slot slot : slots) {
             if (slot != null) {
-                slot.update(this);
+                slot.update();
             }
         }
         updateCursorOffer();
@@ -104,6 +103,9 @@ public class TransactionHolder implements InventoryHolder {
 
     @Override
     public Inventory getInventory() {
+        if (inventory == null) {
+            inventory = Bukkit.createInventory(this, getLayout().getGuiSize(), getLayout().generateTitle(this));
+        }
         return inventory;
     }
 

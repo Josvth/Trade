@@ -55,12 +55,12 @@ public class AcceptSlot extends Slot {
 
 	}
 
-	public void update(TransactionHolder holder) {
+	public void update() {
 
 		if (holder.getTrader().hasAccepted()) {
-			setItem(holder, acceptedItem);
+			setGUIItem(acceptedItem);
 		} else {
-			setItem(holder, acceptItem);
+			setGUIItem(acceptItem);
 		}
 
 	}
@@ -71,10 +71,10 @@ public class AcceptSlot extends Slot {
 
         if (!nextTick) {
             for (Slot slot : slots) {
-                slot.update(holder);
+                slot.update();
             }
         } else if (!slots.isEmpty()) {
-            Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(holder, slots));
+            Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(slots));
         }
 
     }

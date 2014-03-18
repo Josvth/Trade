@@ -2,6 +2,7 @@ package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
 import me.josvth.trade.tasks.SlotUpdateTask;
+import me.josvth.trade.transaction.action.trader.offer.SetOfferAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.transaction.offer.behaviour.ClickCategory;
@@ -28,35 +29,14 @@ public class TradeSlot extends Slot {
         this.offerIndex = offerIndex;
     }
 
-    public void setContents(TransactionHolder holder, Offer offer) {
-        holder.getOfferList().set(getOfferIndex(), offer);
+    public void setContents(Offer offer) {
+        SetOfferAction offerAction = new SetOfferAction(holder.getTrader());
+        offerAction.setOffer(getOfferIndex(), offer);
+        offerAction.execute();
     }
 
-    public Offer getContents(TransactionHolder holder) {
+    public Offer getContents() {
         return holder.getOfferList().get(getOfferIndex());
-    }
-
-    // Event handling
-    @Override
-    public void onClick(InventoryClickEvent event) {
-
-        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-
-        if (holder.getCursorOffer() != null) {
-            holder.getCursorOffer().onClick(event, this, ClickCategory.CURSOR);
-            return;
-        }
-
-       final Offer offer = getContents(holder);
-
-        // If we have a offer on this slot we let the offer handle the event
-        if (offer != null) {
-            offer.onClick(event, this, ClickCategory.SLOT);
-            return;
-        }
-
-        event.setCancelled(true);
-
     }
 
     @Override
@@ -75,9 +55,9 @@ public class TradeSlot extends Slot {
     }
 
     @Override
-    public void update(TransactionHolder holder) {
+    public void update() {
 
-        final Offer offer = getContents(holder);
+        final Offer offer = getContents();
 
         if (offer != null) {
             holder.getInventory().setItem(slot, offer.createItem(holder));
@@ -101,7 +81,7 @@ public class TradeSlot extends Slot {
             for (int i = 0; i < offerIndex.length && notUpdated; i++) {
                 if (slot.getOfferIndex() == offerIndex[i]) {
                     if (!nextTick) {
-                        slot.update(holder);
+                        slot.update();
                     }
                     notUpdated = false;
                 }
@@ -114,7 +94,7 @@ public class TradeSlot extends Slot {
         }
 
         if (nextTick && !slots.isEmpty()) {
-            Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(holder, slots));
+            Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(slots));
         }
 
     }

@@ -2,11 +2,8 @@ package me.josvth.trade.transaction.action.trader.offer;
 
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.offer.Offer;
-import me.josvth.trade.transaction.offer.OfferList;
+import me.josvth.trade.transaction.offer.OfferMutationResult;
 import me.josvth.trade.transaction.offer.StackableOffer;
-
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Action that handles addition and subtraction of an offer to a offer list of a trader
@@ -16,9 +13,7 @@ public class ChangeOfferAction extends OfferAction {
     private Offer offer = null;
     private boolean add = true;
 
-    private int currentAmount = 0;
-    private boolean complete = false;
-    private int remaining = 0;
+    private OfferMutationResult result;
 
     public ChangeOfferAction(Trader trader) {
         super(trader);
@@ -41,15 +36,24 @@ public class ChangeOfferAction extends OfferAction {
     }
 
     public int getCurrentAmount() {
-        return currentAmount;
+        if (result == null) {
+            throw new IllegalStateException("No result!");
+        }
+        return result.getCurrentAmount();
     }
 
     public boolean isComplete() {
-        return complete;
+        if (result == null) {
+            throw new IllegalStateException("No result!");
+        }
+        return result.isComplete();
     }
 
     public int getRemaining() {
-        return remaining;
+        if (result == null) {
+            throw new IllegalStateException("No result!");
+        }
+        return result.getRemaining();
     }
 
     public final int getInitialAmount() {
@@ -61,7 +65,10 @@ public class ChangeOfferAction extends OfferAction {
     }
 
     public final int getChangedAmount() {
-        return getInitialAmount() - remaining;
+        if (result == null) {
+            throw new IllegalStateException("No result!");
+        }
+        return getInitialAmount() - getRemaining();
     }
 
     @Override
@@ -72,22 +79,12 @@ public class ChangeOfferAction extends OfferAction {
         }
 
         if (add) {
-
-            if (offer instanceof StackableOffer) {
-                addStackable((StackableOffer) offer);
-            } else {
-                add(offer);
-            }
-
+            result = getTrader().getOffers().add(offer);
         } else {
-
-            if (offer instanceof StackableOffer) {
-                removeStackable((StackableOffer) offer);
-            } else {
-                remove(offer);
-            }
-
+            result = getTrader().getOffers().remove(offer);
         }
+
+        setChanges(result.getChanges());
 
         if (!getChanges().isEmpty()) {
             updateOffers();
@@ -99,152 +96,7 @@ public class ChangeOfferAction extends OfferAction {
     }
 
 
-    private void addStackable(StackableOffer offer) {
 
-        final OfferList offerList = getTrader().getOffers();
-
-        // Set result variables
-        currentAmount = 0;
-        complete = false;
-        remaining = offer.getAmount();
-
-        // First we try and fill up existing offers
-        for (Map.Entry<Integer, ? extends StackableOffer> entry : offerList.getOfClass(offer.getClass()).entrySet()) {
-
-            if (remaining > 0) {
-
-                final int overflow = entry.getValue().add(remaining);
-
-                // If we have added something change the remaining levels and add this slot to the changed indexes
-                if (overflow < remaining) {
-                    getChanges().put(entry.getKey(), entry.getValue()); // We keep track of what we changed
-                    remaining = overflow;
-                }
-
-            }
-
-            currentAmount += entry.getValue().getAmount(); // We count the total amount currently offered
-
-        }
-
-        // Next put the remaining levels in empty offer slots
-        if (remaining > 0) {
-
-            int firstEmpty = offerList.getFirstEmpty();
-
-            while (remaining > 0 && firstEmpty != -1) {
-
-                final int overflow = remaining - offer.getMaxAmount();
-
-                if (overflow <= 0) {
-
-                    final StackableOffer clone = offer.clone();
-
-                    offerList.set(firstEmpty, clone);
-                    getChanges().put(firstEmpty, clone); // We keep track of what we changed
-
-                    currentAmount += remaining;
-
-                    remaining = 0; // Set the amount to 0 to make the user know there's nothing left
-                    complete = true; // Set our complete boolean
-
-                    firstEmpty = -1; // End the loop
-
-                } else {
-
-                    // We fill the slot up with a full stack of the offer
-                    final StackableOffer fullStack = offer.clone();
-                    fullStack.setAmount(offer.getMaxAmount());
-
-                    offerList.set(firstEmpty, fullStack);
-                    getChanges().put(firstEmpty, fullStack); // We keep track of what we changed
-
-                    currentAmount += fullStack.getMaxAmount();
-
-                    remaining = -1 * overflow;
-
-                    firstEmpty = offerList.getFirstEmpty();
-
-                }
-
-            }
-
-        }
-
-        complete = remaining == 0; // Set our complete boolean
-
-    }
-
-    private void add(Offer offer) {
-
-        final OfferList offerList = getTrader().getOffers();
-
-        currentAmount = offerList.getOfClass(offer.getClass()).size();
-
-        final int empty = offerList.getFirstEmpty();
-
-        if (empty != -1) {
-            offerList.set(empty, offer.clone());
-            getChanges().put(empty, offer.clone());
-            complete = true;
-        }
-
-    }
-
-    private void remove(Offer offer) {
-
-        final OfferList offerList = getTrader().getOffers();
-
-        final TreeMap<Integer, Offer> current = offerList.getOfType(offer.getType());
-
-        if (!current.isEmpty()) {
-            offerList.set(current.lastKey(), null);
-            getChanges().put(current.lastKey(), null);
-            complete = true;
-        }
-
-    }
-
-    private void removeStackable(StackableOffer stackableOffer) {
-
-        final OfferList offerList = getTrader().getOffers();
-
-        // Set result variables
-        currentAmount = 0;
-        complete = false;
-        remaining = stackableOffer.getAmount();
-
-        // TODO lowest amount first
-        // First we try and remove from existing offers
-        for (Map.Entry<Integer, ? extends StackableOffer> entry : offerList.getOfClass(stackableOffer.getClass()).entrySet()) {
-
-            if (remaining > 0) {
-
-                final int overflow = entry.getValue().remove(stackableOffer.getAmount());
-
-                if (overflow < remaining) {    // We only changed something if the overflow is smaller then the amount
-
-                    remaining = overflow;
-
-                    if (entry.getValue().getAmount() == 0) {    // If the amount of the changed offer is 0 we remove it
-                        offerList.set(entry.getKey(), null);
-                        getChanges().put(entry.getKey(), null);
-                    } else {
-                        getChanges().put(entry.getKey(), entry.getValue());
-                    }
-
-                }
-
-            }
-
-            currentAmount += entry.getValue().getAmount();
-
-        }
-
-        // We set our boolean if we removed everything
-        complete = remaining == 0;
-
-    }
 
 
 }

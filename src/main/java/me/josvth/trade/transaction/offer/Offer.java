@@ -4,6 +4,8 @@ import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.action.trader.offer.ChangeOfferAction;
 import me.josvth.trade.transaction.action.trader.offer.SetOfferAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
+import me.josvth.trade.transaction.inventory.slot.ContentSlot;
+import me.josvth.trade.transaction.inventory.slot.InventorySlot;
 import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.inventory.slot.TradeSlot;
 import me.josvth.trade.transaction.offer.behaviour.ClickBehaviour;
@@ -29,17 +31,16 @@ public abstract class Offer {
 
         final LinkedList<ClickBehaviour> cursorLeftBehaviours = new LinkedList<ClickBehaviour>();
 
-        // Clicking an empty inventory slot with an offer (GRANT_ALL)
         cursorLeftBehaviours.add(new ClickBehaviour() {
             @Override
             public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-                if (slot == null) {
+                if (slot instanceof ContentSlot) {
                     final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-                    final ItemStack item = event.getCurrentItem();
-                    if (item == null || item.getType() == Material.AIR) {
+                    final Offer cursorOffer = holder.getCursorOffer();
+                    final Offer slotOffer = ((ContentSlot) slot).getContents();
+                    if (slotOffer == null) {
                         holder.setCursorOffer(null, true);
-                        offer.grant(holder.getTrader());
-                        event.setCancelled(true);
+                        ((ContentSlot) slot).setContents(cursorOffer);
                         return true;
                     }
                 }
@@ -47,56 +48,16 @@ public abstract class Offer {
             }
         });
 
-        // Clicking an filled inventory slot with an offer (offer: GRANT_ALL, item: PICKUP_ALL)
         cursorLeftBehaviours.add(new ClickBehaviour() {
             @Override
             public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-                if (slot == null) {
+                if (slot instanceof ContentSlot) {
                     final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-                    final ItemStack item = event.getCurrentItem();
-                    if (item != null) {
-                        holder.setCursorOffer(new ItemOffer(item.clone()), true);   // Place item on cursor
-                        event.setCurrentItem(null);                                 // Remove item from slot
-                        offer.grant(holder.getTrader());                            // Grant offer
-                        event.setCancelled(true);
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
-
-        // Clicking an empty trade slot with an offer (PLACE_ALL)
-        cursorLeftBehaviours.add(new ClickBehaviour() {
-            @Override
-            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-                if (slot instanceof TradeSlot) {
-                    final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-                    final Offer contents = ((TradeSlot) slot).getContents(holder);
-                    if (contents == null) {
-                        holder.setCursorOffer(null, true);
-                        final SetOfferAction offerAction = new SetOfferAction(holder.getTrader());
-                        offerAction.setOffer(((TradeSlot) slot).getOfferIndex(), offer);
-                        offerAction.execute();
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
-
-        // Clicking a filled trade slot with an offer (SWAP_WITH_CURSOR)
-        cursorLeftBehaviours.add(new ClickBehaviour() {
-            @Override
-            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-                if (slot instanceof TradeSlot) {
-                    final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-                    final Offer contents = ((TradeSlot) slot).getContents(holder);
-                    if (contents != null) {
-                        holder.setCursorOffer(((TradeSlot) slot).getContents(holder), true);
-                        final SetOfferAction offerAction = new SetOfferAction(holder.getTrader());
-                        offerAction.setOffer(((TradeSlot) slot).getOfferIndex(), offer);
-                        offerAction.execute();
+                    final Offer cursorOffer = holder.getCursorOffer();
+                    final Offer slotOffer = ((ContentSlot) slot).getContents();
+                    if (slotOffer != null) {
+                        holder.setCursorOffer(slotOffer, true);
+                        ((ContentSlot) slot).setContents(cursorOffer);
                         return true;
                     }
                 }
@@ -109,25 +70,32 @@ public abstract class Offer {
 
         final LinkedList<ClickBehaviour> cursorShiftLeftBehaviours = new LinkedList<ClickBehaviour>();
 
-        // Shift clicking an filled inventory slot with an offer (MOVE_TO_OTHER_INVENTORY)
         cursorShiftLeftBehaviours.add(new ClickBehaviour() {
             @Override
             public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-                if (slot == null) {
+                if (slot instanceof InventorySlot) {
                     final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-                    final ItemStack item = event.getCurrentItem();
-                    if (item != null) {
+                    final InventorySlot inventorySlot = (InventorySlot) slot;
+
+                    if (inventorySlot.getContents() != null) {
+
                         final ChangeOfferAction offerAction = new ChangeOfferAction(holder.getTrader());
-                        offerAction.setOffer(new ItemOffer(item.clone()));
+                        offerAction.setOffer(inventorySlot.getContents());
                         offerAction.execute();
+
                         if (offerAction.getRemaining() > 0) {
-                            item.setAmount(offerAction.getRemaining());
-                            event.setCurrentItem(item);     // TODO Check if this is safe to use in event
+                            if (inventorySlot.getContents() instanceof StackableOffer) {
+                                ((StackableOffer) inventorySlot.getContents()).setAmount(offerAction.getRemaining());
+                            }
                         } else {
-                            event.setCurrentItem(null);     // TODO Check if this is safe to use in event
+                            inventorySlot.setContents(null);
                         }
+
+                        event.setCancelled(true);
                         return true;
+
                     }
+
                 }
                 return false;
             }
@@ -139,12 +107,15 @@ public abstract class Offer {
             public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
                 if (slot instanceof TradeSlot) {
                     final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-                    final Offer contents = ((TradeSlot) slot).getContents(holder);
+                    final Offer contents = ((TradeSlot) slot).getContents();
                     if (contents != null) {
+
                         contents.grant(holder.getTrader());
+
                         final SetOfferAction offerAction = new SetOfferAction(holder.getTrader());
                         offerAction.setOffer(((TradeSlot) slot).getOfferIndex(), null);
                         offerAction.execute();
+
                         event.setCancelled(true);
                         return true;
                     }

@@ -7,22 +7,20 @@ import java.util.Set;
 
 public class SlotUpdateTask implements Runnable {
 
-	protected final TransactionHolder holder;
     protected final Slot[] slot;
 
-	public SlotUpdateTask(TransactionHolder holder, Set<? extends Slot> slots) {
-		this(holder, slots.toArray(new Slot[slots.size()]));
+	public SlotUpdateTask(Set<? extends Slot> slots) {
+		this(slots.toArray(new Slot[slots.size()]));
 	}
 
-	public SlotUpdateTask(TransactionHolder holder, Slot... slot) {
-		this.holder = holder;
+	public SlotUpdateTask(Slot... slot) {
 		this.slot = slot;
 	}
 
 	@Override
 	public void run() {
 		for (Slot s : slot) {
-			s.update(holder);
+			s.update();
 		}
 	}
 

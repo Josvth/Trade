@@ -10,17 +10,21 @@ import me.josvth.trade.transaction.offer.Offer;
 import java.util.Map;
 import java.util.TreeMap;
 
-
+// TODO Make these actions work for the inventory offer list as well
 public abstract class OfferAction extends TraderAction {
 
-    private final TreeMap<Integer, Offer> changes = new TreeMap<Integer, Offer>();
+    private Map<Integer, Offer> changes = new TreeMap<Integer, Offer>();
 
     public OfferAction(Trader trader) {
         super(trader);
     }
 
-    public TreeMap<Integer, Offer> getChanges() {
+    public Map<Integer, Offer> getChanges() {
         return changes;
+    }
+
+    public void setChanges(Map<Integer, Offer> changes) {
+        this.changes = changes;
     }
 
     public void updateOffers() {

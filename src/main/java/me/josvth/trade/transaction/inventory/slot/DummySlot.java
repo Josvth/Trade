@@ -22,8 +22,8 @@ public class DummySlot extends Slot {
     }
 
     @Override
-    public void update(TransactionHolder holder) {
-        setItem(holder, dummyItem.clone());
+    public void update() {
+        setGUIItem(dummyItem.clone());
     }
 
     public static DummySlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
