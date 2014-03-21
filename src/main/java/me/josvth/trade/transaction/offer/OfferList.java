@@ -2,7 +2,10 @@ package me.josvth.trade.transaction.offer;
 
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
+import org.apache.commons.lang.Validate;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -11,9 +14,9 @@ public class OfferList {
 
 	private final Trader trader;
 
-	private final Offer[] offers;
+	private Offer[] offers;
 
-	public OfferList(Trader trader, int size) {
+  	public OfferList(Trader trader, int size) {
 		this.trader = trader;
 		this.offers = new Offer[size];
 	}
@@ -26,8 +29,17 @@ public class OfferList {
 		return getTrader().getHolder();
 	}
 
-	public Offer get(int tradeSlot) {
-		return offers[tradeSlot];
+    public Offer[] getContents() {
+        return offers;
+    }
+
+    public void setContents(Offer[] contents) {
+        Validate.notNull(contents, "Contents can't be null.");
+        this.offers = contents;
+    }
+
+	public Offer get(int slot) {
+		return offers[slot];
 	}
 
 	public void set(int slot, Offer offer) {
@@ -240,5 +252,6 @@ public class OfferList {
         return result;
 
     }
+
 
 }

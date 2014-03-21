@@ -2,6 +2,7 @@ package me.josvth.trade.transaction.inventory;
 
 import me.josvth.bukkitformatlibrary.message.FormattedMessage;
 import me.josvth.bukkitformatlibrary.message.MessageHolder;
+import me.josvth.trade.transaction.inventory.slot.InventorySlot;
 import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.inventory.slot.SlotDescription;
 import me.josvth.trade.transaction.offer.Offer;
@@ -151,6 +152,12 @@ public class Layout extends MessageHolder {
 
             slots[entry.getKey()] = slot;
 
+        }
+
+        for (int i = 0; i < LayoutManager.PLAYER_INVENTORY_SIZE; i++) {
+            final InventorySlot inventorySlot = new InventorySlot(i + getGuiSize(), holder);
+            inventorySlot.setInventorySlot(i);
+            slots[inventorySlot.getSlot()] = inventorySlot;
         }
 
         return slots;

@@ -5,11 +5,14 @@ import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.action.trader.status.CloseAction;
 import me.josvth.trade.transaction.action.trader.status.RefuseAction;
+import me.josvth.trade.transaction.inventory.slot.InventorySlot;
 import me.josvth.trade.transaction.inventory.slot.Slot;
+import me.josvth.trade.transaction.offer.ItemOffer;
 import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.transaction.offer.OfferList;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -40,7 +43,6 @@ public class TransactionHolder implements InventoryHolder {
         this.inventoryList = new OfferList(trader, LayoutManager.PLAYER_INVENTORY_SIZE);
 
         this.slots = getLayout().createSlots(this);
-
     }
 
     public Trader getTrader() {
@@ -101,6 +103,15 @@ public class TransactionHolder implements InventoryHolder {
         updateCursorOffer();
     }
 
+    public void updateInventoryList() {
+        for (int i = 0; i < trader.getPlayer().getInventory().getSize(); i++) {
+            final ItemStack itemStack = trader.getPlayer().getInventory().getItem(i);
+            if (itemStack != null) {
+                inventoryList.set(i, new ItemOffer(itemStack));
+            }
+        }
+    }
+
     @Override
     public Inventory getInventory() {
         if (inventory == null) {
@@ -133,6 +144,17 @@ public class TransactionHolder implements InventoryHolder {
 
     // Event handling
     public void onClick(InventoryClickEvent event) {
+
+        final Slot slot = slots[event.getRawSlot()];
+
+        if (slot == null) {
+            event.setCancelled(true);
+        } else {
+//            ((Player) event.getWhoClicked()).sendMessage("Object: " + slot.getSlot());
+//            ((Player) event.getWhoClicked()).sendMessage("Raw: " + event.getRawSlot());
+            //event.setCancelled(true);
+            slot.onClick(event);
+        }
 
 //        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {  // TODO MAKE THIS WORK
 //            event.setCancelled(true);

@@ -73,36 +73,6 @@ public class Transaction {
         return stage == Transaction.Stage.POST;
     }
 
-    public void start() {
-
-        if (isStarted()) {
-            throw new IllegalArgumentException("Cannot start an already started transaction");
-        }
-
-        if (hasEnded()) {
-            throw new IllegalArgumentException("Cannot start an ended transaction");
-        }
-
-        if (layout == null) {
-            throw new IllegalStateException("Cannot start transaction without an layout.");
-        }
-
-        if (manager.isInTransaction(traderA.getName()) || manager.isInTransaction(traderB.getName())) {
-            throw new IllegalArgumentException("One of the traders is already trading!");
-        }
-
-        manager.addTransaction(this);
-
-        stage = Transaction.Stage.IN_PROGRESS;
-
-        traderA.getHolder().updateAllSlots();
-        traderB.getHolder().updateAllSlots();
-
-        traderA.openInventory();
-        traderB.openInventory();
-
-    }
-
     public void stop() {
         stage = Transaction.Stage.POST;
     }

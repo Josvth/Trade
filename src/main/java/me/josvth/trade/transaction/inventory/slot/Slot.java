@@ -15,7 +15,11 @@ public abstract class Slot {
         this.holder = holder;
     }
 
-	protected void setGUIItem(ItemStack stack) {
+    public int getSlot() {
+        return slot;
+    }
+
+    protected void setGUIItem(ItemStack stack) {
 		holder.getInventory().setItem(slot, stack);
 	}
 

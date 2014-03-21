@@ -36,6 +36,12 @@ public class StartAction extends Action {
 
         getTransaction().setStage(Transaction.Stage.IN_PROGRESS);
 
+        getTransaction().getTraderA().getHolder().updateInventoryList();
+        getTransaction().getTraderB().getHolder().updateInventoryList();
+
+        getTransaction().getTraderA().getHolder().updateAllSlots();
+        getTransaction().getTraderB().getHolder().updateAllSlots();
+
         getTransaction().getTraderA().openInventory();
         getTransaction().getTraderB().openInventory();
 

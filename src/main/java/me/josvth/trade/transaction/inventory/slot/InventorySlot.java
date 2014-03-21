@@ -36,7 +36,7 @@ public class InventorySlot extends ContentSlot {
 
     @Override
     public void update() {
-        setGUIItem(getContents().createItem(holder));
+        holder.getTrader().getPlayer().getInventory().setItem(getInventorySlot(), (getContents() == null)? null : getContents().createItem(holder));
     }
 
     public static InventorySlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
