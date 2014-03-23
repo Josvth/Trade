@@ -147,14 +147,21 @@ public class TransactionHolder implements InventoryHolder {
 
         final Slot slot = slots[event.getRawSlot()];
 
-        if (slot == null) {
+        if (slot instanceof InventorySlot){
+            ((Player) event.getWhoClicked()).sendMessage("Slot: " + event.getSlot());
+            ((Player) event.getWhoClicked()).sendMessage("InventorySlot: " + ((InventorySlot) slot).getInventorySlot());
+            ((Player) event.getWhoClicked()).sendMessage("Contents: " + ((InventorySlot) slot).getContents());
             event.setCancelled(true);
-        } else {
-//            ((Player) event.getWhoClicked()).sendMessage("Object: " + slot.getSlot());
-//            ((Player) event.getWhoClicked()).sendMessage("Raw: " + event.getRawSlot());
-            //event.setCancelled(true);
-            slot.onClick(event);
         }
+
+//        if (slot == null) {
+//            event.setCancelled(true);
+//        } else {
+////            ((Player) event.getWhoClicked()).sendMessage("Object: " + slot.getSlot());
+////            ((Player) event.getWhoClicked()).sendMessage("Raw: " + event.getRawSlot());
+//            //event.setCancelled(true);
+//            slot.onClick(event);
+//        }
 
 //        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {  // TODO MAKE THIS WORK
 //            event.setCancelled(true);
