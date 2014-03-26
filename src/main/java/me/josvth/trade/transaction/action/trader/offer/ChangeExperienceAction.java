@@ -3,12 +3,13 @@ package me.josvth.trade.transaction.action.trader.offer;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.slot.ExperienceSlot;
 import me.josvth.trade.transaction.offer.ExperienceOffer;
+import me.josvth.trade.transaction.offer.OfferList;
 import me.josvth.trade.util.ExperienceManager;
 
 public class ChangeExperienceAction extends ChangeOfferAction {
 
-    public ChangeExperienceAction(Trader trader, int amount) {
-        super(trader);
+    public ChangeExperienceAction(Trader trader, OfferList list, int amount) {
+        super(trader, list);
         setOffer(ExperienceOffer.create(trader, Math.abs(amount)));
         setAddition(amount > 0);
     }

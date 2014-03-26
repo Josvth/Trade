@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -133,6 +134,22 @@ public abstract class Offer {
             @Override
             public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
                 if (slot instanceof TradeSlot) {
+                    final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+                    holder.setCursorOffer(offer, true);
+                    SetOfferAction offerAction = new SetOfferAction(holder.getTrader());
+                    offerAction.setOffer(((TradeSlot) slot).getOfferIndex(), null);
+                    offerAction.execute();
+                    event.setCancelled(true);
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        slotLeftBehaviours.add(new ClickBehaviour() {
+            @Override
+            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
+                if (slot instanceof Inventory) {
                     final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
                     holder.setCursorOffer(offer, true);
                     SetOfferAction offerAction = new SetOfferAction(holder.getTrader());

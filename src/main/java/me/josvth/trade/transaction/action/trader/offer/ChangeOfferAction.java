@@ -2,6 +2,7 @@ package me.josvth.trade.transaction.action.trader.offer;
 
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.offer.Offer;
+import me.josvth.trade.transaction.offer.OfferList;
 import me.josvth.trade.transaction.offer.OfferMutationResult;
 import me.josvth.trade.transaction.offer.StackableOffer;
 
@@ -15,8 +16,13 @@ public class ChangeOfferAction extends OfferAction {
 
     private OfferMutationResult result;
 
-    public ChangeOfferAction(Trader trader) {
-        super(trader);
+    public ChangeOfferAction(Trader trader, OfferList list) {
+        super(trader, list);
+    }
+
+    public ChangeOfferAction(Trader trader, OfferList list, Offer offer) {
+        super(trader, list);
+        this.offer = offer;
     }
 
     public Offer getOffer() {
@@ -79,9 +85,9 @@ public class ChangeOfferAction extends OfferAction {
         }
 
         if (add) {
-            result = getTrader().getOffers().add(offer);
+            result = list.add(offer);
         } else {
-            result = getTrader().getOffers().remove(offer);
+            result = list.remove(offer);
         }
 
         setChanges(result.getChanges());

@@ -29,7 +29,7 @@ public class Trader implements ActionProvoker {
         this.transaction = transaction;
         this.name = name;
 
-        this.offers = new OfferList(this, offerSize);
+        this.offers = new OfferList(this, offerSize, OfferList.Type.TRADE);
         this.layout = transaction.getLayout();  //TODO Trader specific layouts?
         this.holder = new TransactionHolder(transaction.getPlugin(), this);
 

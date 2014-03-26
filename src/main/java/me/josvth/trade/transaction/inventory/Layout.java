@@ -154,8 +154,16 @@ public class Layout extends MessageHolder {
 
         }
 
-        for (int i = 0; i < LayoutManager.PLAYER_INVENTORY_SIZE; i++) {
-            final InventorySlot inventorySlot = new InventorySlot(i + getGuiSize(), holder);
+        // Set upper slots of player inventory
+        for (int i = 9; i < LayoutManager.PLAYER_INVENTORY_SIZE; i++) {
+            final InventorySlot inventorySlot = new InventorySlot(i - 9 + getGuiSize(), holder);
+            inventorySlot.setInventorySlot(i);
+            slots[inventorySlot.getSlot()] = inventorySlot;
+        }
+
+        // Set lower slots of player inventory (hotbar)
+        for (int i = 0; i < 9; i++) {
+            final InventorySlot inventorySlot = new InventorySlot(i + getGuiSize() + LayoutManager.PLAYER_INVENTORY_SIZE - 9, holder);
             inventorySlot.setInventorySlot(i);
             slots[inventorySlot.getSlot()] = inventorySlot;
         }

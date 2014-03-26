@@ -3,13 +3,14 @@ package me.josvth.trade.transaction.action.trader.offer;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.slot.MoneySlot;
 import me.josvth.trade.transaction.offer.MoneyOffer;
+import me.josvth.trade.transaction.offer.OfferList;
 import net.milkbowl.vault.economy.Economy;
 
 public class ChangeMoneyAction extends ChangeOfferAction {
 
-    public ChangeMoneyAction(Trader trader, int amount) {
-        super(trader);
-        setOffer(MoneyOffer.create(trader, Math.abs(amount)));
+    public ChangeMoneyAction(Trader trader, OfferList list, int amount) {
+        super(trader, list);
+        setOffer(MoneyOffer.create(getTrader(), Math.abs(amount)));
         setAddition(amount > 0);
     }
 

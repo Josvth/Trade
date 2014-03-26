@@ -10,15 +10,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+// TODO Cleanup offer list implementation
 public class OfferList {
 
 	private final Trader trader;
+    private final Type type;
 
 	private Offer[] offers;
 
-  	public OfferList(Trader trader, int size) {
+  	public OfferList(Trader trader, int size, Type type) {
 		this.trader = trader;
 		this.offers = new Offer[size];
+        this.type = type;
 	}
 
     public Trader getTrader() {
@@ -253,5 +256,14 @@ public class OfferList {
 
     }
 
+    public Type getType() {
+        return type;
+    }
+
+
+    public enum Type {
+        TRADE,
+        INVENTORY
+    }
 
 }

@@ -1,11 +1,14 @@
 package me.josvth.trade.transaction.action.trader.offer;
 
 import me.josvth.trade.transaction.Trader;
+import me.josvth.trade.transaction.action.Action;
 import me.josvth.trade.transaction.action.trader.TraderAction;
 import me.josvth.trade.transaction.action.trader.status.DenyAction;
+import me.josvth.trade.transaction.inventory.slot.InventorySlot;
 import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
 import me.josvth.trade.transaction.inventory.slot.TradeSlot;
 import me.josvth.trade.transaction.offer.Offer;
+import me.josvth.trade.transaction.offer.OfferList;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -13,10 +16,13 @@ import java.util.TreeMap;
 // TODO Make these actions work for the inventory offer list as well
 public abstract class OfferAction extends TraderAction {
 
+    protected final OfferList list;
+
     private Map<Integer, Offer> changes = new TreeMap<Integer, Offer>();
 
-    public OfferAction(Trader trader) {
+    public OfferAction(Trader trader, OfferList list) {
         super(trader);
+        this.list = list;
     }
 
     public Map<Integer, Offer> getChanges() {
@@ -29,19 +35,23 @@ public abstract class OfferAction extends TraderAction {
 
     public void updateOffers() {
         for (Map.Entry<Integer, ? extends Offer> entry : getChanges().entrySet()) {
-            getTrader().getOffers().set(entry.getKey(), entry.getValue());
+            list.set(entry.getKey(), entry.getValue());
         }
     }
 
     public void updateSlots() {
         final int[] slots = getSlotArray();
-        TradeSlot.updateTradeSlots(getTrader().getHolder(), true, slots);
-        MirrorSlot.updateMirrors(getOtherTrader().getHolder(), true, slots);
+        if (list.getType() == OfferList.Type.TRADE) {
+            TradeSlot.updateTradeSlots(list.getHolder(), true, slots);
+            MirrorSlot.updateMirrors(list.getHolder().getOtherHolder(), true, slots);
+        } else {
+            InventorySlot.updateInventorySlots(list.getHolder(), true, slots);
+        }
     }
 
     public void denyAccepts() {
-        new DenyAction(getTrader(), DenyAction.Reason.OWN_OFFER_CHANGED).execute();
-        new DenyAction(getOtherTrader(), DenyAction.Reason.OTHERS_OFFER_CHANGED).execute();
+        new DenyAction(list.getTrader(), DenyAction.Reason.OWN_OFFER_CHANGED).execute();
+        new DenyAction(list.getTrader().getOtherTrader(), DenyAction.Reason.OTHERS_OFFER_CHANGED).execute();
     }
 
     public int[] getSlotArray() {
@@ -53,4 +63,5 @@ public abstract class OfferAction extends TraderAction {
         }
         return array;
     }
+
 }

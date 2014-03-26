@@ -4,16 +4,15 @@ import me.josvth.trade.transaction.Transaction;
 
 public abstract class Action {
 
-    private final ActionProvoker provoker;
-
-    public Action(ActionProvoker provoker) {
-        this.provoker = provoker;
-    }
+    private ActionProvoker provoker;
 
     public Transaction getTransaction() {
         return provoker.getTransaction();
     }
 
+    public void setProvoker(ActionProvoker provoker) {
+        this.provoker = provoker;
+    }
     public ActionProvoker getProvoker() {
         return provoker;
     }

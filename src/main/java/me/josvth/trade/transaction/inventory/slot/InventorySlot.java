@@ -1,11 +1,15 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 
+import me.josvth.trade.Trade;
 import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.inventory.LayoutManager;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.offer.Offer;
 import org.bukkit.Bukkit;
+
+import java.util.Iterator;
+import java.util.Set;
 
 public class InventorySlot extends ContentSlot {
 
@@ -45,4 +49,35 @@ public class InventorySlot extends ContentSlot {
         return slot;
     }
 
+    public static void updateInventorySlots(TransactionHolder holder, boolean nextTick, int... inventorySlot) {
+
+        final Set<InventorySlot> slots = holder.getSlotsOfType(InventorySlot.class);
+
+        final Iterator<InventorySlot> iterator = slots.iterator();
+
+        while (iterator.hasNext()) {
+
+            final InventorySlot slot = iterator.next();
+
+            boolean notUpdated = true;
+            for (int i = 0; i < inventorySlot.length && notUpdated; i++) {
+                if (slot.getInventorySlot() == inventorySlot[i]) {
+                    if (!nextTick) {
+                        slot.update();
+                    }
+                    notUpdated = false;
+                }
+            }
+
+            if (notUpdated) {
+                iterator.remove();
+            }
+
+        }
+
+        if (nextTick && !slots.isEmpty()) {
+            Bukkit.getScheduler().runTask(Trade.getInstance(), new SlotUpdateTask(slots));
+        }
+
+    }
 }

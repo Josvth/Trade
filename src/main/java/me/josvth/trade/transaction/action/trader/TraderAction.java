@@ -6,8 +6,10 @@ import org.bukkit.entity.Player;
 
 public abstract class TraderAction extends Action {
 
+    private final Trader trader;
+
     public TraderAction(Trader trader) {
-        super(trader);
+        this.trader = trader;
     }
 
     public Trader getTrader() {
