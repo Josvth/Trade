@@ -85,11 +85,12 @@ public class RequestManager {
         // We check method first
         if (!mayUseMethod(requesterPlayer, method)) {
             restriction = RequestRestriction.METHOD;
-        }
 
-        // We directly check for exclusion
-        if (!hasExclusion(requestedPlayer, restriction)) {
-            return restriction;
+            // We directly check for exclusion
+            if (!hasExclusion(requestedPlayer, restriction)) {
+                return restriction;
+            }
+
         }
 
         if (!hasExclusion(requesterPlayer, RequestRestriction.PERMISSION) && options.usePermissions()) {
@@ -118,7 +119,7 @@ public class RequestManager {
             restriction = RequestRestriction.CROSS_GAME_MODE;
         } else if (!requesterPlayer.canSee(requestedPlayer) && !options.mustSee()) {
             restriction = RequestRestriction.VISION;
-        } else if (requesterPlayer.getLocation().distance(requestedPlayer.getPlayer().getLocation()) > options.getMaxDistance()) {
+        } else if (requesterPlayer.getLocation().distance(requestedPlayer.getPlayer().getLocation()) > options.getMaxDistance() && options.getMaxDistance() != -1) {
             restriction = RequestRestriction.DISTANCE;
         } else if (options.getDisabledWorlds() != null && options.getDisabledWorlds().contains(requesterPlayer.getWorld().getName())) {
             restriction = RequestRestriction.WORLD;
@@ -133,8 +134,9 @@ public class RequestManager {
     }
 
     private boolean mayUseMethod(Player player, RequestMethod method) {
-        if (getOptions().usePermissions())
+        if (getOptions().usePermissions()) {
             return plugin.hasPermission(player, method.permission);
+        }
         switch (method) {
             case COMMAND:
                 return getOptions().allowCommandRequest();

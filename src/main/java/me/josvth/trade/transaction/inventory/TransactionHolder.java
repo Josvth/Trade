@@ -5,7 +5,7 @@ import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.action.trader.status.CloseAction;
 import me.josvth.trade.transaction.action.trader.status.RefuseAction;
-import me.josvth.trade.transaction.inventory.slot.InventorySlot;
+import me.josvth.trade.transaction.click.ClickContext;
 import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.offer.ItemOffer;
 import me.josvth.trade.transaction.offer.Offer;
@@ -145,16 +145,24 @@ public class TransactionHolder implements InventoryHolder {
     // Event handling
     public void onClick(InventoryClickEvent event) {
 
-        final Slot slot = slots[event.getRawSlot()];
+        final Slot slot;
+
+        if (event.getRawSlot() >= slots.length || event.getRawSlot() == -999) {
+            slot = null;
+        } else {
+            slot = slots[event.getRawSlot()];
+        }
+
+        final ClickContext context = new ClickContext(this, event, slot);
+
+        if (getCursorOffer() != null) {
+            if (getCursorOffer().onCursorClick(context)) {
+                ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
+                return;
+            }
+        }
 
         ((Player) event.getWhoClicked()).sendMessage("Raw: " + event.getRawSlot() + " Slot: " + event.getSlot());
-
-        if (slot instanceof InventorySlot){
-            ((Player) event.getWhoClicked()).sendMessage("InventorySlot: " + ((InventorySlot) slot).getInventorySlot());
-            ((Player) event.getWhoClicked()).sendMessage("Contents: " + ((InventorySlot) slot).getContents());
-            //event.setCancelled(true);
-
-        }
 
         if (slot == null) {
             event.setCancelled(true);
@@ -162,7 +170,10 @@ public class TransactionHolder implements InventoryHolder {
 //            ((Player) event.getWhoClicked()).sendMessage("Object: " + slot.getSlot());
 //            ((Player) event.getWhoClicked()).sendMessage("Raw: " + event.getRawSlot());
             //event.setCancelled(true);
+
             slot.onClick(event);
+            ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
+
         }
 
 //        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {  // TODO MAKE THIS WORK
@@ -176,7 +187,7 @@ public class TransactionHolder implements InventoryHolder {
 //            final Slot clickedSlot = getLayout().getSlots()[event.getSlot()];
 //
 //            if (clickedSlot != null) {
-//                clickedSlot.onClick(event);
+//                clickedSlot.onContentClick(event);
 //            } else {
 //                event.setCancelled(true);
 //            }
@@ -189,7 +200,7 @@ public class TransactionHolder implements InventoryHolder {
 //
 //        // If we have a cursor offer we let that handle the event
 //        if (getCursorOffer() != null) {
-//            getCursorOffer().onClick(event, null, ClickCategory.CURSOR);
+//            getCursorOffer().onContentClick(event, null, ClickCategory.CURSOR);
 //
 //            ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
 //

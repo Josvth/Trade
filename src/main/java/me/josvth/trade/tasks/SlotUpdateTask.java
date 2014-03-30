@@ -1,6 +1,5 @@
 package me.josvth.trade.tasks;
 
-import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.slot.Slot;
 
 import java.util.Set;

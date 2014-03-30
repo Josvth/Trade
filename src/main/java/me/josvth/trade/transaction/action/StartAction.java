@@ -6,7 +6,7 @@ import me.josvth.trade.transaction.TransactionManager;
 public class StartAction extends Action {
 
     public StartAction(Transaction transaction) {
-        super(transaction.getTransactionProvoker());
+        super(transaction);
     }
 
     private TransactionManager getManager() {
@@ -32,8 +32,6 @@ public class StartAction extends Action {
             throw new IllegalArgumentException("One of the traders is already trading!");
         }
 
-        getManager().addTransaction(getTransaction());
-
         getTransaction().setStage(Transaction.Stage.IN_PROGRESS);
 
         getTransaction().getTraderA().getHolder().updateInventoryList();
@@ -45,9 +43,13 @@ public class StartAction extends Action {
         getTransaction().getTraderA().openInventory();
         getTransaction().getTraderB().openInventory();
 
+        getManager().addTransaction(getTransaction());
+
         if(getTransaction().useLogging()) {
             getTransaction().logAction(this);
         }
+
+
 
     }
 

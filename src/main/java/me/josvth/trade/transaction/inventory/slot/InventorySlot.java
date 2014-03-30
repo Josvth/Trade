@@ -3,6 +3,7 @@ package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
 import me.josvth.trade.tasks.SlotUpdateTask;
+import me.josvth.trade.transaction.action.trader.offer.SetOfferAction;
 import me.josvth.trade.transaction.inventory.LayoutManager;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.offer.Offer;
@@ -34,19 +35,14 @@ public class InventorySlot extends ContentSlot {
 
     @Override
     public void setContents(Offer contents) {
-        holder.getInventoryList().set(inventorySlot, contents);
-        Bukkit.getScheduler().runTask(holder.getTransaction().getPlugin(), new SlotUpdateTask(this));
+        SetOfferAction offerAction = new SetOfferAction(holder.getTrader(), holder.getInventoryList());
+        offerAction.setOffer(getInventorySlot(), contents);
+        offerAction.execute();
     }
 
     @Override
     public void update() {
         holder.getTrader().getPlayer().getInventory().setItem(getInventorySlot(), (getContents() == null)? null : getContents().createItem(holder));
-    }
-
-    public static InventorySlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
-        final InventorySlot slot = new InventorySlot(slotID, holder);
-        slot.setInventorySlot(slotID - LayoutManager.PLAYER_INVENTORY_SIZE);
-        return slot;
     }
 
     public static void updateInventorySlots(TransactionHolder holder, boolean nextTick, int... inventorySlot) {
@@ -80,4 +76,11 @@ public class InventorySlot extends ContentSlot {
         }
 
     }
+
+    public static InventorySlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
+        final InventorySlot slot = new InventorySlot(slotID, holder);
+        slot.setInventorySlot(slotID - LayoutManager.PLAYER_INVENTORY_SIZE);
+        return slot;
+    }
+
 }

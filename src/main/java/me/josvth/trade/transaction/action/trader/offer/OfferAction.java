@@ -1,7 +1,6 @@
 package me.josvth.trade.transaction.action.trader.offer;
 
 import me.josvth.trade.transaction.Trader;
-import me.josvth.trade.transaction.action.Action;
 import me.josvth.trade.transaction.action.trader.TraderAction;
 import me.josvth.trade.transaction.action.trader.status.DenyAction;
 import me.josvth.trade.transaction.inventory.slot.InventorySlot;

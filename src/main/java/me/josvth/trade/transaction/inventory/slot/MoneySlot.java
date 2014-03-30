@@ -63,9 +63,9 @@ public class MoneySlot extends Slot {
         }
 
         if (event.isLeftClick()) {
-            new ChangeMoneyAction(holder.getTrader(), amount).execute();
+            new ChangeMoneyAction(holder.getTrader(), holder.getOfferList(), amount).execute();
         } else if (event.isRightClick()) {
-            new ChangeMoneyAction(holder.getTrader(), -1*amount).execute();
+            new ChangeMoneyAction(holder.getTrader(), holder.getOfferList(), -1*amount).execute();
         }
 
     }

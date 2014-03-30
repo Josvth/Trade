@@ -7,12 +7,12 @@ public class EndAction extends Action {
     private final Reason reason;
 
     public EndAction(Transaction transaction) {
-        super(transaction.getTransactionProvoker());
+        super(transaction);
         this.reason = Reason.GENERIC;
     }
 
     public EndAction(Transaction transaction, Reason reason) {
-        super(transaction.getTransactionProvoker());
+        super(transaction);
         this.reason = reason;
     }
 

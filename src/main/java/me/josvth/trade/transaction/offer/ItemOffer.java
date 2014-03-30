@@ -3,103 +3,90 @@ package me.josvth.trade.transaction.offer;
 import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.inventory.slot.Slot;
-import me.josvth.trade.transaction.offer.behaviour.ClickBehaviour;
-import me.josvth.trade.transaction.offer.behaviour.ClickCategory;
-import me.josvth.trade.transaction.offer.behaviour.ClickTrigger;
 import me.josvth.trade.transaction.offer.description.ItemOfferDescription;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
 public class ItemOffer extends StackableOffer {
 
-    private static final Map<ClickTrigger, LinkedList<ClickBehaviour>> DEFAULT_BEHAVIOURS = new HashMap<ClickTrigger, LinkedList<ClickBehaviour>>();
-
-    static {
-
-        final LinkedList<ClickBehaviour> cursorLeftBehaviours = new LinkedList<ClickBehaviour>();
-
-        // PLACE_ALL
-        cursorLeftBehaviours.add(new ClickBehaviour() {
-            @Override
-            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-                if (slot == null) {
-                    final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-                    if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
-                        event.setCurrentItem(((ItemOffer) offer).getItem().clone());
-
-                        holder.setCursorOffer(null, true);
-
-                        event.setCancelled(true);
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
-
-        // SWAP_WITH_CURSOR
-        final ClickBehaviour swapWithCursor = new ClickBehaviour() {
-            @Override
-            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-                if (slot == null) {
-                    final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-                    if (event.getCurrentItem() != null) {
-                        holder.setCursorOffer(new ItemOffer(event.getCurrentItem().clone()), true);
-
-                        event.setCurrentItem(((ItemOffer) offer).getItem().clone());
-
-                        event.setCancelled(true);
-                        return true;
-                    }
-                }
-                return false;
-            }
-        };
-
-        cursorLeftBehaviours.add(swapWithCursor);
-
-        DEFAULT_BEHAVIOURS.put(new ClickTrigger(ClickCategory.CURSOR, ClickType.LEFT), cursorLeftBehaviours);
-
-        final LinkedList<ClickBehaviour> cursorRightBehaviours = new LinkedList<ClickBehaviour>();
-
-        // GRANT_ONE
-        cursorRightBehaviours.add(new ClickBehaviour() {
-            @Override
-            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-                if (slot == null) {
-                    final ItemStack currentItem = event.getCurrentItem();
-                    if (currentItem == null) {
-                        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-
-                        final ItemOffer itemOffer = (ItemOffer) offer;
-                        itemOffer.remove(1);
-                        holder.updateCursorOffer();
-
-                        final ItemStack item = itemOffer.getItem().clone();
-                        item.setAmount(1);
-                        event.setCurrentItem(item);
-
-                        event.setCancelled(true);
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
-
-        cursorRightBehaviours.add(swapWithCursor);
-
-        DEFAULT_BEHAVIOURS.put(new ClickTrigger(ClickCategory.CURSOR, ClickType.RIGHT), cursorRightBehaviours);
-
-    }
+//    static {
+//
+//        final LinkedList<OfferClickBehaviour> cursorLeftBehaviours = new LinkedList<OfferClickBehaviour>();
+//
+//        // PLACE_ALL
+//        cursorLeftBehaviours.add(new OfferClickBehaviour() {
+//            @Override
+//            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
+//                if (slot == null) {
+//                    final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+//                    if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
+//                        event.setCurrentItem(((ItemOffer) offer).getItem().clone());
+//
+//                        holder.setCursorOffer(null, true);
+//
+//                        event.setCancelled(true);
+//                        return true;
+//                    }
+//                }
+//                return false;
+//            }
+//        });
+//
+//        // SWAP_WITH_CURSOR
+//        final OfferClickBehaviour swapWithCursor = new OfferClickBehaviour() {
+//            @Override
+//            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
+//                if (slot == null) {
+//                    final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+//                    if (event.getCurrentItem() != null) {
+//                        holder.setCursorOffer(new ItemOffer(event.getCurrentItem().clone()), true);
+//
+//                        event.setCurrentItem(((ItemOffer) offer).getItem().clone());
+//
+//                        event.setCancelled(true);
+//                        return true;
+//                    }
+//                }
+//                return false;
+//            }
+//        };
+//
+//        cursorLeftBehaviours.add(swapWithCursor);
+//
+//        DEFAULT_BEHAVIOURS.put(new ClickTrigger(ClickCategory.CURSOR, ClickType.LEFT), cursorLeftBehaviours);
+//
+//        final LinkedList<OfferClickBehaviour> cursorRightBehaviours = new LinkedList<OfferClickBehaviour>();
+//
+//        // GRANT_ONE
+//        cursorRightBehaviours.add(new OfferClickBehaviour() {
+//            @Override
+//            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
+//                if (slot == null) {
+//                    final ItemStack currentItem = event.getCurrentItem();
+//                    if (currentItem == null) {
+//                        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+//
+//                        final ItemOffer itemOffer = (ItemOffer) offer;
+//                        itemOffer.remove(1);
+//                        holder.updateCursorOffer();
+//
+//                        final ItemStack item = itemOffer.getItem().clone();
+//                        item.setAmount(1);
+//                        event.setCurrentItem(item);
+//
+//                        event.setCancelled(true);
+//                        return true;
+//                    }
+//                }
+//                return false;
+//            }
+//        });
+//
+//        cursorRightBehaviours.add(swapWithCursor);
+//
+//        DEFAULT_BEHAVIOURS.put(new ClickTrigger(ClickCategory.CURSOR, ClickType.RIGHT), cursorRightBehaviours);
+//
+//    }
 
     private ItemStack item = null;
 
@@ -109,7 +96,6 @@ public class ItemOffer extends StackableOffer {
 
     public ItemOffer(ItemStack item) {
         this.item = item;
-        addBehaviours(DEFAULT_BEHAVIOURS);
     }
 
     @Override

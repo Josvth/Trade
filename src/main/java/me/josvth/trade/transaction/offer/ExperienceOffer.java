@@ -26,7 +26,7 @@ public class ExperienceOffer extends StackableOffer {
 
     @Override
     public String getType() {
-        return null;
+        return "experience";
     }
 
     @Override

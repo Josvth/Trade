@@ -2,177 +2,185 @@ package me.josvth.trade.transaction.offer;
 
 
 import me.josvth.trade.transaction.Trader;
-import me.josvth.trade.transaction.action.trader.offer.SetOfferAction;
+import me.josvth.trade.transaction.click.ClickBehaviour;
+import me.josvth.trade.transaction.click.ClickContext;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.inventory.slot.Slot;
-import me.josvth.trade.transaction.inventory.slot.TradeSlot;
-import me.josvth.trade.transaction.offer.behaviour.ClickBehaviour;
-import me.josvth.trade.transaction.offer.behaviour.ClickCategory;
-import me.josvth.trade.transaction.offer.behaviour.ClickTrigger;
+import me.josvth.trade.transaction.inventory.slot.ContentSlot;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public abstract class StackableOffer extends Offer {
 
-    private static final Map<ClickTrigger, LinkedList<ClickBehaviour>> DEFAULT_BEHAVIOURS = new HashMap<ClickTrigger, LinkedList<ClickBehaviour>>();
+    private static final Map<ClickType, List<ClickBehaviour>> DEFAULT_CURSOR_BEHAVIOUR = new HashMap<ClickType, List<ClickBehaviour>>();
+    private static final Map<ClickType, List<ClickBehaviour>> DEFAULT_CONTENT_BEHAVIOUR = new HashMap<ClickType, List<ClickBehaviour>>();
 
     static {
 
-        final LinkedList<ClickBehaviour> cursorLeftBehaviours = new LinkedList<ClickBehaviour>();
+        // CURSOR
+        final List<ClickBehaviour> leftCursorClickBehaviors = new LinkedList<ClickBehaviour>();
+        DEFAULT_CURSOR_BEHAVIOUR.put(ClickType.LEFT, leftCursorClickBehaviors);
 
-        // ADD_ALL, ADD_SOME
-//        cursorLeftBehaviours.add(new ClickBehaviour() {
-//            @Override
-//            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-//                if (slot instanceof TradeSlot) {
-//                    final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-//                    if (((TradeSlot) slot).getContents(holder) instanceof StackableOffer) {
-//                        final StackableOffer contents = (StackableOffer) ((TradeSlot) slot).getContents(holder);
-//                        final StackableOffer stackableOffer = (StackableOffer) offer;
-//                        final int available = (contents.getMaxAmount() == -1)? -1 : contents.getMaxAmount() - contents.getAmount();
-//                        if (available == -1) {
-//                            contents.add(stackableOffer.getAmount());
-//                            final SetOfferAction action = new SetOfferAction(holder.getTrader());
-//                            action.setOffer(((TradeSlot) slot).getOfferIndex(), contents);
-//                            action.execute();
-//
-//                            stackableOffer.setAmount(0);
-//                            holder.updateCursorOffer();
-//
-//                            event.setCancelled(true);
-//                            return true;
-//                        }
-//                        if (available > 0) {
-//                            final int added = Math.min(available, stackableOffer.getAmount());
-//
-//                            contents.add(added);
-//                            final SetOfferAction action = new SetOfferAction(holder.getTrader());
-//                            action.setOffer(((TradeSlot) slot).getOfferIndex(), contents);
-//                            action.execute();
-//
-//                            stackableOffer.remove(added);
-//                            holder.updateCursorOffer();
-//
-//                            event.setCancelled(true);
-//                            return true;
-//                        }
-//                    }
-//                }
-//                return false;
-//            }
-//        });
-//
-//        DEFAULT_BEHAVIOURS.put(new ClickTrigger(ClickCategory.CURSOR, ClickType.LEFT), cursorLeftBehaviours);
-//
-//        final LinkedList<ClickBehaviour> cursorRightBehaviours = new LinkedList<ClickBehaviour>();
-//
-//        // GRANT_ONE
-//        cursorRightBehaviours.add(new ClickBehaviour() {
-//            @Override
-//            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-//                if (slot == null) {
-//                    final ItemStack currentItem = event.getCurrentItem();
-//                    if (currentItem == null) {
-//                        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-//                        final StackableOffer stackableOffer = (StackableOffer) offer;
-//
-//                        stackableOffer.grant(holder.getTrader(), 1);
-//
-//                        stackableOffer.remove(1);
-//                        holder.updateCursorOffer();
-//
-//                        event.setCancelled(true);
-//                        return true;
-//                    }
-//                }
-//                return false;
-//            }
-//        });
-//
-//        // PLACE_ONE
-//        cursorRightBehaviours.add(new ClickBehaviour() {
-//            @Override
-//            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-//                if (slot instanceof TradeSlot) {
-//                    final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-//                    if (((TradeSlot) slot).getContents(holder) == null) {
-//                        final StackableOffer single = ((StackableOffer) offer).clone();
-//                        single.setAmount(1);
-//                        final SetOfferAction action = new SetOfferAction(holder.getTrader());
-//                        action.setOffer(((TradeSlot) slot).getOfferIndex(), single);
-//                        action.execute();
-//
-//                        ((StackableOffer) offer).remove(1);
-//                        holder.updateCursorOffer();
-//
-//                        event.setCancelled(true);
-//                        return true;
-//                    }
-//                }
-//                return false;
-//            }
-//        });
-//
-//        // ADD_ONE
-//        cursorRightBehaviours.add(new ClickBehaviour() {
-//            @Override
-//            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-//                if (slot instanceof TradeSlot) {
-//                    final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-//                    if (((TradeSlot) slot).getContents(holder) instanceof StackableOffer) {
-//                        final StackableOffer contents = (StackableOffer) ((TradeSlot) slot).getContents(holder);
-//                        final StackableOffer stackableOffer = (StackableOffer) offer;
-//                        if ((stackableOffer.isSimilar(contents)) && (contents.getAmount() + 1 <= contents.getMaxAmount() && contents.getMaxAmount() != -1)) {
-//                            contents.add(1);
-//                            final SetOfferAction action = new SetOfferAction(holder.getTrader());
-//                            action.setOffer(((TradeSlot) slot).getOfferIndex(), contents);
-//                            action.execute();
-//
-//                            stackableOffer.remove(1);
-//                            holder.updateCursorOffer();
-//
-//                            event.setCancelled(true);
-//                            return true;
-//                        }
-//                    }
-//                }
-//                return false;
-//            }
-//        });
-//
-//        DEFAULT_BEHAVIOURS.put(new ClickTrigger(ClickCategory.CURSOR, ClickType.RIGHT), cursorRightBehaviours);
-//
-//        final LinkedList<ClickBehaviour> slotRightBehaviours = new LinkedList<ClickBehaviour>();
-//
-//        slotRightBehaviours.add(new ClickBehaviour() {
-//            @Override
-//            public boolean onClick(InventoryClickEvent event, Slot slot, Offer offer) {
-//                if (slot instanceof TradeSlot) {
-//                    final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-//                    StackableOffer split = StackableOffer.split((StackableOffer) offer);
-//                    holder.setCursorOffer(split, true);
-//
-//                    SetOfferAction offerAction = new SetOfferAction(holder.getTrader());
-//                    offerAction.setOffer(((TradeSlot) slot).getOfferIndex(), offer);
-//                    offerAction.execute();
-//
-//                    event.setCancelled(true);
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
-//
-//        DEFAULT_BEHAVIOURS.put(new ClickTrigger(ClickCategory.SLOT, ClickType.RIGHT), slotRightBehaviours);
+        leftCursorClickBehaviors.add(new ClickBehaviour() {
+            @Override
+            public boolean onClick(ClickContext context, Offer offer) {
+                if (context.getSlot() instanceof ContentSlot) {
+
+                    final ContentSlot contentSlot = (ContentSlot) context.getSlot();
+                    final StackableOffer stackableOffer = (StackableOffer) offer;
+
+                    if (contentSlot.getContents() instanceof StackableOffer) {
+                        final StackableOffer stackableContent = (StackableOffer) contentSlot.getContents();
+
+                        if (stackableOffer.isSimilar(stackableContent)) {   // ADD
+
+                            final int remaining = stackableContent.add(stackableOffer.getAmount());
+
+                            if (remaining != stackableOffer.getAmount()) {  // We added something
+                                stackableOffer.setAmount(remaining);
+                                if (stackableOffer.isWorthless()) {
+                                    context.getHolder().setCursorOffer(null, true);
+                                } else {
+                                    context.getHolder().setCursorOffer(stackableOffer, true);
+                                }
+                                contentSlot.setContents(stackableContent);
+                            }
+
+                            ((Player) context.getEvent().getWhoClicked()).sendMessage("ADD");
+
+                            context.getEvent().setCancelled(true);
+                            return true;
+
+                        }
+
+                    }
+
+                }
+
+                return false;
+
+            }
+        });
+
+
+        final List<ClickBehaviour> rightCursorClickBehaviors = new LinkedList<ClickBehaviour>();
+        DEFAULT_CURSOR_BEHAVIOUR.put(ClickType.RIGHT, rightCursorClickBehaviors);
+
+        rightCursorClickBehaviors.add(new ClickBehaviour() {
+            @Override
+            public boolean onClick(ClickContext context, Offer offer) {
+                if (context.getSlot() instanceof ContentSlot) {
+
+                    final ContentSlot contentSlot = (ContentSlot) context.getSlot();
+                    final StackableOffer stackableOffer = (StackableOffer) offer;
+
+                    if (contentSlot.getContents() == null) {    // PLACE_ONE
+
+                        final StackableOffer stackableContent = stackableOffer.clone();
+                        stackableContent.setAmount(1);
+
+                        stackableOffer.remove(1);
+                        if (stackableOffer.isWorthless()) {
+                            context.getHolder().setCursorOffer(null, true);
+                        } else {
+                            context.getHolder().setCursorOffer(stackableOffer, true);
+                        }
+                        contentSlot.setContents(stackableContent);
+
+                        ((Player) context.getEvent().getWhoClicked()).sendMessage("PLACE_ONE");
+
+                        context.getEvent().setCancelled(true);
+                        return true;
+                    }
+
+                }
+
+                return false;
+
+            }
+        });
+
+        rightCursorClickBehaviors.add(new ClickBehaviour() {
+            @Override
+            public boolean onClick(ClickContext context, Offer offer) {
+                if (context.getSlot() instanceof ContentSlot) {
+
+                    final TransactionHolder holder = context.getHolder();
+                    final ContentSlot contentSlot = (ContentSlot) context.getSlot();
+                    final StackableOffer stackableOffer = (StackableOffer) offer;
+
+                    if (contentSlot.getContents() instanceof StackableOffer) {
+                        final StackableOffer stackableContent = (StackableOffer) contentSlot.getContents();
+
+                        if (stackableOffer.isSimilar(stackableContent)) {   // ADD_ONE
+
+                            final int remaining = stackableContent.add(1);
+
+                            if (remaining == 0) {   // We added one something
+                                stackableOffer.remove(1);
+                                if (stackableOffer.isWorthless()) {
+                                    holder.setCursorOffer(null, true);
+                                } else {
+                                    holder.setCursorOffer(stackableOffer, true);
+                                }
+                                contentSlot.setContents(stackableContent);
+                            }
+
+                            ((Player) context.getEvent().getWhoClicked()).sendMessage("ADD_ONE");
+
+                            context.getEvent().setCancelled(true);
+                            return true;
+
+                        }
+
+                    }
+
+                }
+
+                return false;
+
+            }
+        });
+
+
+        // CONTENT
+        final List<ClickBehaviour> rightContentClickBehaviours = new LinkedList<ClickBehaviour>();
+        DEFAULT_CONTENT_BEHAVIOUR.put(ClickType.RIGHT, rightContentClickBehaviours);
+
+        rightContentClickBehaviours.add(new ClickBehaviour() {
+            @Override
+            public boolean onClick(ClickContext context, Offer offer) {
+
+                final ContentSlot contentSlot = (ContentSlot) context.getSlot();
+
+                final StackableOffer stackableOffer = (StackableOffer) contentSlot.getContents();
+                final StackableOffer splitOffer = StackableOffer.split(stackableOffer);
+
+                if (stackableOffer.isWorthless()) {
+                    contentSlot.setContents(null);
+                } else {
+                    contentSlot.setContents(stackableOffer);
+                }
+
+                context.getHolder().setCursorOffer(splitOffer, true);
+
+                ((Player) context.getEvent().getWhoClicked()).sendMessage("PICKUP_HALF");
+
+                context.getEvent().setCancelled(true);
+                return true;
+
+            }
+        });
+
     }
 
     public StackableOffer() {
-        addBehaviours(DEFAULT_BEHAVIOURS);
+        addCursorBehaviours(DEFAULT_CURSOR_BEHAVIOUR);
+        addContentBehaviours(DEFAULT_CONTENT_BEHAVIOUR);
     }
 
     public abstract int getAmount();

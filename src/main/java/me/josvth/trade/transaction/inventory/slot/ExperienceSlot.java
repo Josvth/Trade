@@ -3,17 +3,99 @@ package me.josvth.trade.transaction.inventory.slot;
 import me.josvth.trade.Trade;
 import me.josvth.trade.tasks.ExperienceSlotUpdateTask;
 import me.josvth.trade.transaction.action.trader.offer.ChangeExperienceAction;
+import me.josvth.trade.transaction.click.ClickBehaviour;
+import me.josvth.trade.transaction.click.ClickContext;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.offer.ExperienceOffer;
+import me.josvth.trade.transaction.offer.Offer;
 import me.josvth.trade.transaction.offer.OfferList;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Set;
+import java.util.*;
 
 public class ExperienceSlot extends Slot {
+
+    private static final Map<ClickType, List<ClickBehaviour>> DEFAULT_BEHAVIOURS = new LinkedHashMap<ClickType, List<ClickBehaviour>>();
+
+    static {
+
+        // LEFT
+        final LinkedList<ClickBehaviour> leftBehaviours = new LinkedList<ClickBehaviour>();
+        DEFAULT_BEHAVIOURS.put(ClickType.LEFT, leftBehaviours);
+
+        leftBehaviours.add(new ClickBehaviour() {
+            @Override
+            public boolean onClick(ClickContext context, Offer offer) {
+
+                final ExperienceSlot experienceSlot = (ExperienceSlot) context.getSlot();
+                new ChangeExperienceAction(context.getHolder().getTrader(), context.getHolder().getOfferList(), experienceSlot.getSmallModifier()).execute();
+
+                context.getEvent().setCancelled(true);
+
+                return true;
+            }
+        });
+
+
+        // SHIFT_LEFT
+        final LinkedList<ClickBehaviour> shiftLeftBehaviours = new LinkedList<ClickBehaviour>();
+        DEFAULT_BEHAVIOURS.put(ClickType.SHIFT_LEFT, shiftLeftBehaviours);
+
+        shiftLeftBehaviours.add(new ClickBehaviour() {
+            @Override
+            public boolean onClick(ClickContext context, Offer offer) {
+
+                final ExperienceSlot experienceSlot = (ExperienceSlot) context.getSlot();
+                new ChangeExperienceAction(context.getHolder().getTrader(), context.getHolder().getOfferList(), experienceSlot.getLargeModifier()).execute();
+
+                context.getEvent().setCancelled(true);
+
+                return true;
+
+            }
+        });
+
+        // RIGHT
+        final LinkedList<ClickBehaviour> rightBehaviours = new LinkedList<ClickBehaviour>();
+        DEFAULT_BEHAVIOURS.put(ClickType.RIGHT, rightBehaviours);
+
+        rightBehaviours.add(new ClickBehaviour() {
+            @Override
+            public boolean onClick(ClickContext context, Offer offer) {
+
+                final ExperienceSlot experienceSlot = (ExperienceSlot) context.getSlot();
+                new ChangeExperienceAction(context.getHolder().getTrader(), context.getHolder().getOfferList(), -1 * experienceSlot.getSmallModifier()).execute();
+
+                context.getEvent().setCancelled(true);
+
+                return true;
+
+            }
+        });
+
+        // SHIFT_RIGHT
+        final LinkedList<ClickBehaviour> shiftRightBehaviours = new LinkedList<ClickBehaviour>();
+        DEFAULT_BEHAVIOURS.put(ClickType.SHIFT_RIGHT, shiftRightBehaviours);
+
+        shiftRightBehaviours.add(new ClickBehaviour() {
+            @Override
+            public boolean onClick(ClickContext context, Offer offer) {
+
+                final ExperienceSlot experienceSlot = (ExperienceSlot) context.getSlot();
+                new ChangeExperienceAction(context.getHolder().getTrader(), context.getHolder().getOfferList(), -1 * experienceSlot.getLargeModifier()).execute();
+
+                context.getEvent().setCancelled(true);
+
+                return true;
+
+            }
+        });
+
+
+    }
 
     private ItemStack experienceItem;
 
@@ -22,6 +104,7 @@ public class ExperienceSlot extends Slot {
 
     public ExperienceSlot(int slot, TransactionHolder holder) {
         super(slot, holder);
+        addBehaviours(DEFAULT_BEHAVIOURS);
     }
 
     public ItemStack getExperienceItem() {
@@ -46,28 +129,6 @@ public class ExperienceSlot extends Slot {
 
     public void setLargeModifier(int largeModifier) {
         this.largeModifier = largeModifier;
-    }
-
-    @Override
-    public void onClick(InventoryClickEvent event) {
-
-        // We always cancel the event.
-        event.setCancelled(true);
-
-        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-
-        final int amount = event.isShiftClick() ? largeModifier : smallModifier;
-
-        if (amount <= 0) { // If amount is smaller or equal to 0 we do nothing to allow disabling of shift clicking
-            return;
-        }
-
-        if (event.isLeftClick()) {
-            new ChangeExperienceAction(holder.getTrader(), amount).execute();
-        } else if (event.isRightClick()) {
-            new ChangeExperienceAction(holder.getTrader(), -1*amount).execute();
-        }
-
     }
 
     @Override

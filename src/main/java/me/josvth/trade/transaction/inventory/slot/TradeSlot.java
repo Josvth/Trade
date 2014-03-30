@@ -5,15 +5,12 @@ import me.josvth.trade.tasks.SlotUpdateTask;
 import me.josvth.trade.transaction.action.trader.offer.SetOfferAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.offer.Offer;
-import me.josvth.trade.transaction.offer.behaviour.ClickCategory;
 import org.bukkit.Bukkit;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 
 import java.util.Iterator;
 import java.util.Set;
 
-public class TradeSlot extends Slot {
+public class TradeSlot extends ContentSlot {
 
     private int offerIndex;
 
@@ -29,29 +26,16 @@ public class TradeSlot extends Slot {
         this.offerIndex = offerIndex;
     }
 
+    @Override
     public void setContents(Offer offer) {
-        SetOfferAction offerAction = new SetOfferAction(holder.getTrader());
+        SetOfferAction offerAction = new SetOfferAction(holder.getTrader(), holder.getOfferList());
         offerAction.setOffer(getOfferIndex(), offer);
         offerAction.execute();
     }
 
+    @Override
     public Offer getContents() {
         return holder.getOfferList().get(getOfferIndex());
-    }
-
-    @Override
-    public void onDrag(InventoryDragEvent event) {
-
-//        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-//
-//        final Offer offer = getContents(holder);
-//
-//        if (offer != null) {
-//            offer.onDrag(event, offerIndex, slot);
-//        } else if (event.getNewItems().containsKey(slot)) {
-//            SetOfferAction.create(holder.getTrader(), offerIndex, ItemOffer.create(holder.getTrader(), event.getNewItems().get(slot).clone())).execute();
-//        }
-
     }
 
     @Override

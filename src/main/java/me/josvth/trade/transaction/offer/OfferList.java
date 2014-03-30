@@ -3,9 +3,7 @@ package me.josvth.trade.transaction.offer;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.apache.commons.lang.Validate;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -81,7 +79,7 @@ public class OfferList {
         final TreeMap<Integer, Offer> found = new TreeMap<Integer, Offer>();
 
         for (int i = 0; i < offers.length; i++) {
-            if (type.equalsIgnoreCase(offers[i].getType())) {
+            if (offers[i] != null && type.equalsIgnoreCase(offers[i].getType())) {
                 found.put(i, offers[i]);
             }
         }

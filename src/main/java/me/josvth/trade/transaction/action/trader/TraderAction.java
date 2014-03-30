@@ -9,11 +9,12 @@ public abstract class TraderAction extends Action {
     private final Trader trader;
 
     public TraderAction(Trader trader) {
+        super(trader.getTransaction());
         this.trader = trader;
     }
 
     public Trader getTrader() {
-        return (Trader) getProvoker();
+        return trader;
     }
 
     public Player getPlayer() {
