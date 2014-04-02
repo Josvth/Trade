@@ -4,7 +4,7 @@ import me.josvth.bukkitformatlibrary.message.FormattedMessage;
 import me.josvth.trade.transaction.action.ActionProvoker;
 import me.josvth.trade.transaction.inventory.Layout;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.offer.OfferList;
+import me.josvth.trade.transaction.inventory.offer.OfferList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

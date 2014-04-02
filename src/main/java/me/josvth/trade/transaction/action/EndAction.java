@@ -1,6 +1,9 @@
 package me.josvth.trade.transaction.action;
 
+import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.Transaction;
+import me.josvth.trade.transaction.action.trader.offer.SetOfferAction;
+import me.josvth.trade.transaction.inventory.offer.Offer;
 
 public class EndAction extends Action {
 
@@ -37,15 +40,36 @@ public class EndAction extends Action {
         getTransaction().getTraderA().closeInventory();
         getTransaction().getTraderB().closeInventory();
 
-        if (reason == Reason.ACCEPT) {
-            getTransaction().getTraderA().getOffers().grant(getTransaction().getTraderB());
-            getTransaction().getTraderB().getOffers().grant(getTransaction().getTraderA());
-        } else {
-            getTransaction().getTraderA().getOffers().grant(getTransaction().getTraderA());
-            getTransaction().getTraderB().getOffers().grant(getTransaction().getTraderB());
-        }
+        final boolean nextTick = reason != Reason.RELOAD;
+
+        handleOffers(getTransaction().getTraderA(), nextTick);
+        handleOffers(getTransaction().getTraderB(), nextTick);
 
         getTransaction().remove();
+
+    }
+
+    private void handleOffers(Trader trader, boolean nextTick) {
+
+        final SetOfferAction offerAction = new SetOfferAction(trader, trader.getHolder().getInventoryList());
+
+        for (int i = 0; i < trader.getHolder().getInventoryList().getContents().length; i++) {
+            final Offer offer = trader.getHolder().getInventoryList().getContents()[i];
+            if (offer != null && !offer.canStayInInventory()) {
+                offer.grant(getTransaction().getTraderA(), nextTick);
+                offerAction.setOffer(i, null);
+            }
+        }
+
+        if (!offerAction.getChanges().isEmpty()) {
+            offerAction.execute();
+        }
+
+        if (reason == Reason.ACCEPT) {
+            trader.getOffers().grant(trader.getOtherTrader(), nextTick);
+        } else {
+            trader.getOffers().grant(trader, nextTick);
+        }
 
     }
 

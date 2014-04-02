@@ -1,12 +1,11 @@
 package me.josvth.trade.transaction.inventory.slot;
 
-import me.josvth.trade.transaction.click.ClickBehaviour;
-import me.josvth.trade.transaction.click.ClickContext;
+import me.josvth.trade.transaction.inventory.click.ClickBehaviour;
+import me.josvth.trade.transaction.inventory.click.ClickContext;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.offer.Offer;
+import me.josvth.trade.transaction.inventory.offer.Offer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.LinkedHashMap;
@@ -33,7 +32,6 @@ public abstract class ContentSlot extends Slot {
                 final Offer contents = contentSlot.getContents();
 
                 if (cursor == null && contents == null) { // NOTHING
-                    ((Player) context.getEvent().getWhoClicked()).sendMessage(InventoryAction.NOTHING.name());
                     context.getEvent().setCancelled(true); // TODO not cancelling this is risky but it doesn't show the updating
                     return true;
                 }
@@ -52,7 +50,6 @@ public abstract class ContentSlot extends Slot {
                 final Offer contents = contentSlot.getContents();
 
                 if (cursor == null && contents != null) { // PICKUP_ALL
-                    ((Player) context.getEvent().getWhoClicked()).sendMessage(InventoryAction.PICKUP_ALL.name());
 
                     context.getHolder().setCursorOffer(contents, true);
                     contentSlot.setContents(null);
@@ -76,7 +73,6 @@ public abstract class ContentSlot extends Slot {
                 final Offer contents = contentSlot.getContents();
 
                 if (cursor != null && contents == null) { // PLACE_ALL
-                    ((Player) context.getEvent().getWhoClicked()).sendMessage(InventoryAction.PLACE_ALL.name());
 
                     context.getHolder().setCursorOffer(null, true);
                     contentSlot.setContents(cursor);
@@ -100,7 +96,6 @@ public abstract class ContentSlot extends Slot {
                 final Offer contents = contentSlot.getContents();
 
                 if (cursor != null && contents != null) {   // SWAP_WITH_CURSOR
-                    ((Player) context.getEvent().getWhoClicked()).sendMessage(InventoryAction.SWAP_WITH_CURSOR.name());
 
                     context.getHolder().setCursorOffer(contents, true);
                     contentSlot.setContents(cursor);

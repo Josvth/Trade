@@ -1,10 +1,10 @@
-package me.josvth.trade.transaction.offer;
+package me.josvth.trade.transaction.inventory.offer;
 
 import me.josvth.trade.transaction.Trader;
-import me.josvth.trade.transaction.click.ClickBehaviour;
-import me.josvth.trade.transaction.click.ClickContext;
+import me.josvth.trade.transaction.inventory.click.ClickBehaviour;
+import me.josvth.trade.transaction.inventory.click.ClickContext;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.offer.description.OfferDescription;
+import me.josvth.trade.transaction.inventory.offer.description.OfferDescription;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
@@ -15,6 +15,9 @@ public abstract class Offer {
 
     protected final Map<ClickType, List<ClickBehaviour>> cursorClickBehaviourMap = new HashMap<ClickType, List<ClickBehaviour>>();
     protected final Map<ClickType, List<ClickBehaviour>> contentClickBehaviourMap = new HashMap<ClickType, List<ClickBehaviour>>();
+
+    protected boolean allowedInInventory = false;
+    protected boolean canStayInInventory = false;
 
     public Offer() {
 
@@ -30,7 +33,27 @@ public abstract class Offer {
 
     public abstract ItemStack createMirrorItem(TransactionHolder holder);
 
-    public abstract void grant(Trader trader);
+    public abstract void grant(Trader trader, boolean nextTick);
+
+    public boolean isAllowedInInventory() {
+        return allowedInInventory;
+    }
+
+    public void setAllowedInInventory(boolean allowedInInventory) {
+        this.allowedInInventory = allowedInInventory;
+    }
+
+    public boolean isCanStayInInventory() {
+        return canStayInInventory;
+    }
+
+    public boolean canStayInInventory() {
+        return canStayInInventory;
+    }
+
+    public void setCanStayInInventory(boolean canStayInInventory) {
+        this.canStayInInventory = canStayInInventory;
+    }
 
     // Behaviours
     public void addCursorBehaviour(ClickType clickType, ClickBehaviour behaviour) {
@@ -67,10 +90,18 @@ public abstract class Offer {
         }
     }
 
+    public Map<ClickType, List<ClickBehaviour>> getCursorClickBehaviourMap() {
+        return cursorClickBehaviourMap;
+    }
+
+    public Map<ClickType, List<ClickBehaviour>> getContentClickBehaviourMap() {
+        return contentClickBehaviourMap;
+    }
+
     // Event handling
     public boolean onCursorClick(ClickContext context) {
 
-        final List<ClickBehaviour> behaviours = cursorClickBehaviourMap.get(context.getEvent().getClick());
+        final List<ClickBehaviour> behaviours = getCursorClickBehaviourMap().get(context.getEvent().getClick());
 
         if (behaviours != null) {
 
@@ -99,7 +130,7 @@ public abstract class Offer {
 
     public boolean onContentClick(ClickContext context) {
 
-        final List<ClickBehaviour> behaviours = contentClickBehaviourMap.get(context.getEvent().getClick());
+        final List<ClickBehaviour> behaviours = getContentClickBehaviourMap().get(context.getEvent().getClick());
 
         if (behaviours != null) {
 

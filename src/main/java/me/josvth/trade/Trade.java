@@ -8,6 +8,7 @@ import me.josvth.trade.request.RequestManager;
 import me.josvth.trade.transaction.TransactionManager;
 import me.josvth.trade.transaction.inventory.LayoutManager;
 import me.josvth.trade.transaction.inventory.slot.*;
+import me.josvth.trade.transaction.inventory.offer.ExperienceOffer;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.PermissionDefault;
@@ -55,6 +56,8 @@ public class Trade extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        new ExperienceOffer(0);
 
         // Load dependencies
         loadDependencies();

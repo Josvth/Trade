@@ -1,10 +1,10 @@
 package me.josvth.trade.transaction.action.trader.offer;
 
 import me.josvth.trade.transaction.Trader;
-import me.josvth.trade.transaction.offer.Offer;
-import me.josvth.trade.transaction.offer.OfferList;
-import me.josvth.trade.transaction.offer.OfferMutationResult;
-import me.josvth.trade.transaction.offer.StackableOffer;
+import me.josvth.trade.transaction.inventory.offer.Offer;
+import me.josvth.trade.transaction.inventory.offer.OfferList;
+import me.josvth.trade.transaction.inventory.offer.OfferMutationResult;
+import me.josvth.trade.transaction.inventory.offer.StackableOffer;
 
 /**
  * Action that handles addition and subtraction of an offer to a offer list of a trader

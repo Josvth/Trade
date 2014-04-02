@@ -1,4 +1,4 @@
-package me.josvth.trade.transaction.offer;
+package me.josvth.trade.transaction.inventory.offer;
 
 import java.util.Map;
 

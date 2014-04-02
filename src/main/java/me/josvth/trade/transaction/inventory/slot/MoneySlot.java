@@ -4,8 +4,8 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.tasks.MoneySlotUpdateTask;
 import me.josvth.trade.transaction.action.trader.offer.ChangeMoneyAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.offer.MoneyOffer;
-import me.josvth.trade.transaction.offer.OfferList;
+import me.josvth.trade.transaction.inventory.offer.MoneyOffer;
+import me.josvth.trade.transaction.inventory.offer.OfferList;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -76,7 +76,7 @@ public class MoneySlot extends Slot {
         update(getMoney(holder.getOfferList()));
     }
 
-    private static int getMoney(OfferList offers) {
+    public static int getMoney(OfferList offers) {
         int money = 0;
         for (MoneyOffer tradeable : offers.getOfClass(MoneyOffer.class).values()) {
             money += tradeable.getAmount();

@@ -1,9 +1,9 @@
-package me.josvth.trade.transaction.offer;
+package me.josvth.trade.transaction.inventory.offer;
 
 import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.offer.description.MoneyOfferDescription;
+import me.josvth.trade.transaction.inventory.offer.description.MoneyOfferDescription;
 import org.bukkit.inventory.ItemStack;
 
 public class MoneyOffer extends StackableOffer {
@@ -15,7 +15,10 @@ public class MoneyOffer extends StackableOffer {
     }
 
     public MoneyOffer(int amount) {
+        super();
         this.amount = amount;
+        setAllowedInInventory(true);
+        setCanStayInInventory(false);
     }
 
     @Override
@@ -64,12 +67,12 @@ public class MoneyOffer extends StackableOffer {
     }
 
     @Override
-	public void grant(Trader trader) {
-        grant(trader, amount);
+	public void grant(Trader trader, boolean nextTick) {
+        grant(trader, true, amount);
     }
 
     @Override
-    public void grant(Trader trader, int amount) {
+    public void grant(Trader trader, boolean nextTick, int amount) {
         Trade.getInstance().getEconomy().depositPlayer(trader.getName(), amount/100);
     }
 

@@ -1,8 +1,8 @@
-package me.josvth.trade.transaction.offer.description;
+package me.josvth.trade.transaction.inventory.offer.description;
 
 import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.offer.MoneyOffer;
+import me.josvth.trade.transaction.inventory.offer.MoneyOffer;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.inventory.ItemStack;
 

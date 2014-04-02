@@ -2,8 +2,8 @@ package me.josvth.trade.transaction.action.trader.offer;
 
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.slot.ExperienceSlot;
-import me.josvth.trade.transaction.offer.ExperienceOffer;
-import me.josvth.trade.transaction.offer.OfferList;
+import me.josvth.trade.transaction.inventory.offer.ExperienceOffer;
+import me.josvth.trade.transaction.inventory.offer.OfferList;
 import me.josvth.trade.util.ExperienceManager;
 
 public class ChangeExperienceAction extends ChangeOfferAction {
@@ -46,7 +46,7 @@ public class ChangeExperienceAction extends ChangeOfferAction {
                 expManager.changeExp(-1 * added);
 
                 // Update experience slots
-                ExperienceSlot.updateExperienceSlots(getTrader().getHolder(), true, getCurrentAmount());
+                //ExperienceSlot.updateExperienceSlots(getTrader().getHolder(), true, getCurrentAmount());
 
             }
 
@@ -66,7 +66,7 @@ public class ChangeExperienceAction extends ChangeOfferAction {
                 getOtherTrader().getFormattedMessage("experience.removed.other").send(getOtherPlayer(), "%player%", getTrader().getName(), "%experience%", String.valueOf(removed));
 
                 // Update experience slots
-                ExperienceSlot.updateExperienceSlots(getTrader().getHolder(), true, getCurrentAmount());
+                //ExperienceSlot.updateExperienceSlots(getTrader().getHolder(), true, getCurrentAmount());
 
             }
 

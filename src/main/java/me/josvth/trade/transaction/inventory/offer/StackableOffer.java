@@ -1,9 +1,9 @@
-package me.josvth.trade.transaction.offer;
+package me.josvth.trade.transaction.inventory.offer;
 
 
 import me.josvth.trade.transaction.Trader;
-import me.josvth.trade.transaction.click.ClickBehaviour;
-import me.josvth.trade.transaction.click.ClickContext;
+import me.josvth.trade.transaction.inventory.click.ClickBehaviour;
+import me.josvth.trade.transaction.inventory.click.ClickContext;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.slot.ContentSlot;
 import org.bukkit.entity.Player;
@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+
 public abstract class StackableOffer extends Offer {
 
     private static final Map<ClickType, List<ClickBehaviour>> DEFAULT_CURSOR_BEHAVIOUR = new HashMap<ClickType, List<ClickBehaviour>>();
@@ -22,10 +23,9 @@ public abstract class StackableOffer extends Offer {
     static {
 
         // CURSOR
-        final List<ClickBehaviour> leftCursorClickBehaviors = new LinkedList<ClickBehaviour>();
-        DEFAULT_CURSOR_BEHAVIOUR.put(ClickType.LEFT, leftCursorClickBehaviors);
+        DEFAULT_CURSOR_BEHAVIOUR.put(ClickType.LEFT, new LinkedList<ClickBehaviour>());
+        DEFAULT_CURSOR_BEHAVIOUR.get(ClickType.LEFT).add(new ClickBehaviour() {
 
-        leftCursorClickBehaviors.add(new ClickBehaviour() {
             @Override
             public boolean onClick(ClickContext context, Offer offer) {
                 if (context.getSlot() instanceof ContentSlot) {
@@ -66,11 +66,8 @@ public abstract class StackableOffer extends Offer {
             }
         });
 
-
-        final List<ClickBehaviour> rightCursorClickBehaviors = new LinkedList<ClickBehaviour>();
-        DEFAULT_CURSOR_BEHAVIOUR.put(ClickType.RIGHT, rightCursorClickBehaviors);
-
-        rightCursorClickBehaviors.add(new ClickBehaviour() {
+        DEFAULT_CURSOR_BEHAVIOUR.put(ClickType.RIGHT, new LinkedList<ClickBehaviour>());
+        DEFAULT_CURSOR_BEHAVIOUR.get(ClickType.RIGHT).add(new ClickBehaviour() {
             @Override
             public boolean onClick(ClickContext context, Offer offer) {
                 if (context.getSlot() instanceof ContentSlot) {
@@ -91,8 +88,6 @@ public abstract class StackableOffer extends Offer {
                         }
                         contentSlot.setContents(stackableContent);
 
-                        ((Player) context.getEvent().getWhoClicked()).sendMessage("PLACE_ONE");
-
                         context.getEvent().setCancelled(true);
                         return true;
                     }
@@ -104,7 +99,7 @@ public abstract class StackableOffer extends Offer {
             }
         });
 
-        rightCursorClickBehaviors.add(new ClickBehaviour() {
+        DEFAULT_CURSOR_BEHAVIOUR.get(ClickType.RIGHT).add(new ClickBehaviour() {
             @Override
             public boolean onClick(ClickContext context, Offer offer) {
                 if (context.getSlot() instanceof ContentSlot) {
@@ -130,8 +125,6 @@ public abstract class StackableOffer extends Offer {
                                 contentSlot.setContents(stackableContent);
                             }
 
-                            ((Player) context.getEvent().getWhoClicked()).sendMessage("ADD_ONE");
-
                             context.getEvent().setCancelled(true);
                             return true;
 
@@ -148,10 +141,8 @@ public abstract class StackableOffer extends Offer {
 
 
         // CONTENT
-        final List<ClickBehaviour> rightContentClickBehaviours = new LinkedList<ClickBehaviour>();
-        DEFAULT_CONTENT_BEHAVIOUR.put(ClickType.RIGHT, rightContentClickBehaviours);
-
-        rightContentClickBehaviours.add(new ClickBehaviour() {
+        DEFAULT_CONTENT_BEHAVIOUR.put(ClickType.RIGHT, new LinkedList<ClickBehaviour>());
+        DEFAULT_CONTENT_BEHAVIOUR.get(ClickType.RIGHT).add(new ClickBehaviour() {
             @Override
             public boolean onClick(ClickContext context, Offer offer) {
 
@@ -167,8 +158,6 @@ public abstract class StackableOffer extends Offer {
                 }
 
                 context.getHolder().setCursorOffer(splitOffer, true);
-
-                ((Player) context.getEvent().getWhoClicked()).sendMessage("PICKUP_HALF");
 
                 context.getEvent().setCancelled(true);
                 return true;
@@ -226,7 +215,7 @@ public abstract class StackableOffer extends Offer {
         }
     }
 
-    public abstract void grant(Trader trader, int amount);
+    public abstract void grant(Trader trader, boolean nextTick, int amount);
 
     public abstract StackableOffer clone();
 

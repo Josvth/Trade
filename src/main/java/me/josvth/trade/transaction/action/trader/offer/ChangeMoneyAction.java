@@ -2,8 +2,8 @@ package me.josvth.trade.transaction.action.trader.offer;
 
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.slot.MoneySlot;
-import me.josvth.trade.transaction.offer.MoneyOffer;
-import me.josvth.trade.transaction.offer.OfferList;
+import me.josvth.trade.transaction.inventory.offer.MoneyOffer;
+import me.josvth.trade.transaction.inventory.offer.OfferList;
 import net.milkbowl.vault.economy.Economy;
 
 public class ChangeMoneyAction extends ChangeOfferAction {

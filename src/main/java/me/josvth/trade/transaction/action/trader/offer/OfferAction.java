@@ -3,11 +3,11 @@ package me.josvth.trade.transaction.action.trader.offer;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.action.trader.TraderAction;
 import me.josvth.trade.transaction.action.trader.status.DenyAction;
-import me.josvth.trade.transaction.inventory.slot.InventorySlot;
-import me.josvth.trade.transaction.inventory.slot.MirrorSlot;
-import me.josvth.trade.transaction.inventory.slot.TradeSlot;
-import me.josvth.trade.transaction.offer.Offer;
-import me.josvth.trade.transaction.offer.OfferList;
+import me.josvth.trade.transaction.inventory.offer.ExperienceOffer;
+import me.josvth.trade.transaction.inventory.offer.MoneyOffer;
+import me.josvth.trade.transaction.inventory.slot.*;
+import me.josvth.trade.transaction.inventory.offer.Offer;
+import me.josvth.trade.transaction.inventory.offer.OfferList;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -33,9 +33,39 @@ public abstract class OfferAction extends TraderAction {
     }
 
     public void updateOffers() {
+
+        // TODO THIS IS HORRIBLE! COME UP WITH A FIX
+        int newExperience = ExperienceSlot.getExperience(list);
+        int newMoney = MoneySlot.getMoney(list);
+
         for (Map.Entry<Integer, ? extends Offer> entry : getChanges().entrySet()) {
+
+            if (list.get(entry.getKey()) instanceof ExperienceOffer) {
+                newExperience -= ((ExperienceOffer)list.get(entry.getKey())).getAmount();
+            }
+
+            if (list.get(entry.getKey()) instanceof MoneyOffer) {
+                newMoney -= ((MoneyOffer)list.get(entry.getKey())).getAmount();
+            }
+
+            if (entry.getValue() instanceof ExperienceOffer) {
+                newExperience += ((ExperienceOffer)entry.getValue()).getAmount();
+            }
+
+            if (entry.getValue() instanceof MoneyOffer) {
+                newMoney += ((MoneyOffer)entry.getValue()).getAmount();
+            }
+
             list.set(entry.getKey(), entry.getValue());
+
         }
+
+        // TODO UGLY!!!
+        if (list.getType() == OfferList.Type.TRADE) {
+            ExperienceSlot.updateExperienceSlots(list.getHolder(), true, newExperience);
+            MoneySlot.updateMoneySlots(list.getHolder(), true, newMoney);
+        }
+
     }
 
     public void updateSlots() {

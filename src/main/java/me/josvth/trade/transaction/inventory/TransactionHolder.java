@@ -5,11 +5,11 @@ import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.Transaction;
 import me.josvth.trade.transaction.action.trader.status.CloseAction;
 import me.josvth.trade.transaction.action.trader.status.RefuseAction;
-import me.josvth.trade.transaction.click.ClickContext;
+import me.josvth.trade.transaction.inventory.click.ClickContext;
 import me.josvth.trade.transaction.inventory.slot.Slot;
-import me.josvth.trade.transaction.offer.ItemOffer;
-import me.josvth.trade.transaction.offer.Offer;
-import me.josvth.trade.transaction.offer.OfferList;
+import me.josvth.trade.transaction.inventory.offer.ItemOffer;
+import me.josvth.trade.transaction.inventory.offer.Offer;
+import me.josvth.trade.transaction.inventory.offer.OfferList;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -157,71 +157,15 @@ public class TransactionHolder implements InventoryHolder {
 
         if (getCursorOffer() != null) {
             if (getCursorOffer().onCursorClick(context)) {
-                ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
                 return;
             }
         }
 
-        ((Player) event.getWhoClicked()).sendMessage("Raw: " + event.getRawSlot() + " Slot: " + event.getSlot());
-
         if (slot == null) {
             event.setCancelled(true);
         } else {
-//            ((Player) event.getWhoClicked()).sendMessage("Object: " + slot.getSlot());
-//            ((Player) event.getWhoClicked()).sendMessage("Raw: " + event.getRawSlot());
-            //event.setCancelled(true);
-
             slot.onClick(event);
-            ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
-
         }
-
-//        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {  // TODO MAKE THIS WORK
-//            event.setCancelled(true);
-//            return;
-//        }
-//
-//        if (event.getRawSlot() < getLayout().getGuiSize() && event.getRawSlot() != -999) {
-//
-//            // If the player clicked a transaction slot we let that slot handle the event
-//            final Slot clickedSlot = getLayout().getSlots()[event.getSlot()];
-//
-//            if (clickedSlot != null) {
-//                clickedSlot.onContentClick(event);
-//            } else {
-//                event.setCancelled(true);
-//            }
-//
-//            ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
-//
-//            return;
-//
-//        }
-//
-//        // If we have a cursor offer we let that handle the event
-//        if (getCursorOffer() != null) {
-//            getCursorOffer().onContentClick(event, null, ClickCategory.CURSOR);
-//
-//            ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
-//
-//            return;
-//        }
-//
-//        // If we didn't click a slot or have a cursor offer we handle the event here
-//        switch (event.getAction()) {
-//            case PICKUP_ALL:
-//                setCursorOffer(new ItemOffer(event.getCurrentItem().clone()), true);
-//                break;
-//            case PICKUP_HALF:
-//                setCursorOffer(new ItemOffer(ItemStackUtils.split(event.getCurrentItem())[0]), true);
-//            case NOTHING:
-//                break;
-//            default:
-//                event.setCancelled(true);
-//                throw new IllegalStateException("UNHANDLED ACTION: " + event.getAction().name());
-//        }
-//
-//        ((Player) event.getWhoClicked()).sendMessage("Cursor: " + getCursorOffer());
 
     }
 

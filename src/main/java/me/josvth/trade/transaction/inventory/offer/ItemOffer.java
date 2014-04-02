@@ -1,9 +1,9 @@
-package me.josvth.trade.transaction.offer;
+package me.josvth.trade.transaction.inventory.offer;
 
 import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.offer.description.ItemOfferDescription;
+import me.josvth.trade.transaction.inventory.offer.description.ItemOfferDescription;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
@@ -95,7 +95,10 @@ public class ItemOffer extends StackableOffer {
     }
 
     public ItemOffer(ItemStack item) {
+        super();
         this.item = item;
+        setAllowedInInventory(true);
+        setCanStayInInventory(true);
     }
 
     @Override
@@ -145,25 +148,33 @@ public class ItemOffer extends StackableOffer {
     }
 
     @Override
-    public void grant(final Trader trader) {
-        Bukkit.getScheduler().runTask(Trade.getInstance(), new Runnable() {         //TODO Make this nicer
-            @Override
-            public void run() {
-                trader.getPlayer().getInventory().addItem(item);
-            }
-        });
+    public void grant(final Trader trader, boolean nextTick) {
+        if (nextTick) {
+            Bukkit.getScheduler().runTask(Trade.getInstance(), new Runnable() {         //TODO Make this nicer
+                @Override
+                public void run() {
+                    trader.getPlayer().getInventory().addItem(item);
+                }
+            });
+        } else {
+            trader.getPlayer().getInventory().addItem(item);
+        }
     }
 
     @Override
-    public void grant(final Trader trader, int amount) {
+    public void grant(final Trader trader, boolean nextTick, int amount) {
         final ItemStack clone = item.clone();
         clone.setAmount(amount);
-        Bukkit.getScheduler().runTask(Trade.getInstance(), new Runnable() {         //TODO Make this nicer
-            @Override
-            public void run() {
-                trader.getPlayer().getInventory().addItem(clone);
-            }
-        });
+        if (nextTick) {
+            Bukkit.getScheduler().runTask(Trade.getInstance(), new Runnable() {         //TODO Make this nicer
+                @Override
+                public void run() {
+                    trader.getPlayer().getInventory().addItem(clone);
+                }
+            });
+        } else {
+            trader.getPlayer().getInventory().addItem(clone);
+        }
     }
 
     public ItemStack getItem() {

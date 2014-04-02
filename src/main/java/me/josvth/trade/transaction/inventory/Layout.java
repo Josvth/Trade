@@ -5,8 +5,8 @@ import me.josvth.bukkitformatlibrary.message.MessageHolder;
 import me.josvth.trade.transaction.inventory.slot.InventorySlot;
 import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.inventory.slot.SlotDescription;
-import me.josvth.trade.transaction.offer.Offer;
-import me.josvth.trade.transaction.offer.description.OfferDescription;
+import me.josvth.trade.transaction.inventory.offer.Offer;
+import me.josvth.trade.transaction.inventory.offer.description.OfferDescription;
 
 import java.util.HashMap;
 import java.util.Map;

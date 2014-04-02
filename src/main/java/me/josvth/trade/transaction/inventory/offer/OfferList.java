@@ -1,4 +1,4 @@
-package me.josvth.trade.transaction.offer;
+package me.josvth.trade.transaction.inventory.offer;
 
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
@@ -97,10 +97,10 @@ public class OfferList {
 		return -1;
 	}
 
-	public void grant(Trader trader) {
+	public void grant(Trader trader, boolean nextTick) {
 		for (Offer offer : offers) {
 			if (offer != null) {
-				offer.grant(trader);
+				offer.grant(trader, nextTick);
 			}
 		}
 	}
@@ -119,19 +119,24 @@ public class OfferList {
             // First we try and fill up existing offers
             for (Map.Entry<Integer, ? extends StackableOffer> entry : getOfClass(stackableOffer.getClass()).entrySet()) {
 
-                if (result.getRemaining() > 0) {
+                // TODO Do this here?
+                if (stackableOffer.isSimilar(entry.getValue())) {
 
-                    final int overflow = entry.getValue().add(result.getRemaining());
+                    if (result.getRemaining() > 0) {
 
-                    // If we have added something change the remaining levels and add this slot to the changed indexes
-                    if (overflow < result.getRemaining()) {
-                        changes.put(entry.getKey(), entry.getValue()); // We keep track of what we changed
-                        result.setRemaining(overflow);
+                        final int overflow = entry.getValue().add(result.getRemaining());
+
+                        // If we have added something change the remaining levels and add this slot to the changed indexes
+                        if (overflow < result.getRemaining()) {
+                            changes.put(entry.getKey(), entry.getValue()); // We keep track of what we changed
+                            result.setRemaining(overflow);
+                        }
+
                     }
 
-                }
+                    result.setCurrentAmount(result.getCurrentAmount() + entry.getValue().getAmount()); // We count the total amount currently offered
 
-                result.setCurrentAmount(result.getCurrentAmount() + entry.getValue().getAmount()); // We count the total amount currently offered
+                }
 
             }
 

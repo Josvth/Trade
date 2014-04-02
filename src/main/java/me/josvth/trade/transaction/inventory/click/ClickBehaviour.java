@@ -1,6 +1,6 @@
-package me.josvth.trade.transaction.click;
+package me.josvth.trade.transaction.inventory.click;
 
-import me.josvth.trade.transaction.offer.Offer;
+import me.josvth.trade.transaction.inventory.offer.Offer;
 
 public abstract class ClickBehaviour {
 

@@ -3,12 +3,12 @@ package me.josvth.trade.transaction.inventory.slot;
 import me.josvth.trade.Trade;
 import me.josvth.trade.tasks.ExperienceSlotUpdateTask;
 import me.josvth.trade.transaction.action.trader.offer.ChangeExperienceAction;
-import me.josvth.trade.transaction.click.ClickBehaviour;
-import me.josvth.trade.transaction.click.ClickContext;
+import me.josvth.trade.transaction.inventory.click.ClickBehaviour;
+import me.josvth.trade.transaction.inventory.click.ClickContext;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.offer.ExperienceOffer;
-import me.josvth.trade.transaction.offer.Offer;
-import me.josvth.trade.transaction.offer.OfferList;
+import me.josvth.trade.transaction.inventory.offer.ExperienceOffer;
+import me.josvth.trade.transaction.inventory.offer.Offer;
+import me.josvth.trade.transaction.inventory.offer.OfferList;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.ClickType;
@@ -140,7 +140,7 @@ public class ExperienceSlot extends Slot {
         setGUIItem(ItemStackUtils.argument(experienceItem.clone(), "%experience%", String.valueOf(experience), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier)));
     }
 
-    private static int getExperience(OfferList list) {
+    public static int getExperience(OfferList list) {
         int experience = 0;
         for (ExperienceOffer tradeable : list.getOfClass(ExperienceOffer.class).values()) {
             experience += tradeable.getAmount();

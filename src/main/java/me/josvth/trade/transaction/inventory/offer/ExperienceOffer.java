@@ -1,10 +1,21 @@
-package me.josvth.trade.transaction.offer;
+package me.josvth.trade.transaction.inventory.offer;
 
 import me.josvth.trade.transaction.Trader;
+import me.josvth.trade.transaction.inventory.click.ClickBehaviour;
+import me.josvth.trade.transaction.inventory.click.ClickContext;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.offer.description.ExperienceOfferDescription;
+import me.josvth.trade.transaction.inventory.slot.ContentSlot;
+import me.josvth.trade.transaction.inventory.slot.ExperienceSlot;
+import me.josvth.trade.transaction.inventory.slot.TradeSlot;
+import me.josvth.trade.transaction.inventory.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.util.ExperienceManager;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class ExperienceOffer extends StackableOffer {
 
@@ -21,7 +32,10 @@ public class ExperienceOffer extends StackableOffer {
     }
 
     public ExperienceOffer(int experience) {
+        super();
         this.experience = experience;
+        setAllowedInInventory(true);
+        setCanStayInInventory(false);
     }
 
     @Override
@@ -75,11 +89,11 @@ public class ExperienceOffer extends StackableOffer {
     }
 
     @Override
-    public void grant(Trader trader) {
-        grant(trader, experience);
+    public void grant(Trader trader, boolean nextTick) {
+        grant(trader, true, experience);
     }
 
-    public void grant(Trader trader, int experience) {
+    public void grant(Trader trader, boolean nextTick, int experience) {
         new ExperienceManager(trader.getPlayer()).changeExp(experience);
     }
 
