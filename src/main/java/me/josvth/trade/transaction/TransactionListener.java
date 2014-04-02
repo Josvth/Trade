@@ -21,7 +21,7 @@ public class TransactionListener implements Listener {
     public void onDrag(InventoryDragEvent event) {
         if (event.getInventory().getHolder() instanceof TransactionHolder) {
             event.setCancelled(true);
-   //         ((TransactionHolder) event.getInventory().getHolder()).onDrag(event);
+            //         ((TransactionHolder) event.getInventory().getHolder()).onDrag(event);
         }
     }
 

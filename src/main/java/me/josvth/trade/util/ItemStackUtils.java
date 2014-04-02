@@ -73,7 +73,7 @@ public class ItemStackUtils {
             lore.set(i, messageManager.preformatMessage(lore.get(i)));
         }
 
-		return setMeta(new ItemStack(material, section.getInt("amount"), (short) section.getInt("damage"), (byte) section.getInt("data")),
+        return setMeta(new ItemStack(material, section.getInt("amount"), (short) section.getInt("damage"), (byte) section.getInt("data")),
                 messageManager.preformatMessage(section.getString("display-name")),
                 lore);
 

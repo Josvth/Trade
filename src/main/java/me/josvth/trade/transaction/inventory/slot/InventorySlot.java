@@ -60,31 +60,6 @@ public class InventorySlot extends ContentSlot {
         addBehaviours(DEFAULT_BEHAVIOURS);
     }
 
-    public int getInventorySlot() {
-        return inventorySlot;
-    }
-
-    public void setInventorySlot(int inventorySlot) {
-        this.inventorySlot = inventorySlot;
-    }
-
-    @Override
-    public Offer getContents() {
-        return holder.getInventoryList().get(inventorySlot);
-    }
-
-    @Override
-    public void setContents(Offer contents) {
-        SetOfferAction offerAction = new SetOfferAction(holder.getTrader(), holder.getInventoryList());
-        offerAction.setOffer(getInventorySlot(), contents);
-        offerAction.execute();
-    }
-
-    @Override
-    public void update() {
-        holder.getTrader().getPlayer().getInventory().setItem(getInventorySlot(), (getContents() == null)? null : getContents().createItem(holder));
-    }
-
     public static void updateInventorySlots(TransactionHolder holder, boolean nextTick, int... inventorySlot) {
 
         final Set<InventorySlot> slots = holder.getSlotsOfType(InventorySlot.class);
@@ -121,6 +96,31 @@ public class InventorySlot extends ContentSlot {
         final InventorySlot slot = new InventorySlot(slotID, holder);
         slot.setInventorySlot(slotID - LayoutManager.PLAYER_INVENTORY_SIZE);
         return slot;
+    }
+
+    public int getInventorySlot() {
+        return inventorySlot;
+    }
+
+    public void setInventorySlot(int inventorySlot) {
+        this.inventorySlot = inventorySlot;
+    }
+
+    @Override
+    public Offer getContents() {
+        return holder.getInventoryList().get(inventorySlot);
+    }
+
+    @Override
+    public void setContents(Offer contents) {
+        SetOfferAction offerAction = new SetOfferAction(holder.getTrader(), holder.getInventoryList());
+        offerAction.setOffer(getInventorySlot(), contents);
+        offerAction.execute();
+    }
+
+    @Override
+    public void update() {
+        holder.getTrader().getPlayer().getInventory().setItem(getInventorySlot(), (getContents() == null) ? null : getContents().createItem(holder));
     }
 
 }

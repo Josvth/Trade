@@ -7,7 +7,7 @@ import me.josvth.trade.transaction.inventory.offer.description.ItemOfferDescript
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemOffer extends StackableOffer {
+public class ItemOffer extends Offer {
 
 //    static {
 //
@@ -123,7 +123,7 @@ public class ItemOffer extends StackableOffer {
 
     @Override
     public int getAmount() {
-        return (item == null)? 0 : item.getAmount();
+        return (item == null) ? 0 : item.getAmount();
     }
 
     @Override
@@ -139,7 +139,7 @@ public class ItemOffer extends StackableOffer {
 
     @Override
     public int getMaxAmount() {
-        return (item == null)? 0 : item.getMaxStackSize();
+        return (item == null) ? 0 : item.getMaxStackSize();
     }
 
     @Override
@@ -190,8 +190,8 @@ public class ItemOffer extends StackableOffer {
     }
 
     @Override
-    public boolean isSimilar(StackableOffer stackableOffer) {
-        return stackableOffer instanceof ItemOffer && (getItem() != null) && getItem().isSimilar(((ItemOffer) stackableOffer).getItem());
+    public boolean isSimilar(Offer offer) {
+        return offer instanceof ItemOffer && (getItem() != null) && getItem().isSimilar(((ItemOffer) offer).getItem());
     }
 
 }

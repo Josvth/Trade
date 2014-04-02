@@ -2,11 +2,11 @@ package me.josvth.trade.transaction.inventory;
 
 import me.josvth.bukkitformatlibrary.message.FormattedMessage;
 import me.josvth.bukkitformatlibrary.message.MessageHolder;
+import me.josvth.trade.transaction.inventory.offer.Offer;
+import me.josvth.trade.transaction.inventory.offer.description.OfferDescription;
 import me.josvth.trade.transaction.inventory.slot.InventorySlot;
 import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.inventory.slot.SlotDescription;
-import me.josvth.trade.transaction.inventory.offer.Offer;
-import me.josvth.trade.transaction.inventory.offer.description.OfferDescription;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,17 +18,13 @@ public class Layout extends MessageHolder {
     private final String name;
 
     private final LayoutManager manager;
-
+    // Offer descriptions
+    private final Map<Class<? extends Offer>, OfferDescription> offerDescriptions = new HashMap<Class<? extends Offer>, OfferDescription>();
+    // Slot descriptions
+    private final Map<Integer, SlotDescription> slotDescriptions = new HashMap<Integer, SlotDescription>();
     private int guiRows;
     private int offerSize = 4;
     private FormattedMessage title = new FormattedMessage("");
-
-    // Offer descriptions
-    private final Map<Class<? extends Offer>, OfferDescription> offerDescriptions = new HashMap<Class<? extends Offer>, OfferDescription>();
-
-    // Slot descriptions
-    private final Map<Integer, SlotDescription> slotDescriptions = new HashMap<Integer, SlotDescription>();
-
     // Layout options
     private int priority = -1;
     private String permission = null;
@@ -88,7 +84,7 @@ public class Layout extends MessageHolder {
     }
 
     // Offer descriptions
-    public <T extends Offer> OfferDescription<T> getOfferDescription(Class<T> offerClass) {
+    public <T> OfferDescription<T> getOfferDescription(Class<T> offerClass) {
         return offerDescriptions.get(offerClass);
     }
 

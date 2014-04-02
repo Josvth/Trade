@@ -101,14 +101,13 @@ public class Trader implements ActionProvoker {
         return layout.getMessage(key);
     }
 
-    public void setState(State state) {
-        this.state = state;
-    }
-
     public State getState() {
         return state;
     }
 
+    public void setState(State state) {
+        this.state = state;
+    }
 
 
     public enum State {

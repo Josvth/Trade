@@ -1,8 +1,8 @@
 package me.josvth.trade.transaction.inventory.slot;
 
+import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.click.ClickBehaviour;
 import me.josvth.trade.transaction.inventory.click.ClickContext;
-import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.offer.Offer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;

@@ -8,11 +8,17 @@ import org.bukkit.inventory.ItemStack;
 
 public class CloseSlot extends Slot {
 
-	private ItemStack closeItem = null;
+    private ItemStack closeItem = null;
 
-	public CloseSlot(int slot, TransactionHolder holder) {
-		super(slot, holder);
-	}
+    public CloseSlot(int slot, TransactionHolder holder) {
+        super(slot, holder);
+    }
+
+    public static CloseSlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
+        final CloseSlot slot = new CloseSlot(slotID, holder);
+        slot.setCloseItem(ItemStackUtils.fromSection(description.getConfiguration().getConfigurationSection("close-item"), Trade.getInstance().getMessageManager()));
+        return slot;
+    }
 
     public ItemStack getCloseItem() {
         return closeItem;
@@ -23,25 +29,19 @@ public class CloseSlot extends Slot {
     }
 
     @Override
-	public void onClick(InventoryClickEvent event) {
+    public void onClick(InventoryClickEvent event) {
 
-		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
 
-		holder.getTrader().closeInventory();
+        holder.getTrader().closeInventory();
 
-		event.setCancelled(true);
+        event.setCancelled(true);
 
-	}
+    }
 
-	@Override
-	public void update() {
-		setGUIItem(closeItem);
-	}
-
-    public static CloseSlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
-        final CloseSlot slot = new CloseSlot(slotID, holder);
-        slot.setCloseItem(ItemStackUtils.fromSection(description.getConfiguration().getConfigurationSection("close-item"), Trade.getInstance().getMessageManager()));
-        return slot;
+    @Override
+    public void update() {
+        setGUIItem(closeItem);
     }
 
 }

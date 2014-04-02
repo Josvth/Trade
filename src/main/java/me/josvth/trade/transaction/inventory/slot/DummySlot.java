@@ -13,6 +13,12 @@ public class DummySlot extends Slot {
         super(slot, holder);
     }
 
+    public static DummySlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
+        final DummySlot slot = new DummySlot(slotID, holder);
+        slot.setDummyItem(ItemStackUtils.fromSection(description.getConfiguration().getConfigurationSection("dummy-item"), Trade.getInstance().getMessageManager()));
+        return slot;
+    }
+
     public ItemStack getDummyItem() {
         return dummyItem;
     }
@@ -24,11 +30,5 @@ public class DummySlot extends Slot {
     @Override
     public void update() {
         setGUIItem(dummyItem.clone());
-    }
-
-    public static DummySlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
-        final DummySlot slot = new DummySlot(slotID, holder);
-        slot.setDummyItem(ItemStackUtils.fromSection(description.getConfiguration().getConfigurationSection("dummy-item"), Trade.getInstance().getMessageManager()));
-        return slot;
     }
 }

@@ -8,19 +8,19 @@ public class SlotUpdateTask implements Runnable {
 
     protected final Slot[] slot;
 
-	public SlotUpdateTask(Set<? extends Slot> slots) {
-		this(slots.toArray(new Slot[slots.size()]));
-	}
+    public SlotUpdateTask(Set<? extends Slot> slots) {
+        this(slots.toArray(new Slot[slots.size()]));
+    }
 
-	public SlotUpdateTask(Slot... slot) {
-		this.slot = slot;
-	}
+    public SlotUpdateTask(Slot... slot) {
+        this.slot = slot;
+    }
 
-	@Override
-	public void run() {
-		for (Slot s : slot) {
-			s.update();
-		}
-	}
+    @Override
+    public void run() {
+        for (Slot s : slot) {
+            s.update();
+        }
+    }
 
 }

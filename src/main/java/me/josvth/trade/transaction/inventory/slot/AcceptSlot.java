@@ -15,55 +15,12 @@ import java.util.Set;
 
 public class AcceptSlot extends Slot {
 
-	private ItemStack acceptItem;
-	private ItemStack acceptedItem;
+    private ItemStack acceptItem;
+    private ItemStack acceptedItem;
 
-	public AcceptSlot(int slot, TransactionHolder holder) {
-		super(slot, holder);
-	}
-
-    public ItemStack getAcceptItem() {
-        return acceptItem;
+    public AcceptSlot(int slot, TransactionHolder holder) {
+        super(slot, holder);
     }
-
-    public void setAcceptItem(ItemStack acceptItem) {
-        this.acceptItem = acceptItem;
-    }
-
-    public ItemStack getAcceptedItem() {
-        return acceptedItem;
-    }
-
-    public void setAcceptedItem(ItemStack acceptedItem) {
-        this.acceptedItem = acceptedItem;
-    }
-
-    @Override
-	public void onClick(InventoryClickEvent event) {
-
-		final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-
-        final Trader trader = holder.getTrader();
-
-        if (trader.hasAccepted()) {
-            new DenyAction(trader, DenyAction.Reason.BUTTON).execute();
-        } else {
-            new AcceptAction(trader, AcceptAction.Reason.BUTTON).execute();
-        }
-
-		event.setCancelled(true);
-
-	}
-
-	public void update() {
-
-		if (holder.getTrader().hasAccepted()) {
-			setGUIItem(acceptedItem);
-		} else {
-			setGUIItem(acceptItem);
-		}
-
-	}
 
     public static void updateAcceptSlots(TransactionHolder holder, boolean nextTick) {
 
@@ -84,6 +41,49 @@ public class AcceptSlot extends Slot {
         slot.setAcceptItem(ItemStackUtils.fromSection(description.getConfiguration().getConfigurationSection("accept-item"), Trade.getInstance().getMessageManager()));
         slot.setAcceptedItem(ItemStackUtils.fromSection(description.getConfiguration().getConfigurationSection("accepted-item"), Trade.getInstance().getMessageManager()));
         return slot;
+    }
+
+    public ItemStack getAcceptItem() {
+        return acceptItem;
+    }
+
+    public void setAcceptItem(ItemStack acceptItem) {
+        this.acceptItem = acceptItem;
+    }
+
+    public ItemStack getAcceptedItem() {
+        return acceptedItem;
+    }
+
+    public void setAcceptedItem(ItemStack acceptedItem) {
+        this.acceptedItem = acceptedItem;
+    }
+
+    @Override
+    public void onClick(InventoryClickEvent event) {
+
+        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+
+        final Trader trader = holder.getTrader();
+
+        if (trader.hasAccepted()) {
+            new DenyAction(trader, DenyAction.Reason.BUTTON).execute();
+        } else {
+            new AcceptAction(trader, AcceptAction.Reason.BUTTON).execute();
+        }
+
+        event.setCancelled(true);
+
+    }
+
+    public void update() {
+
+        if (holder.getTrader().hasAccepted()) {
+            setGUIItem(acceptedItem);
+        } else {
+            setGUIItem(acceptItem);
+        }
+
     }
 
 }

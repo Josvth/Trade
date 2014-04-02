@@ -15,6 +15,12 @@ public class RefuseSlot extends Slot {
         super(slot, holder);
     }
 
+    public static RefuseSlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
+        final RefuseSlot slot = new RefuseSlot(slotID, holder);
+        slot.setRefuseItem(ItemStackUtils.fromSection(description.getConfiguration().getConfigurationSection("refuse-item"), Trade.getInstance().getMessageManager()));
+        return slot;
+    }
+
     public ItemStack getRefuseItem() {
         return refuseItem;
     }
@@ -37,12 +43,6 @@ public class RefuseSlot extends Slot {
     @Override
     public void update() {
         setGUIItem(refuseItem);
-    }
-
-    public static RefuseSlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
-        final RefuseSlot slot = new RefuseSlot(slotID, holder);
-        slot.setRefuseItem(ItemStackUtils.fromSection(description.getConfiguration().getConfigurationSection("refuse-item"), Trade.getInstance().getMessageManager()));
-        return slot;
     }
 
 }

@@ -5,7 +5,7 @@ import me.josvth.trade.transaction.inventory.slot.Slot;
 
 import java.util.Set;
 
-public class ExperienceSlotUpdateTask extends SlotUpdateTask{
+public class ExperienceSlotUpdateTask extends SlotUpdateTask {
 
     private final int levels;
 
@@ -17,7 +17,7 @@ public class ExperienceSlotUpdateTask extends SlotUpdateTask{
     @Override
     public void run() {
         for (Slot s : slot) {
-            ((ExperienceSlot)s).update(levels);
+            ((ExperienceSlot) s).update(levels);
         }
     }
 

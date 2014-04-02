@@ -5,9 +5,9 @@ import me.josvth.trade.transaction.action.trader.TraderAction;
 import me.josvth.trade.transaction.action.trader.status.DenyAction;
 import me.josvth.trade.transaction.inventory.offer.ExperienceOffer;
 import me.josvth.trade.transaction.inventory.offer.MoneyOffer;
-import me.josvth.trade.transaction.inventory.slot.*;
 import me.josvth.trade.transaction.inventory.offer.Offer;
 import me.josvth.trade.transaction.inventory.offer.OfferList;
+import me.josvth.trade.transaction.inventory.slot.*;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -41,19 +41,19 @@ public abstract class OfferAction extends TraderAction {
         for (Map.Entry<Integer, ? extends Offer> entry : getChanges().entrySet()) {
 
             if (list.get(entry.getKey()) instanceof ExperienceOffer) {
-                newExperience -= ((ExperienceOffer)list.get(entry.getKey())).getAmount();
+                newExperience -= ((ExperienceOffer) list.get(entry.getKey())).getAmount();
             }
 
             if (list.get(entry.getKey()) instanceof MoneyOffer) {
-                newMoney -= ((MoneyOffer)list.get(entry.getKey())).getAmount();
+                newMoney -= ((MoneyOffer) list.get(entry.getKey())).getAmount();
             }
 
             if (entry.getValue() instanceof ExperienceOffer) {
-                newExperience += ((ExperienceOffer)entry.getValue()).getAmount();
+                newExperience += ((ExperienceOffer) entry.getValue()).getAmount();
             }
 
             if (entry.getValue() instanceof MoneyOffer) {
-                newMoney += ((MoneyOffer)entry.getValue()).getAmount();
+                newMoney += ((MoneyOffer) entry.getValue()).getAmount();
             }
 
             list.set(entry.getKey(), entry.getValue());
@@ -86,7 +86,7 @@ public abstract class OfferAction extends TraderAction {
     public int[] getSlotArray() {
         final int[] array = new int[changes.size()];
         int i = 0;
-        for(Integer integer : changes.keySet()) {
+        for (Integer integer : changes.keySet()) {
             array[i] = integer;
             i++;
         }

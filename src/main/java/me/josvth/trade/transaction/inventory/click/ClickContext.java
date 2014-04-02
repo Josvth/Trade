@@ -1,9 +1,9 @@
 package me.josvth.trade.transaction.inventory.click;
 
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.inventory.offer.Offer;
 import me.josvth.trade.transaction.inventory.offer.OfferList;
+import me.josvth.trade.transaction.inventory.slot.Slot;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class ClickContext {

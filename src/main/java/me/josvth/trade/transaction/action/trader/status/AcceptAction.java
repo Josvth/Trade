@@ -47,9 +47,9 @@ public class AcceptAction extends TraderAction {
 
     public enum Reason {
 
-        GENERIC ("accept.generic.message", "accept.generic.mirror"),
-        BUTTON ("accept.generic.message", "accept.generic.mirror"),
-        COMMAND ("accept.generic.message", "accept.generic.mirror");
+        GENERIC("accept.generic.message", "accept.generic.mirror"),
+        BUTTON("accept.generic.message", "accept.generic.mirror"),
+        COMMAND("accept.generic.message", "accept.generic.mirror");
 
         public final String messagePath;
         public final String mirrorMessagePath;

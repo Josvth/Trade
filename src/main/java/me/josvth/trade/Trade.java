@@ -7,8 +7,8 @@ import me.josvth.bukkitformatlibrary.message.managers.YamlMessageManager;
 import me.josvth.trade.request.RequestManager;
 import me.josvth.trade.transaction.TransactionManager;
 import me.josvth.trade.transaction.inventory.LayoutManager;
-import me.josvth.trade.transaction.inventory.slot.*;
 import me.josvth.trade.transaction.inventory.offer.ExperienceOffer;
+import me.josvth.trade.transaction.inventory.slot.*;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.PermissionDefault;
@@ -99,15 +99,15 @@ public class Trade extends JavaPlugin {
         messageManager.loadMessages(messageConfiguration);
 
         layoutManager.load(layoutConfiguration, messageConfiguration.getConfigurationSection("trading"), generalConfiguration.getConfigurationSection("trading.offers"));
-        layoutManager.getRegisteredSlots().put("accept",        AcceptSlot.class);
-        layoutManager.getRegisteredSlots().put("refuse",        RefuseSlot.class);
-        layoutManager.getRegisteredSlots().put("status",        StatusSlot.class);
-        layoutManager.getRegisteredSlots().put("close",         CloseSlot.class);
-        layoutManager.getRegisteredSlots().put("dummy",         DummySlot.class);
-        layoutManager.getRegisteredSlots().put("mirror",        MirrorSlot.class);
-        layoutManager.getRegisteredSlots().put("trade",         TradeSlot.class);
-        layoutManager.getRegisteredSlots().put("money",         MoneySlot.class);
-        layoutManager.getRegisteredSlots().put("experience",    ExperienceSlot.class);
+        layoutManager.getRegisteredSlots().put("accept", AcceptSlot.class);
+        layoutManager.getRegisteredSlots().put("refuse", RefuseSlot.class);
+        layoutManager.getRegisteredSlots().put("status", StatusSlot.class);
+        layoutManager.getRegisteredSlots().put("close", CloseSlot.class);
+        layoutManager.getRegisteredSlots().put("dummy", DummySlot.class);
+        layoutManager.getRegisteredSlots().put("mirror", MirrorSlot.class);
+        layoutManager.getRegisteredSlots().put("trade", TradeSlot.class);
+        layoutManager.getRegisteredSlots().put("money", MoneySlot.class);
+        layoutManager.getRegisteredSlots().put("experience", ExperienceSlot.class);
 
         transactionManager.load(generalConfiguration.getConfigurationSection("trading"));
 

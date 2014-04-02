@@ -75,10 +75,10 @@ public class EndAction extends Action {
 
     public enum Reason {
 
-        GENERIC (null),
-        ACCEPT (null),
-        REFUSE (null),
-        RELOAD ("cancelled.reload");
+        GENERIC(null),
+        ACCEPT(null),
+        REFUSE(null),
+        RELOAD("cancelled.reload");
 
         public final String messagePath;
 

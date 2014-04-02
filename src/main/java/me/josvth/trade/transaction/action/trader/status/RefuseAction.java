@@ -33,10 +33,10 @@ public class RefuseAction extends TraderAction {
 
     public enum Reason {
 
-        GENERIC ("refuse.generic.message", "refuse.generic.mirror"),
-        BUTTON ("refuse.generic.message", "refuse.generic.mirror"),
-        COMMAND ("refuse.generic.message", "refuse.generic.mirror"),
-        DISCONNECT ("refuse.disconnected.message", "refuse.disconnected.mirror"),
+        GENERIC("refuse.generic.message", "refuse.generic.mirror"),
+        BUTTON("refuse.generic.message", "refuse.generic.mirror"),
+        COMMAND("refuse.generic.message", "refuse.generic.mirror"),
+        DISCONNECT("refuse.disconnected.message", "refuse.disconnected.mirror"),
         CLOSE("refuse.closed.message", "refuse.closed.mirror");
 
         public final String messagePath;

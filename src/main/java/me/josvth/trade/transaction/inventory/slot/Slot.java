@@ -1,8 +1,8 @@
 package me.josvth.trade.transaction.inventory.slot;
 
+import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.click.ClickBehaviour;
 import me.josvth.trade.transaction.inventory.click.ClickContext;
-import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -12,12 +12,12 @@ import java.util.*;
 
 public abstract class Slot {
 
-	protected final int slot;
+    protected final int slot;
     protected final TransactionHolder holder;
 
     protected final Map<ClickType, LinkedList<ClickBehaviour>> clickBehaviourMap = new HashMap<ClickType, LinkedList<ClickBehaviour>>();
 
-	public Slot(int slot, TransactionHolder holder) {
+    public Slot(int slot, TransactionHolder holder) {
         this.slot = slot;
         this.holder = holder;
     }
@@ -26,13 +26,13 @@ public abstract class Slot {
         return slot;
     }
 
-    protected void setGUIItem(ItemStack stack) {
-		holder.getInventory().setItem(slot, stack);
-	}
+    protected ItemStack getGUIItem() {
+        return holder.getInventory().getItem(slot);
+    }
 
-	protected ItemStack getGUIItem() {
-		return holder.getInventory().getItem(slot);
-	}
+    protected void setGUIItem(ItemStack stack) {
+        holder.getInventory().setItem(slot, stack);
+    }
 
     // Behaviours
     public void addBehaviour(ClickType clickType, ClickBehaviour behaviour) {
@@ -52,8 +52,8 @@ public abstract class Slot {
         }
     }
 
-	// Event handling
-	public void onClick(InventoryClickEvent event) {
+    // Event handling
+    public void onClick(InventoryClickEvent event) {
 
         final List<ClickBehaviour> behaviours = clickBehaviourMap.get(event.getClick());
 
@@ -77,15 +77,15 @@ public abstract class Slot {
             event.setCancelled(true);
         }
 
-	}
+    }
 
-	public void onDrag(InventoryDragEvent event) {
+    public void onDrag(InventoryDragEvent event) {
 
         event.setCancelled(true);
-	}
+    }
 
-	public void update() {
+    public void update() {
 
-	}
+    }
 
 }

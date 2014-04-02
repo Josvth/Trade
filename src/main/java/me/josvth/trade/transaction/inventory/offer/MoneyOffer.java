@@ -6,7 +6,7 @@ import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.offer.description.MoneyOfferDescription;
 import org.bukkit.inventory.ItemStack;
 
-public class MoneyOffer extends StackableOffer {
+public class MoneyOffer extends Offer {
 
     private int amount = 0;
 
@@ -19,6 +19,12 @@ public class MoneyOffer extends StackableOffer {
         this.amount = amount;
         setAllowedInInventory(true);
         setCanStayInInventory(false);
+    }
+
+    public static MoneyOffer create(Trader trader, int amount) {
+        final MoneyOffer offer = trader.getLayout().getOfferDescription(MoneyOffer.class).createOffer();
+        offer.setAmount(amount);
+        return offer;
     }
 
     @Override
@@ -56,30 +62,24 @@ public class MoneyOffer extends StackableOffer {
         return 64;
     }
 
-	@Override
-	public MoneyOffer clone() {
-		return new MoneyOffer(amount);
-	}
-
     @Override
-    public boolean isSimilar(StackableOffer stackableOffer) {
-        return stackableOffer instanceof MoneyOffer;
+    public MoneyOffer clone() {
+        return new MoneyOffer(amount);
     }
 
     @Override
-	public void grant(Trader trader, boolean nextTick) {
+    public boolean isSimilar(Offer offer) {
+        return offer instanceof MoneyOffer;
+    }
+
+    @Override
+    public void grant(Trader trader, boolean nextTick) {
         grant(trader, true, amount);
     }
 
     @Override
     public void grant(Trader trader, boolean nextTick, int amount) {
-        Trade.getInstance().getEconomy().depositPlayer(trader.getName(), amount/100);
-    }
-
-    public static MoneyOffer create(Trader trader, int amount) {
-        final MoneyOffer offer = trader.getLayout().getOfferDescription(MoneyOffer.class).createOffer();
-        offer.setAmount(amount);
-        return offer;
+        Trade.getInstance().getEconomy().depositPlayer(trader.getName(), amount / 100);
     }
 
 }

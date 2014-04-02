@@ -57,12 +57,12 @@ public class Transaction {
         return layout;
     }
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
     public Transaction.Stage getStage() {
         return stage;
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 
     public boolean isStarted() {
@@ -93,6 +93,12 @@ public class Transaction {
         return transactionProvoker;
     }
 
+    public enum Stage {
+        PRE,
+        IN_PROGRESS,
+        POST;
+    }
+
     private class TransactionActionProvoker implements ActionProvoker {
 
         private final Transaction transaction;
@@ -111,11 +117,5 @@ public class Transaction {
             return "TRANSACTION";
         }
 
-    }
-
-    public enum Stage {
-        PRE,
-        IN_PROGRESS,
-        POST;
     }
 }

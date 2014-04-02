@@ -16,11 +16,12 @@ public abstract class Action {
         return transaction;
     }
 
-    public void setProvoker(ActionProvoker provoker) {
-        this.provoker = provoker;
-    }
     public ActionProvoker getProvoker() {
         return provoker;
+    }
+
+    public void setProvoker(ActionProvoker provoker) {
+        this.provoker = provoker;
     }
 
     public abstract void execute();

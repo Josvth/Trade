@@ -12,7 +12,7 @@ public class SetOfferAction extends OfferAction {
     }
 
     public void setOffer(int offerIndex, Offer offer) {
-         getChanges().put(offerIndex, offer);
+        getChanges().put(offerIndex, offer);
     }
 
     @Override

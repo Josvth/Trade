@@ -17,7 +17,7 @@ public class MoneySlotUpdateTask extends SlotUpdateTask {
     @Override
     public void run() {
         for (Slot s : slot) {
-            ((MoneySlot)s).update(money);
+            ((MoneySlot) s).update(money);
         }
     }
 

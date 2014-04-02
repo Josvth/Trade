@@ -45,10 +45,9 @@ public class StartAction extends Action {
 
         getManager().addTransaction(getTransaction());
 
-        if(getTransaction().useLogging()) {
+        if (getTransaction().useLogging()) {
             getTransaction().logAction(this);
         }
-
 
 
     }

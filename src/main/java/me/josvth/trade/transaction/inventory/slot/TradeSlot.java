@@ -18,39 +18,6 @@ public class TradeSlot extends ContentSlot {
         super(slot, holder);
     }
 
-    public int getOfferIndex() {
-        return offerIndex;
-    }
-
-    public void setOfferIndex(int offerIndex) {
-        this.offerIndex = offerIndex;
-    }
-
-    @Override
-    public void setContents(Offer offer) {
-        SetOfferAction offerAction = new SetOfferAction(holder.getTrader(), holder.getOfferList());
-        offerAction.setOffer(getOfferIndex(), offer);
-        offerAction.execute();
-    }
-
-    @Override
-    public Offer getContents() {
-        return holder.getOfferList().get(getOfferIndex());
-    }
-
-    @Override
-    public void update() {
-
-        final Offer offer = getContents();
-
-        if (offer != null) {
-            holder.getInventory().setItem(slot, offer.createItem(holder));
-        } else {
-            holder.getInventory().setItem(slot, null);
-        }
-
-    }
-
     public static void updateTradeSlots(TransactionHolder holder, boolean nextTick, int... offerIndex) {
 
         final Set<TradeSlot> slots = holder.getSlotsOfType(TradeSlot.class);
@@ -87,6 +54,39 @@ public class TradeSlot extends ContentSlot {
         final TradeSlot slot = new TradeSlot(slotID, holder);
         slot.setOfferIndex(description.getConfiguration().getInt("offer-index", 0));
         return slot;
+    }
+
+    public int getOfferIndex() {
+        return offerIndex;
+    }
+
+    public void setOfferIndex(int offerIndex) {
+        this.offerIndex = offerIndex;
+    }
+
+    @Override
+    public Offer getContents() {
+        return holder.getOfferList().get(getOfferIndex());
+    }
+
+    @Override
+    public void setContents(Offer offer) {
+        SetOfferAction offerAction = new SetOfferAction(holder.getTrader(), holder.getOfferList());
+        offerAction.setOffer(getOfferIndex(), offer);
+        offerAction.execute();
+    }
+
+    @Override
+    public void update() {
+
+        final Offer offer = getContents();
+
+        if (offer != null) {
+            holder.getInventory().setItem(slot, offer.createItem(holder));
+        } else {
+            holder.getInventory().setItem(slot, null);
+        }
+
     }
 
 }

@@ -1,9 +1,9 @@
 package me.josvth.trade.transaction.action.trader.offer;
 
 import me.josvth.trade.transaction.Trader;
-import me.josvth.trade.transaction.inventory.slot.MoneySlot;
 import me.josvth.trade.transaction.inventory.offer.MoneyOffer;
 import me.josvth.trade.transaction.inventory.offer.OfferList;
+import me.josvth.trade.transaction.inventory.slot.MoneySlot;
 import net.milkbowl.vault.economy.Economy;
 
 public class ChangeMoneyAction extends ChangeOfferAction {
@@ -23,7 +23,7 @@ public class ChangeMoneyAction extends ChangeOfferAction {
 
         if (isAdd()) {
 
-            final double moneyToAdd = (double)getInitialAmount() / Math.pow(10, getEconomy().fractionalDigits());
+            final double moneyToAdd = (double) getInitialAmount() / Math.pow(10, getEconomy().fractionalDigits());
 
             if (!getEconomy().has(getTrader().getName(), moneyToAdd)) {
                 getTrader().getFormattedMessage("money.insufficient").send(getPlayer(), "%money%", getEconomy().format(moneyToAdd));
@@ -62,7 +62,7 @@ public class ChangeMoneyAction extends ChangeOfferAction {
 
             // Deposit money
             final int removed = getChangedAmount();
-            final double removedDouble = (double)removed / Math.pow(10, getEconomy().fractionalDigits());
+            final double removedDouble = (double) removed / Math.pow(10, getEconomy().fractionalDigits());
 
             // Send messages
             getTrader().getFormattedMessage("money.removed.self").send(getPlayer(), "%money%", getEconomy().format(removedDouble));

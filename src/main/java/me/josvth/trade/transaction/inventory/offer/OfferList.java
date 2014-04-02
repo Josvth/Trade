@@ -11,24 +11,24 @@ import java.util.TreeMap;
 // TODO Cleanup offer list implementation
 public class OfferList {
 
-	private final Trader trader;
+    private final Trader trader;
     private final Type type;
 
-	private Offer[] offers;
+    private Offer[] offers;
 
-  	public OfferList(Trader trader, int size, Type type) {
-		this.trader = trader;
-		this.offers = new Offer[size];
+    public OfferList(Trader trader, int size, Type type) {
+        this.trader = trader;
+        this.offers = new Offer[size];
         this.type = type;
-	}
+    }
 
     public Trader getTrader() {
         return trader;
     }
 
-	public TransactionHolder getHolder() {
-		return getTrader().getHolder();
-	}
+    public TransactionHolder getHolder() {
+        return getTrader().getHolder();
+    }
 
     public Offer[] getContents() {
         return offers;
@@ -39,40 +39,40 @@ public class OfferList {
         this.offers = contents;
     }
 
-	public Offer get(int slot) {
-		return offers[slot];
-	}
+    public Offer get(int slot) {
+        return offers[slot];
+    }
 
-	public void set(int slot, Offer offer) {
-		offers[slot] = offer;
-	}
+    public void set(int slot, Offer offer) {
+        offers[slot] = offer;
+    }
 
-	@Override
-	public String toString() {
+    @Override
+    public String toString() {
 
-		final StringBuilder builder = new StringBuilder("Contents:");
+        final StringBuilder builder = new StringBuilder("Contents:");
 
-		for (Offer offer : offers) {
-			builder.append((offer == null)? "\n null" : "\n " + offer.toString());
-		}
+        for (Offer offer : offers) {
+            builder.append((offer == null) ? "\n null" : "\n " + offer.toString());
+        }
 
-		return builder.toString();
+        return builder.toString();
 
-	}
+    }
 
-	public <T extends Offer> TreeMap<Integer, T> getOfClass(Class<T> clazz) {
+    public <T> TreeMap<Integer, T> getOfClass(Class<T> clazz) {
 
-		final TreeMap<Integer, T> found = new TreeMap<Integer, T>();
+        final TreeMap<Integer, T> found = new TreeMap<Integer, T>();
 
-		for (int i = 0; i < offers.length; i++) {
-			if (clazz.isInstance(offers[i])) {
-				found.put(i, (T) offers[i]);
-			}
-		}
+        for (int i = 0; i < offers.length; i++) {
+            if (clazz.isInstance(offers[i])) {
+                found.put(i, (T) offers[i]);
+            }
+        }
 
-		return found;
+        return found;
 
-	}
+    }
 
     public TreeMap<Integer, Offer> getOfType(String type) {
 
@@ -88,22 +88,22 @@ public class OfferList {
 
     }
 
-	public int getFirstEmpty() {
-		for (int i = 0; i < offers.length; i++) {
-			if (offers[i] == null) {
-				return i;
-			}
-		}
-		return -1;
-	}
+    public int getFirstEmpty() {
+        for (int i = 0; i < offers.length; i++) {
+            if (offers[i] == null) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
-	public void grant(Trader trader, boolean nextTick) {
-		for (Offer offer : offers) {
-			if (offer != null) {
-				offer.grant(trader, nextTick);
-			}
-		}
-	}
+    public void grant(Trader trader, boolean nextTick) {
+        for (Offer offer : offers) {
+            if (offer != null) {
+                offer.grant(trader, nextTick);
+            }
+        }
+    }
 
     public OfferMutationResult add(Offer offer) {
 
@@ -112,12 +112,12 @@ public class OfferList {
         final OfferMutationResult result = new OfferMutationResult(offer, OfferMutationResult.Type.ADDITION);
         result.setChanges(changes);
 
-        if (offer instanceof StackableOffer) {
+        if (offer instanceof Offer) {
 
-            final StackableOffer stackableOffer = (StackableOffer) offer;
+            final Offer stackableOffer = (Offer) offer;
 
             // First we try and fill up existing offers
-            for (Map.Entry<Integer, ? extends StackableOffer> entry : getOfClass(stackableOffer.getClass()).entrySet()) {
+            for (Map.Entry<Integer, ? extends Offer> entry : getOfClass(stackableOffer.getClass()).entrySet()) {
 
                 // TODO Do this here?
                 if (stackableOffer.isSimilar(entry.getValue())) {
@@ -151,7 +151,7 @@ public class OfferList {
 
                     if (overflow <= 0) {
 
-                        final StackableOffer clone = stackableOffer.clone();
+                        final Offer clone = stackableOffer.clone();
 
                         set(firstEmpty, clone);
                         changes.put(firstEmpty, clone); // We keep track of what we changed
@@ -165,7 +165,7 @@ public class OfferList {
                     } else {
 
                         // We fill the slot up with a full stack of the offer
-                        final StackableOffer fullStack = stackableOffer.clone();
+                        final Offer fullStack = stackableOffer.clone();
                         fullStack.setAmount(stackableOffer.getMaxAmount());
 
                         set(firstEmpty, fullStack);
@@ -209,23 +209,23 @@ public class OfferList {
         final OfferMutationResult result = new OfferMutationResult(offer, OfferMutationResult.Type.ADDITION);
         result.setChanges(changes);
 
-        if (offer instanceof StackableOffer) {
+        if (offer instanceof Offer) {
 
-            final StackableOffer stackableOffer = (StackableOffer) offer;
+            final Offer stackableOffer = (Offer) offer;
 
             // TODO lowest amount first
             // First we try and remove from existing offers
             for (Map.Entry<Integer, Offer> entry : getOfType(stackableOffer.getType()).entrySet()) {
 
-                if (result.getRemaining() > 0 && entry.getValue() instanceof StackableOffer) {
+                if (result.getRemaining() > 0 && entry.getValue() instanceof Offer) {
 
-                    final int overflow = ((StackableOffer) entry.getValue()).remove(stackableOffer.getAmount());
+                    final int overflow = ((Offer) entry.getValue()).remove(stackableOffer.getAmount());
 
                     if (overflow < result.getRemaining()) {    // We only changed something if the overflow is smaller then the amount
 
                         result.setRemaining(overflow);
 
-                        if (((StackableOffer) entry.getValue()).getAmount() == 0) {    // If the amount of the changed offer is 0 we remove it
+                        if (((Offer) entry.getValue()).getAmount() == 0) {    // If the amount of the changed offer is 0 we remove it
                             set(entry.getKey(), null);
                             changes.put(entry.getKey(), null);
                         } else {
@@ -236,7 +236,7 @@ public class OfferList {
 
                 }
 
-                result.setCurrentAmount(result.getCurrentAmount() + ((entry.getValue() instanceof StackableOffer)? ((StackableOffer)entry.getValue()).getAmount() : 1));
+                result.setCurrentAmount(result.getCurrentAmount() + ((entry.getValue() instanceof Offer) ? ((Offer) entry.getValue()).getAmount() : 1));
 
             }
 

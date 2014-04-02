@@ -15,8 +15,8 @@ public class OfferMutationResult {
         this.offer = offer;
         this.type = type;
 
-        if (offer instanceof StackableOffer) {
-            remaining = ((StackableOffer) offer).getAmount();
+        if (offer instanceof Offer) {
+            remaining = ((Offer) offer).getAmount();
         } else {
             remaining = 0;
         }

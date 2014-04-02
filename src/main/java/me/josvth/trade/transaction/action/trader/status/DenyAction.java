@@ -42,11 +42,11 @@ public class DenyAction extends TraderAction {
 
     public enum Reason {
 
-        GENERIC ("deny.generic.message", "deny.generic.mirror"),
-        BUTTON ("deny.generic.message", "deny.generic.mirror"),
+        GENERIC("deny.generic.message", "deny.generic.mirror"),
+        BUTTON("deny.generic.message", "deny.generic.mirror"),
         OWN_OFFER_CHANGED("deny.own-offer-changed.message", "deny.own-offer-changed.mirror"),
         OTHERS_OFFER_CHANGED("deny.others-offer-changed.message", "deny.others-offer-changed.mirror"),
-        COMMAND ("deny.generic.message", "deny.generic.mirror");
+        COMMAND("deny.generic.message", "deny.generic.mirror");
 
         public final String messagePath;
         public final String mirrorMessagePath;
