@@ -2,20 +2,67 @@ package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.Trade;
 import me.josvth.trade.tasks.SlotUpdateTask;
+import me.josvth.trade.transaction.action.trader.offer.ChangeOfferAction;
 import me.josvth.trade.transaction.action.trader.offer.SetOfferAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
+import me.josvth.trade.transaction.inventory.click.ClickBehaviour;
+import me.josvth.trade.transaction.inventory.click.ClickContext;
 import me.josvth.trade.transaction.inventory.offer.Offer;
 import org.bukkit.Bukkit;
+import org.bukkit.event.inventory.ClickType;
 
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class TradeSlot extends ContentSlot {
+
+    private static final Map<ClickType, List<ClickBehaviour>> DEFAULT_BEHAVIOURS = new LinkedHashMap<ClickType, List<ClickBehaviour>>();
+
+    static {
+
+        final ClickBehaviour shiftBehaviour = new ClickBehaviour() {
+            @Override
+            public boolean onClick(ClickContext context, Offer offer) {
+
+                final TradeSlot tradeSlot = (TradeSlot) context.getSlot();
+
+                Offer contents = tradeSlot.getContents();
+
+                if (contents != null) {
+
+                    final ChangeOfferAction action = new ChangeOfferAction(context.getHolder().getTrader(), context.getHolder().getInventoryList(), contents);
+                    action.execute();
+
+                    if (action.getRemaining() > 0) {
+                        contents.setAmount(action.getRemaining());
+                    } else {
+                        contents = null;
+                    }
+
+                    // Update inventory slot
+                    tradeSlot.setContents(contents);
+
+                    context.getEvent().setCancelled(true);
+
+                    return true;
+                }
+
+                return false;
+            }
+        };
+
+        DEFAULT_BEHAVIOURS.put(ClickType.SHIFT_LEFT, new LinkedList<ClickBehaviour>());
+        DEFAULT_BEHAVIOURS.get(ClickType.SHIFT_LEFT).add(shiftBehaviour);
+
+        DEFAULT_BEHAVIOURS.put(ClickType.SHIFT_RIGHT, new LinkedList<ClickBehaviour>());
+        DEFAULT_BEHAVIOURS.get(ClickType.SHIFT_RIGHT).add(shiftBehaviour);
+
+    }
 
     private int offerIndex;
 
     public TradeSlot(int slot, TransactionHolder holder) {
         super(slot, holder);
+        addBehaviours(DEFAULT_BEHAVIOURS);
     }
 
     public static void updateTradeSlots(TransactionHolder holder, boolean nextTick, int... offerIndex) {

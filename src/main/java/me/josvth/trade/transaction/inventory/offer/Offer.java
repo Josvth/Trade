@@ -17,8 +17,8 @@ import java.util.*;
 public abstract class Offer {
 
     private static final Map<ClickType, List<ClickBehaviour>> DEFAULT_CURSOR_BEHAVIOUR = new HashMap<ClickType, List<ClickBehaviour>>();
+    protected final Map<ClickType, List<ClickBehaviour>> cursorClickBehaviourMap = DEFAULT_CURSOR_BEHAVIOUR;
     private static final Map<ClickType, List<ClickBehaviour>> DEFAULT_CONTENT_BEHAVIOUR = new HashMap<ClickType, List<ClickBehaviour>>();
-
     static {
 
         // CURSOR
@@ -165,8 +165,6 @@ public abstract class Offer {
         });
 
     }
-
-    protected final Map<ClickType, List<ClickBehaviour>> cursorClickBehaviourMap = DEFAULT_CURSOR_BEHAVIOUR;
     protected final Map<ClickType, List<ClickBehaviour>> contentClickBehaviourMap = DEFAULT_CONTENT_BEHAVIOUR;
 
     protected boolean allowedInInventory = false;

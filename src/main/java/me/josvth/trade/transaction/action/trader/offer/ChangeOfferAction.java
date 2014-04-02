@@ -62,11 +62,7 @@ public class ChangeOfferAction extends OfferAction {
     }
 
     public final int getInitialAmount() {
-        if (offer instanceof Offer) {
-            return ((Offer) offer).getAmount();
-        } else {
-            return 1;
-        }
+        return offer.getAmount();
     }
 
     public final int getChangedAmount() {

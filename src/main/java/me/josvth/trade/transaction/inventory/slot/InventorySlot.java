@@ -27,14 +27,21 @@ public class InventorySlot extends ContentSlot {
 
                 final InventorySlot inventorySlot = (InventorySlot) context.getSlot();
 
-                final Offer contents = inventorySlot.getContents();
+                Offer contents = inventorySlot.getContents();
 
                 if (contents != null) {
 
-                    inventorySlot.setContents(null);
-
                     final ChangeOfferAction action = new ChangeOfferAction(context.getHolder().getTrader(), context.getOffersList(), contents);
                     action.execute();
+
+                    if (action.getRemaining() > 0) {
+                        contents.setAmount(action.getRemaining());
+                    } else {
+                        contents = null;
+                    }
+
+                    // Update inventory slot
+                    inventorySlot.setContents(contents);
 
                     context.getEvent().setCancelled(true);
 

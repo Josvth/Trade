@@ -112,91 +112,72 @@ public class OfferList {
         final OfferMutationResult result = new OfferMutationResult(offer, OfferMutationResult.Type.ADDITION);
         result.setChanges(changes);
 
-        if (offer instanceof Offer) {
+        // First we try and fill up existing offers
+        for (Map.Entry<Integer, Offer> entry : getOfType(offer.getType()).entrySet()) {
 
-            final Offer stackableOffer = (Offer) offer;
+            if (offer.isSimilar(entry.getValue())) {
 
-            // First we try and fill up existing offers
-            for (Map.Entry<Integer, ? extends Offer> entry : getOfClass(stackableOffer.getClass()).entrySet()) {
+                if (result.getRemaining() > 0) {
 
-                // TODO Do this here?
-                if (stackableOffer.isSimilar(entry.getValue())) {
+                    final int overflow = entry.getValue().add(result.getRemaining());
 
-                    if (result.getRemaining() > 0) {
-
-                        final int overflow = entry.getValue().add(result.getRemaining());
-
-                        // If we have added something change the remaining levels and add this slot to the changed indexes
-                        if (overflow < result.getRemaining()) {
-                            changes.put(entry.getKey(), entry.getValue()); // We keep track of what we changed
-                            result.setRemaining(overflow);
-                        }
-
-                    }
-
-                    result.setCurrentAmount(result.getCurrentAmount() + entry.getValue().getAmount()); // We count the total amount currently offered
-
-                }
-
-            }
-
-            // Next put the remaining levels in empty offer slots
-            if (result.getRemaining() > 0) {
-
-                int firstEmpty = getFirstEmpty();
-
-                while (result.getRemaining() > 0 && firstEmpty != -1) {
-
-                    final int overflow = result.getRemaining() - stackableOffer.getMaxAmount();
-
-                    if (overflow <= 0) {
-
-                        final Offer clone = stackableOffer.clone();
-
-                        set(firstEmpty, clone);
-                        changes.put(firstEmpty, clone); // We keep track of what we changed
-
-                        result.setCurrentAmount(result.getCurrentAmount() + result.getRemaining());
-
-                        result.setRemaining(0);     // Set the amount to 0 to make the user know there's nothing left
-
-                        firstEmpty = -1; // End the loop
-
-                    } else {
-
-                        // We fill the slot up with a full stack of the offer
-                        final Offer fullStack = stackableOffer.clone();
-                        fullStack.setAmount(stackableOffer.getMaxAmount());
-
-                        set(firstEmpty, fullStack);
-                        changes.put(firstEmpty, fullStack); // We keep track of what we changed
-
-                        result.setCurrentAmount(result.getCurrentAmount() + fullStack.getMaxAmount());
-
-                        result.setRemaining(-1 * overflow);
-
-                        firstEmpty = getFirstEmpty();
-
+                    // If we have added something change the remaining levels and add this slot to the changed indexes
+                    if (overflow < result.getRemaining()) {
+                        changes.put(entry.getKey(), entry.getValue()); // We keep track of what we changed
+                        result.setRemaining(overflow);
                     }
 
                 }
 
-            }
+                result.setCurrentAmount(result.getCurrentAmount() + entry.getValue().getAmount()); // We count the total amount currently offered
 
-        } else {
-
-            final int empty = getFirstEmpty();
-
-            if (empty != -1) {
-                set(empty, offer.clone());
-                changes.put(empty, offer.clone());
-                result.setRemaining(0);
-                result.setCurrentAmount(getOfClass(offer.getClass()).size() + 1);
-            } else {
-                result.setCurrentAmount(getOfClass(offer.getClass()).size());
             }
 
         }
+
+        // Next put the remaining levels in empty offer slots
+        if (result.getRemaining() > 0) {
+
+            int firstEmpty = getFirstEmpty();
+
+            while (result.getRemaining() > 0 && firstEmpty != -1) {
+
+                final int overflow = result.getRemaining() - offer.getMaxAmount();
+
+                if (overflow <= 0) {
+
+                    final Offer clone = offer.clone();
+
+                    set(firstEmpty, clone);
+                    changes.put(firstEmpty, clone); // We keep track of what we changed
+
+                    result.setCurrentAmount(result.getCurrentAmount() + result.getRemaining());
+
+                    result.setRemaining(0);     // Set the amount to 0 to make the user know there's nothing left
+
+                    firstEmpty = -1; // End the loop
+
+                } else {
+
+                    // We fill the slot up with a full stack of the offer
+                    final Offer fullStack = offer.clone();
+                    fullStack.setAmount(offer.getMaxAmount());
+
+                    set(firstEmpty, fullStack);
+                    changes.put(firstEmpty, fullStack); // We keep track of what we changed
+
+                    result.setCurrentAmount(result.getCurrentAmount() + fullStack.getMaxAmount());
+
+                    result.setRemaining(-1 * overflow);
+
+                    firstEmpty = getFirstEmpty();
+
+                }
+
+            }
+
+        }
+
 
         return result;
 
@@ -209,17 +190,14 @@ public class OfferList {
         final OfferMutationResult result = new OfferMutationResult(offer, OfferMutationResult.Type.ADDITION);
         result.setChanges(changes);
 
-        if (offer instanceof Offer) {
+        // TODO lowest amount first
+        // First we try and remove from existing offers
+        for (Map.Entry<Integer, Offer> entry : getOfType(offer.getType()).entrySet()) {
 
-            final Offer stackableOffer = (Offer) offer;
+            if (offer.isSimilar(entry.getValue())) {
+                if (result.getRemaining() > 0) {
 
-            // TODO lowest amount first
-            // First we try and remove from existing offers
-            for (Map.Entry<Integer, Offer> entry : getOfType(stackableOffer.getType()).entrySet()) {
-
-                if (result.getRemaining() > 0 && entry.getValue() instanceof Offer) {
-
-                    final int overflow = ((Offer) entry.getValue()).remove(stackableOffer.getAmount());
+                    final int overflow = entry.getValue().remove(offer.getAmount());
 
                     if (overflow < result.getRemaining()) {    // We only changed something if the overflow is smaller then the amount
 
@@ -236,21 +214,7 @@ public class OfferList {
 
                 }
 
-                result.setCurrentAmount(result.getCurrentAmount() + ((entry.getValue() instanceof Offer) ? ((Offer) entry.getValue()).getAmount() : 1));
-
-            }
-
-        } else {
-
-            final TreeMap<Integer, Offer> current = getOfType(offer.getType());
-
-            if (!current.isEmpty()) {
-                set(current.lastKey(), null);
-                changes.put(current.lastKey(), null);
-                result.setRemaining(0);
-                result.setCurrentAmount(current.size() - 1);
-            } else {
-                result.setCurrentAmount(current.size());
+                result.setCurrentAmount(result.getCurrentAmount() + entry.getValue().getAmount());
             }
 
         }
