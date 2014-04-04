@@ -7,8 +7,8 @@ import me.josvth.trade.transaction.action.trader.offer.ChangeOfferAction;
 import me.josvth.trade.transaction.action.trader.offer.SetOfferAction;
 import me.josvth.trade.transaction.inventory.LayoutManager;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.inventory.click.ClickBehaviour;
-import me.josvth.trade.transaction.inventory.click.ClickContext;
+import me.josvth.trade.transaction.inventory.interact.ClickBehaviour;
+import me.josvth.trade.transaction.inventory.interact.ClickContext;
 import me.josvth.trade.transaction.inventory.offer.Offer;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.ClickType;
@@ -21,6 +21,11 @@ public class InventorySlot extends ContentSlot {
 
     static {
 
+        DEFAULT_BEHAVIOURS.put(ClickType.SHIFT_LEFT, new LinkedList<ClickBehaviour>());
+        DEFAULT_BEHAVIOURS.put(ClickType.SHIFT_RIGHT, new LinkedList<ClickBehaviour>());
+        DEFAULT_BEHAVIOURS.put(ClickType.NUMBER_KEY, new LinkedList<ClickBehaviour>());
+
+        // MOVE_TO_OTHER_INVENTORY
         final ClickBehaviour shiftBehaviour = new ClickBehaviour() {
             @Override
             public boolean onClick(ClickContext context, Offer offer) {
@@ -51,12 +56,36 @@ public class InventorySlot extends ContentSlot {
                 return false;
             }
         };
-
-        DEFAULT_BEHAVIOURS.put(ClickType.SHIFT_LEFT, new LinkedList<ClickBehaviour>());
         DEFAULT_BEHAVIOURS.get(ClickType.SHIFT_LEFT).add(shiftBehaviour);
-
-        DEFAULT_BEHAVIOURS.put(ClickType.SHIFT_RIGHT, new LinkedList<ClickBehaviour>());
         DEFAULT_BEHAVIOURS.get(ClickType.SHIFT_RIGHT).add(shiftBehaviour);
+
+        // HOTBAR_SWAP
+        DEFAULT_BEHAVIOURS.get(ClickType.NUMBER_KEY).add(new ClickBehaviour() {
+            @Override
+            public boolean onClick(ClickContext context, Offer offer) {
+
+                final InventorySlot slot = (InventorySlot) context.getSlot();
+
+                if (slot.getContents() != null) {
+
+                    final InventorySlot inventorySlot = (InventorySlot) context.getHolder().getSlots()[context.getEvent().getHotbarButton()];
+
+                    final Offer inventoryOffer = inventorySlot.getContents();
+
+                    // Update inventory slot
+                    inventorySlot.setContents(slot.getContents());
+
+                    // Update content slot
+                    slot.setContents(inventoryOffer);
+
+                    context.setCancelled(true);
+
+                    return true;
+                }
+
+                return false;
+            }
+        });
 
     }
 

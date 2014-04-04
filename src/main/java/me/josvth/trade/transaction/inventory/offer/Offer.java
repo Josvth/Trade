@@ -3,12 +3,14 @@ package me.josvth.trade.transaction.inventory.offer;
 
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.inventory.click.ClickBehaviour;
-import me.josvth.trade.transaction.inventory.click.ClickContext;
+import me.josvth.trade.transaction.inventory.interact.ClickBehaviour;
+import me.josvth.trade.transaction.inventory.interact.ClickContext;
+import me.josvth.trade.transaction.inventory.interact.DragBehaviour;
+import me.josvth.trade.transaction.inventory.interact.DragContext;
 import me.josvth.trade.transaction.inventory.offer.description.OfferDescription;
 import me.josvth.trade.transaction.inventory.slot.ContentSlot;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.DragType;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,156 +18,14 @@ import java.util.*;
 
 public abstract class Offer {
 
-    private static final Map<ClickType, List<ClickBehaviour>> DEFAULT_CURSOR_BEHAVIOUR = new HashMap<ClickType, List<ClickBehaviour>>();
-    protected final Map<ClickType, List<ClickBehaviour>> cursorClickBehaviourMap = DEFAULT_CURSOR_BEHAVIOUR;
-    private static final Map<ClickType, List<ClickBehaviour>> DEFAULT_CONTENT_BEHAVIOUR = new HashMap<ClickType, List<ClickBehaviour>>();
-    static {
+    private static final Map<ClickType, List<ClickBehaviour>> DEFAULT_CURSOR_CLICK_BEHAVIOUR = new HashMap<ClickType, List<ClickBehaviour>>();
+    private static final Map<ClickType, List<ClickBehaviour>> DEFAULT_CONTENT_CLICK_BEHAVIOUR = new HashMap<ClickType, List<ClickBehaviour>>();
 
-        // CURSOR
-        DEFAULT_CURSOR_BEHAVIOUR.put(ClickType.LEFT, new LinkedList<ClickBehaviour>());
-        DEFAULT_CURSOR_BEHAVIOUR.get(ClickType.LEFT).add(new ClickBehaviour() {
+    private static final Map<DragType, List<DragBehaviour>> DEFAULT_CURSOR_DRAG_BEHAVIOUR = new HashMap<DragType, List<DragBehaviour>>();
+    private static final Map<DragType, List<DragBehaviour>> DEFAULT_CONTENT_DRAG_BEHAVIOUR = new HashMap<DragType, List<DragBehaviour>>();
 
-            @Override
-            public boolean onClick(ClickContext context, Offer offer) {
-                if (context.getSlot() instanceof ContentSlot) {
-
-                    final ContentSlot contentSlot = (ContentSlot) context.getSlot();
-                    final Offer stackableOffer = (Offer) offer;
-
-                    if (contentSlot.getContents() instanceof Offer) {
-                        final Offer stackableContent = (Offer) contentSlot.getContents();
-
-                        if (stackableOffer.isSimilar(stackableContent)) {   // ADD
-
-                            final int remaining = stackableContent.add(stackableOffer.getAmount());
-
-                            if (remaining != stackableOffer.getAmount()) {  // We added something
-                                stackableOffer.setAmount(remaining);
-                                if (stackableOffer.isWorthless()) {
-                                    context.getHolder().setCursorOffer(null, true);
-                                } else {
-                                    context.getHolder().setCursorOffer(stackableOffer, true);
-                                }
-                                contentSlot.setContents(stackableContent);
-                            }
-
-                            ((Player) context.getEvent().getWhoClicked()).sendMessage("ADD");
-
-                            context.getEvent().setCancelled(true);
-                            return true;
-
-                        }
-
-                    }
-
-                }
-
-                return false;
-
-            }
-        });
-
-        DEFAULT_CURSOR_BEHAVIOUR.put(ClickType.RIGHT, new LinkedList<ClickBehaviour>());
-        DEFAULT_CURSOR_BEHAVIOUR.get(ClickType.RIGHT).add(new ClickBehaviour() {
-            @Override
-            public boolean onClick(ClickContext context, Offer offer) {
-                if (context.getSlot() instanceof ContentSlot) {
-
-                    final ContentSlot contentSlot = (ContentSlot) context.getSlot();
-                    final Offer stackableOffer = (Offer) offer;
-
-                    if (contentSlot.getContents() == null) {    // PLACE_ONE
-
-                        final Offer stackableContent = stackableOffer.clone();
-                        stackableContent.setAmount(1);
-
-                        stackableOffer.remove(1);
-                        if (stackableOffer.isWorthless()) {
-                            context.getHolder().setCursorOffer(null, true);
-                        } else {
-                            context.getHolder().setCursorOffer(stackableOffer, true);
-                        }
-                        contentSlot.setContents(stackableContent);
-
-                        context.getEvent().setCancelled(true);
-                        return true;
-                    }
-
-                }
-
-                return false;
-
-            }
-        });
-
-        DEFAULT_CURSOR_BEHAVIOUR.get(ClickType.RIGHT).add(new ClickBehaviour() {
-            @Override
-            public boolean onClick(ClickContext context, Offer offer) {
-                if (context.getSlot() instanceof ContentSlot) {
-
-                    final TransactionHolder holder = context.getHolder();
-                    final ContentSlot contentSlot = (ContentSlot) context.getSlot();
-                    final Offer stackableOffer = (Offer) offer;
-
-                    if (contentSlot.getContents() instanceof Offer) {
-                        final Offer stackableContent = (Offer) contentSlot.getContents();
-
-                        if (stackableOffer.isSimilar(stackableContent)) {   // ADD_ONE
-
-                            final int remaining = stackableContent.add(1);
-
-                            if (remaining == 0) {   // We added one something
-                                stackableOffer.remove(1);
-                                if (stackableOffer.isWorthless()) {
-                                    holder.setCursorOffer(null, true);
-                                } else {
-                                    holder.setCursorOffer(stackableOffer, true);
-                                }
-                                contentSlot.setContents(stackableContent);
-                            }
-
-                            context.getEvent().setCancelled(true);
-                            return true;
-
-                        }
-
-                    }
-
-                }
-
-                return false;
-
-            }
-        });
-
-
-        // CONTENT
-        DEFAULT_CONTENT_BEHAVIOUR.put(ClickType.RIGHT, new LinkedList<ClickBehaviour>());
-        DEFAULT_CONTENT_BEHAVIOUR.get(ClickType.RIGHT).add(new ClickBehaviour() {
-            @Override
-            public boolean onClick(ClickContext context, Offer offer) {
-
-                final ContentSlot contentSlot = (ContentSlot) context.getSlot();
-
-                final Offer stackableOffer = (Offer) contentSlot.getContents();
-                final Offer splitOffer = Offer.split(stackableOffer);
-
-                if (stackableOffer.isWorthless()) {
-                    contentSlot.setContents(null);
-                } else {
-                    contentSlot.setContents(stackableOffer);
-                }
-
-                context.getHolder().setCursorOffer(splitOffer, true);
-
-                context.getEvent().setCancelled(true);
-                return true;
-
-            }
-        });
-
-    }
-    protected final Map<ClickType, List<ClickBehaviour>> contentClickBehaviourMap = DEFAULT_CONTENT_BEHAVIOUR;
+    private final Map<ClickType, List<ClickBehaviour>> cursorClickBehaviourMap = DEFAULT_CURSOR_CLICK_BEHAVIOUR;
+    private final Map<ClickType, List<ClickBehaviour>> contentClickBehaviourMap = DEFAULT_CONTENT_CLICK_BEHAVIOUR;
 
     protected boolean allowedInInventory = false;
     protected boolean canStayInInventory = false;
@@ -354,6 +214,10 @@ public abstract class Offer {
 
     }
 
+    public boolean onCursorDrag(DragContext context) {
+        return false;
+    }
+
     public boolean onDrag(InventoryDragEvent event, int offerIndex, int slotIndex) {
         event.setCancelled(true);
         return true;
@@ -386,4 +250,6 @@ public abstract class Offer {
     public boolean isDraggable() {
         return false;
     }
+
+
 }

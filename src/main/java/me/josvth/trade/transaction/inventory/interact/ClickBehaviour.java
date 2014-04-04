@@ -1,4 +1,4 @@
-package me.josvth.trade.transaction.inventory.click;
+package me.josvth.trade.transaction.inventory.interact;
 
 import me.josvth.trade.transaction.inventory.offer.Offer;
 

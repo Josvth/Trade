@@ -1,8 +1,9 @@
 package me.josvth.trade.transaction.inventory.slot;
 
 import me.josvth.trade.transaction.inventory.TransactionHolder;
-import me.josvth.trade.transaction.inventory.click.ClickBehaviour;
-import me.josvth.trade.transaction.inventory.click.ClickContext;
+import me.josvth.trade.transaction.inventory.interact.ClickBehaviour;
+import me.josvth.trade.transaction.inventory.interact.ClickContext;
+import me.josvth.trade.transaction.inventory.interact.DragContext;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -53,15 +54,13 @@ public abstract class Slot {
     }
 
     // Event handling
-    public void onClick(InventoryClickEvent event) {
+    public void onClick(ClickContext context) {
 
-        final List<ClickBehaviour> behaviours = clickBehaviourMap.get(event.getClick());
+        final List<ClickBehaviour> behaviours = clickBehaviourMap.get(context.getEvent().getClick());
 
         if (behaviours != null) {
 
             final ListIterator<ClickBehaviour> iterator = behaviours.listIterator(behaviours.size());
-
-            final ClickContext context = new ClickContext(holder, event, this);
 
             boolean executed = false;
 
@@ -70,18 +69,18 @@ public abstract class Slot {
             }
 
             if (!executed) {
-                event.setCancelled(true);
+                context.getEvent().setCancelled(true);
             }
 
         } else {
-            event.setCancelled(true);
+            context.getEvent().setCancelled(true);
         }
 
     }
 
-    public void onDrag(InventoryDragEvent event) {
+    public void onDrag(DragContext context) {
 
-        event.setCancelled(true);
+        context.getEvent().setCancelled(true);
     }
 
     public void update() {

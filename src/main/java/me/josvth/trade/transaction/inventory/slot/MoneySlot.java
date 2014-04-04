@@ -4,11 +4,11 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.tasks.MoneySlotUpdateTask;
 import me.josvth.trade.transaction.action.trader.offer.ChangeMoneyAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
+import me.josvth.trade.transaction.inventory.interact.ClickContext;
 import me.josvth.trade.transaction.inventory.offer.MoneyOffer;
 import me.josvth.trade.transaction.inventory.offer.OfferList;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Set;
@@ -77,22 +77,20 @@ public class MoneySlot extends Slot {
     }
 
     @Override
-    public void onClick(InventoryClickEvent event) {
+    public void onClick(ClickContext context) {
 
         // We always cancel the event.
-        event.setCancelled(true);
+        context.getEvent().setCancelled(true);
 
-        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
-
-        final int amount = event.isShiftClick() ? largeModifier : smallModifier;
+        final int amount = context.getEvent().isShiftClick() ? largeModifier : smallModifier;
 
         if (amount <= 0) { // If amount is smaller or equal to 0 we do nothing to allow disabling of shift clicking
             return;
         }
 
-        if (event.isLeftClick()) {
+        if (context.getEvent().isLeftClick()) {
             new ChangeMoneyAction(holder.getTrader(), holder.getOfferList(), amount).execute();
-        } else if (event.isRightClick()) {
+        } else if (context.getEvent().isRightClick()) {
             new ChangeMoneyAction(holder.getTrader(), holder.getOfferList(), -1 * amount).execute();
         }
 

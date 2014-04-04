@@ -5,6 +5,7 @@ import me.josvth.bukkitformatlibrary.message.MessageHolder;
 import me.josvth.trade.transaction.inventory.offer.Offer;
 import me.josvth.trade.transaction.inventory.offer.description.OfferDescription;
 import me.josvth.trade.transaction.inventory.slot.InventorySlot;
+import me.josvth.trade.transaction.inventory.slot.OutsideSlot;
 import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.inventory.slot.SlotDescription;
 
@@ -168,4 +169,7 @@ public class Layout extends MessageHolder {
 
     }
 
+    public OutsideSlot getOutsideSlot(TransactionHolder holder) {
+        return null;
+    }
 }

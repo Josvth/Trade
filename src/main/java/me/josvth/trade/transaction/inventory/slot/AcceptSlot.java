@@ -6,9 +6,9 @@ import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.action.trader.status.AcceptAction;
 import me.josvth.trade.transaction.action.trader.status.DenyAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
+import me.josvth.trade.transaction.inventory.interact.ClickContext;
 import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Set;
@@ -60,9 +60,7 @@ public class AcceptSlot extends Slot {
     }
 
     @Override
-    public void onClick(InventoryClickEvent event) {
-
-        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+    public void onClick(ClickContext context) {
 
         final Trader trader = holder.getTrader();
 
@@ -72,7 +70,7 @@ public class AcceptSlot extends Slot {
             new AcceptAction(trader, AcceptAction.Reason.BUTTON).execute();
         }
 
-        event.setCancelled(true);
+        context.getEvent().setCancelled(true);
 
     }
 

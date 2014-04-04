@@ -1,5 +1,6 @@
-package me.josvth.trade.transaction.inventory.click;
+package me.josvth.trade.transaction.inventory.interact;
 
+import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.offer.Offer;
 import me.josvth.trade.transaction.inventory.offer.OfferList;
@@ -30,6 +31,8 @@ public class ClickContext {
         return slot;
     }
 
+    public Trader getTrader() {return holder.getTrader(); }
+
     public Offer getCursorOffer() {
         return holder.getCursorOffer();
     }
@@ -41,4 +44,13 @@ public class ClickContext {
     public OfferList getInventoryList() {
         return holder.getInventoryList();
     }
+
+    public void setCursorOffer(Offer offer, boolean update) {
+        holder.setCursorOffer(offer, update);
+    }
+
+    public void setCancelled(boolean cancelled) {
+        event.setCancelled(cancelled);
+    }
+
 }

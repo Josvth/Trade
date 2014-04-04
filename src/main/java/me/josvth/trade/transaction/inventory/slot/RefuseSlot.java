@@ -3,8 +3,8 @@ package me.josvth.trade.transaction.inventory.slot;
 import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.action.trader.status.RefuseAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
+import me.josvth.trade.transaction.inventory.interact.ClickContext;
 import me.josvth.trade.util.ItemStackUtils;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class RefuseSlot extends Slot {
@@ -30,13 +30,11 @@ public class RefuseSlot extends Slot {
     }
 
     @Override
-    public void onClick(InventoryClickEvent event) {
-
-        final TransactionHolder holder = (TransactionHolder) event.getInventory().getHolder();
+    public void onClick(ClickContext context) {
 
         new RefuseAction(holder.getTrader(), RefuseAction.Reason.BUTTON).execute();
 
-        event.setCancelled(true);
+        context.getEvent().setCancelled(true);
 
     }
 
