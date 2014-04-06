@@ -69,5 +69,6 @@ requesting:
     distance: "%player% is too far away from you to request him."
     world: "Trading is disabled in this world."
     region: "You can't trade in this region."
+    self: "You cannot trade with yourself!."
     method:
      command: "You are not allowed to use this command."

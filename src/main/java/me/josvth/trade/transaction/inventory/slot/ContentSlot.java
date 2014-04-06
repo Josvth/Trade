@@ -1,11 +1,15 @@
 package me.josvth.trade.transaction.inventory.slot;
 
+import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.interact.ClickBehaviour;
 import me.josvth.trade.transaction.inventory.interact.ClickContext;
+import me.josvth.trade.transaction.inventory.interact.DragBehaviour;
+import me.josvth.trade.transaction.inventory.interact.DragContext;
 import me.josvth.trade.transaction.inventory.offer.Offer;
-import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.DragType;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -14,16 +18,18 @@ import java.util.Map;
 
 public abstract class ContentSlot extends Slot {
 
-    private static final Map<ClickType, List<ClickBehaviour>> DEFAULT_BEHAVIOURS = new LinkedHashMap<ClickType, List<ClickBehaviour>>();
+    private static final Map<ClickType, List<ClickBehaviour>> DEFAULT_CLICK_BEHAVIOURS = new LinkedHashMap<ClickType, List<ClickBehaviour>>();
+    private static final Map<DragType, List<DragBehaviour>> DEFAULT_DRAG_BEHAVIOURS = new LinkedHashMap<DragType, List<DragBehaviour>>();
 
     static {
 
-        DEFAULT_BEHAVIOURS.put(ClickType.LEFT, new LinkedList<ClickBehaviour>());
-        DEFAULT_BEHAVIOURS.put(ClickType.RIGHT, new LinkedList<ClickBehaviour>());
-        DEFAULT_BEHAVIOURS.put(ClickType.NUMBER_KEY, new LinkedList<ClickBehaviour>());
+        // Click behaviours
+        DEFAULT_CLICK_BEHAVIOURS.put(ClickType.LEFT, new LinkedList<ClickBehaviour>());
+        DEFAULT_CLICK_BEHAVIOURS.put(ClickType.RIGHT, new LinkedList<ClickBehaviour>());
+        DEFAULT_CLICK_BEHAVIOURS.put(ClickType.NUMBER_KEY, new LinkedList<ClickBehaviour>());
 
         // PICKUP_ALL
-        DEFAULT_BEHAVIOURS.get(ClickType.LEFT).add(new ClickBehaviour() {
+        DEFAULT_CLICK_BEHAVIOURS.get(ClickType.LEFT).add(new ClickBehaviour() {
             @Override
             public boolean onClick(ClickContext context, Offer offer) {
 
@@ -51,7 +57,7 @@ public abstract class ContentSlot extends Slot {
         // PICKUP_SOME ???
 
         // PICKUP_HALF
-        DEFAULT_BEHAVIOURS.get(ClickType.RIGHT).add(new ClickBehaviour() {
+        DEFAULT_CLICK_BEHAVIOURS.get(ClickType.RIGHT).add(new ClickBehaviour() {
             @Override
             public boolean onClick(ClickContext context, Offer offer) {
 
@@ -76,7 +82,7 @@ public abstract class ContentSlot extends Slot {
         // PICKUP_ONE ??
 
         // PLACE_ALL
-        DEFAULT_BEHAVIOURS.get(ClickType.LEFT).add(new ClickBehaviour() {
+        DEFAULT_CLICK_BEHAVIOURS.get(ClickType.LEFT).add(new ClickBehaviour() {
             @Override
             public boolean onClick(ClickContext context, Offer offer) {
 
@@ -102,7 +108,7 @@ public abstract class ContentSlot extends Slot {
         });
 
         // PLACE_ONE (Note: We define PLACING as in placing in an empty slot and ADDING as adding to a partially filled slot)
-        DEFAULT_BEHAVIOURS.get(ClickType.RIGHT).add(new ClickBehaviour() {
+        DEFAULT_CLICK_BEHAVIOURS.get(ClickType.RIGHT).add(new ClickBehaviour() {
             @Override
             public boolean onClick(ClickContext context, Offer offer) {
                 if (context.getSlot() instanceof ContentSlot) {
@@ -136,7 +142,7 @@ public abstract class ContentSlot extends Slot {
         });
 
         // ADD_SOME (Bukkit: PLACE_SOME) (Note: Includes adding one which Bukkit calls PLACE_ONE)
-        DEFAULT_BEHAVIOURS.get(ClickType.LEFT).add(new ClickBehaviour() {
+        DEFAULT_CLICK_BEHAVIOURS.get(ClickType.LEFT).add(new ClickBehaviour() {
             @Override
             public boolean onClick(ClickContext context, Offer offer) {
 
@@ -174,7 +180,7 @@ public abstract class ContentSlot extends Slot {
         });
 
         // ADD_ONE (Bukkit: PLACE_ONE)
-        DEFAULT_BEHAVIOURS.get(ClickType.RIGHT).add(new ClickBehaviour() {
+        DEFAULT_CLICK_BEHAVIOURS.get(ClickType.RIGHT).add(new ClickBehaviour() {
             @Override
             public boolean onClick(ClickContext context, Offer offer) {
 
@@ -235,14 +241,135 @@ public abstract class ContentSlot extends Slot {
 
             }
         };
-        DEFAULT_BEHAVIOURS.get(ClickType.LEFT).add(swapWithCursor);
-        DEFAULT_BEHAVIOURS.get(ClickType.RIGHT).add(swapWithCursor);
+        DEFAULT_CLICK_BEHAVIOURS.get(ClickType.LEFT).add(swapWithCursor);
+        DEFAULT_CLICK_BEHAVIOURS.get(ClickType.RIGHT).add(swapWithCursor);
+
+        // Drag behaviours
+        DEFAULT_DRAG_BEHAVIOURS.put(DragType.SINGLE, new LinkedList<DragBehaviour>());
+        DEFAULT_DRAG_BEHAVIOURS.put(DragType.EVEN, new LinkedList<DragBehaviour>());
+
+        DEFAULT_DRAG_BEHAVIOURS.get(DragType.EVEN).add(new DragBehaviour() {
+            @Override
+            public boolean onDrag(final DragContext context, Slot slot, Offer offer) {
+
+                final ContentSlot contentSlot = (ContentSlot) slot;
+
+                Offer contents = contentSlot.getContents();
+                final Offer cursor = context.getCursorOffer();
+
+                if (contents == null || contents.isSimilar(cursor)) {
+
+//                    // We count the amount of content slots that is dragged over
+//                    int amount = 0;
+//                    for (Slot draggedSlot : context.getSlots()) {
+//                        if (draggedSlot instanceof ContentSlot) {
+//                            amount++;
+//                        }
+//                    }
+
+                    final int increase = cursor.getAmount() / context.getSlots().size();
+
+                    final int taken;
+
+                    if (contents != null) {
+                        taken = increase - contents.add(increase);
+                    } else {
+                        taken = increase;
+                        contents = cursor.clone();
+                        contents.setAmount(taken);
+                    }
+
+                    if (taken > 0) {    // We added something
+
+                        contentSlot.setContents(contents);
+
+                        // TODO Do something about this
+                        Bukkit.getScheduler().runTask(Trade.getInstance(), new Runnable() {
+                            @Override
+                            public void run() {
+
+                                // Check if we still have the same cursor
+                                if (context.getCursorOffer() != null && context.getCursorOffer().isSimilar(cursor)) {
+                                    context.getCursorOffer().remove(taken);
+                                    context.getHolder().updateCursorOffer();
+                                }
+
+                            }
+                        });
+
+                    }
+
+
+                }
+
+                return false;
+
+            }
+        });
+
+        DEFAULT_DRAG_BEHAVIOURS.get(DragType.SINGLE).add(new DragBehaviour() {
+            @Override
+            public boolean onDrag(final DragContext context, Slot slot, Offer offer) {
+
+                final ContentSlot contentSlot = (ContentSlot) slot;
+
+                Offer contents = contentSlot.getContents();
+                final Offer cursor = context.getCursorOffer();
+
+                if (contents == null || contents.isSimilar(cursor)) {
+
+//                    // We count the amount of content slots that is dragged over
+//                    int amount = 0;
+//                    for (Slot draggedSlot : context.getSlots()) {
+//                        if (draggedSlot instanceof ContentSlot) {
+//                            amount++;
+//                        }
+//                    }
+
+                    final int taken;
+
+                    if (contents != null) {
+                        taken = 1 - contents.add(1);
+                    } else {
+                        taken = 1;
+                        contents = cursor.clone();
+                        contents.setAmount(1);
+                    }
+
+                    if (taken > 0) {    // We added something
+
+                        contentSlot.setContents(contents);
+
+                        // TODO Do something about this
+                        Bukkit.getScheduler().runTask(Trade.getInstance(), new Runnable() {
+                            @Override
+                            public void run() {
+
+                                // Check if we still have the same cursor
+                                if (context.getCursorOffer() != null && context.getCursorOffer().isSimilar(cursor)) {
+                                    context.getCursorOffer().remove(taken);
+                                    context.getHolder().updateCursorOffer();
+                                }
+
+                            }
+                        });
+
+                    }
+
+
+                }
+
+                return false;
+
+            }
+        });
 
     }
 
     public ContentSlot(int slot, TransactionHolder holder) {
         super(slot, holder);
-        addBehaviours(DEFAULT_BEHAVIOURS);
+        addClickBehaviours(DEFAULT_CLICK_BEHAVIOURS);
+        addDragBehaviours(DEFAULT_DRAG_BEHAVIOURS);
     }
 
     public abstract Offer getContents();

@@ -66,9 +66,9 @@ public class InventorySlot extends ContentSlot {
 
                 final InventorySlot slot = (InventorySlot) context.getSlot();
 
-                if (slot.getContents() != null) {
+                if (slot.getContents() != null && context.getCursorOffer() == null) {
 
-                    final InventorySlot inventorySlot = (InventorySlot) context.getHolder().getSlots()[context.getEvent().getHotbarButton()];
+                    final InventorySlot inventorySlot = (InventorySlot) context.getHolder().getSlots()[context.getHolder().getSlots().length - 9 + context.getEvent().getHotbarButton()];
 
                     final Offer inventoryOffer = inventorySlot.getContents();
 
@@ -93,7 +93,7 @@ public class InventorySlot extends ContentSlot {
 
     public InventorySlot(int slot, TransactionHolder holder) {
         super(slot, holder);
-        addBehaviours(DEFAULT_BEHAVIOURS);
+        addClickBehaviours(DEFAULT_BEHAVIOURS);
     }
 
     public static void updateInventorySlots(TransactionHolder holder, boolean nextTick, int... inventorySlot) {

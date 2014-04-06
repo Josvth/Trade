@@ -1,5 +1,6 @@
 package me.josvth.trade.transaction;
 
+import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.action.trader.status.RefuseAction;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import org.bukkit.entity.Player;
@@ -21,14 +22,15 @@ public class TransactionListener implements Listener {
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
         if (event.getInventory().getHolder() instanceof TransactionHolder) {
-            event.setCancelled(true);
-            //         ((TransactionHolder) event.getInventory().getHolder()).onDrag(event);
+            ((TransactionHolder) event.getInventory().getHolder()).onDrag(event);
         }
     }
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        ((Player) event.getWhoClicked()).sendMessage(event.getAction().toString());
+        if (Trade.getInstance().getGeneralConfiguration().getBoolean("debug-mode")) {
+            ((Player) event.getWhoClicked()).sendMessage("Raw: " + event.getRawSlot() + " Slot: " + event.getSlot());
+        }
         if (event.getInventory().getHolder() instanceof TransactionHolder) {
             ((TransactionHolder) event.getInventory().getHolder()).onClick(event);
         }

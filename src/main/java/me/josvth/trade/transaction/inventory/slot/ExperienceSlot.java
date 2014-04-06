@@ -104,7 +104,7 @@ public class ExperienceSlot extends Slot {
 
     public ExperienceSlot(int slot, TransactionHolder holder) {
         super(slot, holder);
-        addBehaviours(DEFAULT_BEHAVIOURS);
+        addClickBehaviours(DEFAULT_BEHAVIOURS);
     }
 
     public static int getExperience(OfferList list) {

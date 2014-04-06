@@ -49,11 +49,8 @@ public class LayoutManager {
 
             try {
                 if (layoutSection.isConfigurationSection(key)) {
-                    Layout layout = layouts.get(key);
-                    if (layout == null) {
-                        layout = new Layout(key, this);
-                    }
-
+                    final Layout layout = new Layout(key, this);
+                    layouts.put(key, layout);
                     loadLayout(layout, layoutSection.getConfigurationSection(key), defaultMessages, defaultOfferDescriptions);
                 }
             } catch (IllegalArgumentException e) {

@@ -10,13 +10,13 @@ requesting:
   max-requests: 5
   method-allow:
     command: true
-    right-click: true
-    shift-right-click: true
+    right-click: false
+    shift-right-click: false
     left-click: false
     shift-left-click: false
 trading:
   allow-inventory-closing: false
-  use-economy: true
+  use-economy: false
   offers:
     experience:
       experience-item:

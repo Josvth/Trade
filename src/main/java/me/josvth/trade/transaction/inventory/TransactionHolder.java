@@ -14,6 +14,7 @@ import me.josvth.trade.transaction.inventory.slot.OutsideSlot;
 import me.josvth.trade.transaction.inventory.slot.Slot;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -201,55 +202,6 @@ public class TransactionHolder implements InventoryHolder {
                 slot.onDrag(context);
             }
         }
-
-//        // First we check in which parts of the inventory the player tries to drag items
-//        boolean upper = false;
-//        boolean lower = false;
-//
-//        final Iterator<Integer> iterator = event.getRawSlots().iterator();
-//        while (!(upper && lower) && iterator.hasNext()) {
-//            if (iterator.next() >= getLayout().getGuiSize()) {
-//                lower = true;
-//            } else {
-//                upper = true;
-//            }
-//        }
-//
-//        // We don't support dragging in both upper and lower inventories
-//        if (upper && lower) {
-//            event.setCancelled(true);
-//            return;
-//        }
-//
-//        // However dragging in the lower part is just fine
-//        if (lower) {
-//            return;
-//        }
-//
-//        for (int slotIndex : event.getInventorySlots() ) {
-//
-//            final Slot slot = getLayout().getSlots()[slotIndex];
-//
-//            // Cancel if the slot is empty or not a trade slot
-//            if (slot == null || !(slot instanceof TradeSlot)) {
-//                event.setCancelled(true);
-//                return;
-//            }
-//
-//            final Offer offer = ((TradeSlot) slot).getSlotContents(this);
-//
-//            // Return if this offer does not support drag events
-//            if (offer != null && !offer.isDraggable()) {
-//                event.setCancelled(true);
-//                return;
-//            }
-//
-//        }
-//
-//        for (int s : event.getInventorySlots()) {
-//            final Slot slot = getLayout().getSlots()[s];
-//            slot.onDrag(event);
-//        }
 
     }
 

@@ -80,6 +80,10 @@ public class RequestManager {
             return RequestRestriction.OFFLINE;
         }
 
+        if (requestedPlayer == requesterPlayer) {
+            return RequestRestriction.SELF;
+        }
+
         RequestRestriction restriction = RequestRestriction.ALLOW;
 
         // We check method first

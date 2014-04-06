@@ -64,9 +64,9 @@ public class TradeSlot extends ContentSlot {
 
                 final TradeSlot slot = (TradeSlot) context.getSlot();
 
-                if (slot.getContents() != null) {
+                if (slot.getContents() != null && context.getCursorOffer() == null) {
 
-                    final InventorySlot inventorySlot = (InventorySlot) context.getHolder().getSlots()[context.getEvent().getHotbarButton()];
+                    final InventorySlot inventorySlot = (InventorySlot) context.getHolder().getSlots()[context.getHolder().getSlots().length - 9 + context.getEvent().getHotbarButton()];
 
                     // Add the inventory offer to the inventory list
                     final ChangeOfferAction action = new ChangeOfferAction(context.getTrader(), context.getInventoryList(), inventorySlot.getContents());
@@ -74,6 +74,9 @@ public class TradeSlot extends ContentSlot {
 
                     // Update inventory slot
                     inventorySlot.setContents(slot.getContents());
+
+                    // Update trade slot
+                    slot.setContents(null);
 
                     context.setCancelled(true);
 
@@ -90,7 +93,7 @@ public class TradeSlot extends ContentSlot {
 
     public TradeSlot(int slot, TransactionHolder holder) {
         super(slot, holder);
-        addBehaviours(DEFAULT_BEHAVIOURS);
+        addClickBehaviours(DEFAULT_BEHAVIOURS);
     }
 
     public static void updateTradeSlots(TransactionHolder holder, boolean nextTick, int... offerIndex) {
