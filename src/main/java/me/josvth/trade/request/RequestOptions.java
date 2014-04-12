@@ -7,7 +7,6 @@ import java.util.List;
 public class RequestOptions {
 
     // Player options
-    private boolean usePermissions = false;
     private boolean allowCrossGameMode = false;
     private boolean allowCrossWorld = false;
     private boolean mustSee = false;
@@ -27,35 +26,26 @@ public class RequestOptions {
 
     public void load(ConfigurationSection section) {
 
-        usePermissions = section.getBoolean("use-permissions", usePermissions);
-        allowCrossGameMode = section.getBoolean("allow-cross-game-mode", allowCrossGameMode);
-        allowCrossWorld = section.getBoolean("allow-cross-world", allowCrossWorld);
-        mustSee = section.getBoolean("must-see", mustSee);
-        maxDistance = section.getInt("max-distance", maxDistance);
-        disabledWorlds = section.getStringList("disabled-worlds");
-        disabledRegions = section.getStringList("disabled-regions");
+        setAllowCrossGameMode(section.getBoolean("allow-cross-game-mode", isAllowCrossGameMode()));
+        setAllowCrossWorld(section.getBoolean("allow-cross-world", isAllowCrossWorld()));
+        setMustSee(section.getBoolean("must-see", isMustSee()));
+        setMaxDistance(section.getInt("max-distance", getMaxDistance()));
+        setDisabledWorlds(section.getStringList("disabled-worlds"));
+        setDisabledRegions(section.getStringList("disabled-regions"));
 
-        timeoutMillis = section.getLong("timeout", timeoutMillis);
-        maxRequests = section.getInt("max-requests", maxRequests);
+        setTimeoutMillis(section.getLong("timeout", getTimeoutMillis()));
+        setMaxRequests(section.getInt("max-requests", getMaxRequests()));
 
-        allowCommandRequest = section.getBoolean("method-allow.command", allowCommandRequest);
-        allowRightClickRequest = section.getBoolean("method-allow.right-click", allowRightClickRequest);
-        allowShiftRightClickRequest = section.getBoolean("method-allow.shift-right-click", allowShiftRightClickRequest);
-        allowLeftClickRequest = section.getBoolean("method-allow.left-click", allowLeftClickRequest);
-        allowShiftLeftClickRequest = section.getBoolean("method-allow.shift-left-click", allowShiftLeftClickRequest);
+        setAllowCommandRequest(section.getBoolean("method-allow.command", isAllowCommandRequest()));
+        setAllowRightClickRequest(section.getBoolean("method-allow.right-click", isAllowRightClickRequest()));
+        setAllowShiftRightClickRequest(section.getBoolean("method-allow.shift-right-click", isAllowShiftRightClickRequest()));
+        setAllowLeftClickRequest(section.getBoolean("method-allow.left-click", isAllowLeftClickRequest()));
+        setAllowShiftLeftClickRequest(section.getBoolean("method-allow.shift-left-click", isAllowShiftLeftClickRequest()));
 
-    }
-
-    public boolean usePermissions() {
-        return usePermissions;
-    }
-
-    public void setUsePermissions(boolean usePermissions) {
-        this.usePermissions = usePermissions;
     }
 
     public boolean allowCrossGameMode() {
-        return allowCrossGameMode;
+        return isAllowCrossGameMode();
     }
 
     public void setAllowCrossGameMode(boolean allowCrossGameMode) {
@@ -63,7 +53,7 @@ public class RequestOptions {
     }
 
     public boolean allowCrossWorld() {
-        return allowCrossWorld;
+        return isAllowCrossWorld();
     }
 
     public void setAllowCrossWorld(boolean crossWorld) {
@@ -71,7 +61,7 @@ public class RequestOptions {
     }
 
     public boolean mustSee() {
-        return mustSee;
+        return isMustSee();
     }
 
     public void setMustSee(boolean mustSee) {
@@ -111,7 +101,7 @@ public class RequestOptions {
     }
 
     public boolean allowCommandRequest() {
-        return allowCommandRequest;
+        return isAllowCommandRequest();
     }
 
     public void setAllowCommandRequest(boolean allowCommandRequest) {
@@ -119,7 +109,7 @@ public class RequestOptions {
     }
 
     public boolean allowRightClickRequest() {
-        return allowRightClickRequest;
+        return isAllowRightClickRequest();
     }
 
     public void setAllowRightClickRequest(boolean allowRightClickRequest) {
@@ -127,7 +117,7 @@ public class RequestOptions {
     }
 
     public boolean allowRightShiftClickRequest() {
-        return allowShiftRightClickRequest;
+        return isAllowShiftRightClickRequest();
     }
 
     public void setAllowShiftRightClickRequest(boolean allowShiftRightClickRequest) {
@@ -135,7 +125,7 @@ public class RequestOptions {
     }
 
     public boolean allowLeftClickRequest() {
-        return allowLeftClickRequest;
+        return isAllowLeftClickRequest();
     }
 
     public void setAllowLeftClickRequest(boolean allowLeftClickRequest) {
@@ -143,7 +133,7 @@ public class RequestOptions {
     }
 
     public boolean allowLeftShiftClickRequest() {
-        return allowShiftLeftClickRequest;
+        return isAllowShiftLeftClickRequest();
     }
 
     public void setAllowShiftLeftClickRequest(boolean allowShiftLeftClickRequest) {
@@ -156,5 +146,37 @@ public class RequestOptions {
 
     public void setMaxRequests(int maxRequests) {
         this.maxRequests = maxRequests;
+    }
+
+    public boolean isAllowCrossGameMode() {
+        return allowCrossGameMode;
+    }
+
+    public boolean isAllowCrossWorld() {
+        return allowCrossWorld;
+    }
+
+    public boolean isMustSee() {
+        return mustSee;
+    }
+
+    public boolean isAllowCommandRequest() {
+        return allowCommandRequest;
+    }
+
+    public boolean isAllowRightClickRequest() {
+        return allowRightClickRequest;
+    }
+
+    public boolean isAllowShiftRightClickRequest() {
+        return allowShiftRightClickRequest;
+    }
+
+    public boolean isAllowLeftClickRequest() {
+        return allowLeftClickRequest;
+    }
+
+    public boolean isAllowShiftLeftClickRequest() {
+        return allowShiftLeftClickRequest;
     }
 }

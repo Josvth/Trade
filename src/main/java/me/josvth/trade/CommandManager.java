@@ -153,7 +153,7 @@ public class CommandManager implements CommandExecutor {
 
         if ("".equalsIgnoreCase(requested)) {
             final List<Request> requests = getRequestManager().getActiveRequests(player.getName());
-            if (requests.isEmpty()) {
+            if (requests == null || requests.isEmpty()) {
                 getMessageHolder().getMessage("requesting.not-requested").send(commandSender);
                 return true;
             } else {

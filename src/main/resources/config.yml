@@ -1,5 +1,4 @@
 requesting:
-  use-permissions: false
   allow-cross-game-mode: false
   allow-cross-world: false
   must-see: true

@@ -97,7 +97,7 @@ public class RequestManager {
 
         }
 
-        if (!hasExclusion(requesterPlayer, RequestRestriction.PERMISSION) && options.usePermissions()) {
+        if (!hasExclusion(requesterPlayer, RequestRestriction.PERMISSION)) {
             return RequestRestriction.PERMISSION;
         }
 
@@ -138,9 +138,13 @@ public class RequestManager {
     }
 
     private boolean mayUseMethod(Player player, RequestMethod method) {
-        if (getOptions().usePermissions()) {
-            return plugin.hasPermission(player, method.permission);
+
+        // First we check permissions
+        if (!player.hasPermission(method.permission)) {
+            return false;
         }
+
+        // Next we check if the request option is enabled
         switch (method) {
             case COMMAND:
                 return getOptions().allowCommandRequest();
@@ -157,8 +161,7 @@ public class RequestManager {
     }
 
     private boolean hasExclusion(Player player, RequestRestriction restriction) {
-        if (!getOptions().usePermissions()) return false;
-        return plugin.hasPermission(player, restriction.excludePermission);
+        return player.hasPermission(restriction.excludePermission);
     }
 
     private boolean isRequested(String player, String by) {

@@ -26,13 +26,14 @@ permissions:
       trade.allow.cross-world: true
   trade.request.*:
     description: Grants permission to all requesting features.
-    default: false
+    default: true
     children:
       trade.request.command: true
       trade.request.right-click: true
       trade.request.shift-right-click: true
       trade.request.left-click: true
       trade.request.shift-left-click: true
+      trade.request.ignore: true
   trade.request.command:
     description: Grants permission to request by command.
     default: false
@@ -47,4 +48,7 @@ permissions:
     default: false
   trade.request.shift-left-click:
     description: Grants permission to request by shift left clicking.
+    default: false
+  trade.request.ignore:
+    description: Grants permission to ignore all incomming requests
     default: false

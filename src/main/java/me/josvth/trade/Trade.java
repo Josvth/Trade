@@ -142,10 +142,11 @@ public class Trade extends JavaPlugin {
     }
 
     public boolean hasPermission(CommandSender sender, String permission) {
-        if (getGeneralConfiguration().getBoolean("use-permissions", true)) {
-            return sender.hasPermission(permission);
-        }
-        return (getServer().getPluginManager().getPermission(permission).getDefault() == PermissionDefault.OP && sender.isOp()) || getServer().getPluginManager().getPermission(permission).getDefault() != PermissionDefault.OP;
+        return sender.hasPermission(permission);
+//        if (getGeneralConfiguration().getBoolean("use-permissions", true)) {
+//            return sender.hasPermission(permission);
+//        }
+//        return (getServer().getPluginManager().getPermission(permission).getDefault() == PermissionDefault.OP && sender.isOp()) || getServer().getPluginManager().getPermission(permission).getDefault() != PermissionDefault.OP;
     }
 
     public MessageManager getMessageManager() {
