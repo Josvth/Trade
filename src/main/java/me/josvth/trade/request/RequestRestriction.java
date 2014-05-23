@@ -16,7 +16,8 @@ public enum RequestRestriction {
     WORLD("trade.allow.world", "requesting.restriction.world"),
     REGION("trade.allow.region", "requesting.restriction.region"),
     METHOD("trade.allow.*", "requesting.restriction.method"),
-    SELF("", "requesting.restriction.self");
+    SELF("", "requesting.restriction.self"),
+    NPC("", "");
 
     public final String excludePermission;
     public final String requestMessagePath;

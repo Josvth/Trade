@@ -80,6 +80,11 @@ public class RequestManager {
             return RequestRestriction.OFFLINE;
         }
 
+        // We check if the entity is a NPC
+        if (requestedPlayer.hasMetadata("NPC")) {
+            return RequestRestriction.NPC;
+        }
+
         if (requestedPlayer == requesterPlayer) {
             return RequestRestriction.SELF;
         }
