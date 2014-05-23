@@ -18,7 +18,13 @@ public class ExperienceOfferDescription extends OfferDescription<ExperienceOffer
         final ItemStack itemStack;
         if (experienceItem != null) {
             itemStack = experienceItem.clone();
-            itemStack.setAmount(offer.getAmount());
+
+            if (offer.getAmount() > Integer.MAX_VALUE) {
+                itemStack.setAmount((Integer.MAX_VALUE));
+            } else {
+                itemStack.setAmount(((int) offer.getAmount()));
+            }
+
         } else {
             itemStack = null;
         }
@@ -30,7 +36,13 @@ public class ExperienceOfferDescription extends OfferDescription<ExperienceOffer
         final ItemStack itemStack;
         if (experienceItemMirror != null) {
             itemStack = experienceItemMirror.clone();
-            itemStack.setAmount(offer.getAmount());
+
+            if (offer.getAmount() > Integer.MAX_VALUE) {
+                itemStack.setAmount((Integer.MAX_VALUE));
+            } else {
+                itemStack.setAmount(((int) offer.getAmount()));
+            }
+
         } else {
             itemStack = null;
         }

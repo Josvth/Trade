@@ -119,7 +119,7 @@ public class OfferList {
 
                 if (result.getRemaining() > 0) {
 
-                    final int overflow = entry.getValue().add(result.getRemaining());
+                    final double overflow = entry.getValue().add(result.getRemaining());
 
                     // If we have added something change the remaining levels and add this slot to the changed indexes
                     if (overflow < result.getRemaining()) {
@@ -142,7 +142,7 @@ public class OfferList {
 
             while (result.getRemaining() > 0 && firstEmpty != -1) {
 
-                final int overflow = result.getRemaining() - offer.getMaxAmount();
+                final double overflow = result.getRemaining() - offer.getMaxAmount();
 
                 if (overflow <= 0) {
 
@@ -197,7 +197,7 @@ public class OfferList {
             if (offer.isSimilar(entry.getValue())) {
                 if (result.getRemaining() > 0) {
 
-                    final int overflow = entry.getValue().remove(offer.getAmount());
+                    final double overflow = entry.getValue().remove(offer.getAmount());
 
                     if (overflow < result.getRemaining()) {    // We only changed something if the overflow is smaller then the amount
 

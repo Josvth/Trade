@@ -107,15 +107,15 @@ public class ExperienceSlot extends Slot {
         addClickBehaviours(DEFAULT_BEHAVIOURS);
     }
 
-    public static int getExperience(OfferList list) {
-        int experience = 0;
+    public static double getExperience(OfferList list) {
+        double experience = 0;
         for (ExperienceOffer tradeable : list.getOfClass(ExperienceOffer.class).values()) {
             experience += tradeable.getAmount();
         }
         return experience;
     }
 
-    public static void updateExperienceSlots(TransactionHolder holder, boolean nextTick, int experience) {
+    public static void updateExperienceSlots(TransactionHolder holder, boolean nextTick, double experience) {
 
         final Set<ExperienceSlot> slots = holder.getSlotsOfType(ExperienceSlot.class);
 
@@ -166,7 +166,7 @@ public class ExperienceSlot extends Slot {
         update(getExperience(holder.getOfferList()));
     }
 
-    public void update(int experience) {
+    public void update(double experience) {
         setGUIItem(ItemStackUtils.argument(experienceItem.clone(), "%experience%", String.valueOf(experience), "%small%", String.valueOf(smallModifier), "%large%", String.valueOf(largeModifier)));
     }
 

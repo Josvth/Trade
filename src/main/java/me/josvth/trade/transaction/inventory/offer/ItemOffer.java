@@ -122,19 +122,29 @@ public class ItemOffer extends Offer {
     }
 
     @Override
-    public int getAmount() {
+    public double getAmount() {
+        return getIntAmount();
+    }
+
+    public int getIntAmount() {
         return (item == null) ? 0 : item.getAmount();
     }
 
     @Override
-    public void setAmount(int amount) {
+    public void setAmount(double amount) {
+        if (amount > Integer.MAX_VALUE) {
+            setIntAmount(Integer.MAX_VALUE);
+        } else {
+            setIntAmount((int) amount);
+        }
+    }
 
+    public void setIntAmount(int amount) {
         if (item == null) {
             throw new IllegalArgumentException("Cannot set amount if item is zero");
         }
 
         item.setAmount(amount);
-
     }
 
     @Override
@@ -162,9 +172,16 @@ public class ItemOffer extends Offer {
     }
 
     @Override
-    public void grant(final Trader trader, boolean nextTick, int amount) {
+    public void grant(final Trader trader, boolean nextTick, double amount) {
+
         final ItemStack clone = item.clone();
-        clone.setAmount(amount);
+
+        if (amount > Integer.MAX_VALUE) {
+            clone.setAmount((Integer.MAX_VALUE));
+        } else {
+            clone.setAmount(((int) amount));
+        }
+
         if (nextTick) {
             Bukkit.getScheduler().runTask(Trade.getInstance(), new Runnable() {         //TODO Make this nicer
                 @Override

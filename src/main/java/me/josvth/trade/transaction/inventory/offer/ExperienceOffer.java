@@ -8,13 +8,13 @@ import org.bukkit.inventory.ItemStack;
 
 public class ExperienceOffer extends Offer {
 
-    private int experience = 0;
+    private double experience = 0;
 
     public ExperienceOffer() {
         this(0);
     }
 
-    public ExperienceOffer(int experience) {
+    public ExperienceOffer(double experience) {
         super();
         this.experience = experience;
         setAllowedInInventory(true);
@@ -48,12 +48,12 @@ public class ExperienceOffer extends Offer {
     }
 
     @Override
-    public int getAmount() {
+    public double getAmount() {
         return experience;
     }
 
     @Override
-    public void setAmount(int amount) {
+    public void setAmount(double amount) {
         this.experience = amount;
     }
 
@@ -82,7 +82,7 @@ public class ExperienceOffer extends Offer {
         grant(trader, true, experience);
     }
 
-    public void grant(Trader trader, boolean nextTick, int experience) {
+    public void grant(Trader trader, boolean nextTick, double experience) {
         new ExperienceManager(trader.getPlayer()).changeExp(experience);
     }
 

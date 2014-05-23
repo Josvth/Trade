@@ -7,8 +7,8 @@ public class OfferMutationResult {
     private final Offer offer;
     private final Type type;
 
-    int currentAmount = 0;
-    int remaining = 0;
+    double currentAmount = 0;
+    double remaining = 0;
     Map<Integer, Offer> changes = null;
 
     public OfferMutationResult(Offer offer, Type type) {
@@ -30,11 +30,11 @@ public class OfferMutationResult {
         return type;
     }
 
-    public int getCurrentAmount() {
+    public double getCurrentAmount() {
         return currentAmount;
     }
 
-    public void setCurrentAmount(int currentAmount) {
+    public void setCurrentAmount(double currentAmount) {
         this.currentAmount = currentAmount;
     }
 
@@ -42,11 +42,11 @@ public class OfferMutationResult {
         return remaining == 0;
     }
 
-    public int getRemaining() {
+    public double getRemaining() {
         return remaining;
     }
 
-    public void setRemaining(int remaining) {
+    public void setRemaining(double remaining) {
         this.remaining = remaining;
     }
 

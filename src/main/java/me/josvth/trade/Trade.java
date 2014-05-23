@@ -57,8 +57,6 @@ public class Trade extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        new ExperienceOffer(0);
-
         // Load dependencies
         loadDependencies();
 

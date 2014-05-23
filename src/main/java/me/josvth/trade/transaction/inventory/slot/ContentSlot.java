@@ -151,7 +151,7 @@ public abstract class ContentSlot extends Slot {
 
                 if (slot.getContents() != null && cursor != null && slot.getContents().isSimilar(cursor)) {
 
-                    final int remaining = slot.getContents().add(cursor.getAmount());
+                    final double remaining = slot.getContents().add(cursor.getAmount());
 
                     if (remaining != cursor.getAmount()) {  // We added something
 
@@ -189,7 +189,7 @@ public abstract class ContentSlot extends Slot {
 
                 if (slot.getContents() != null && slot.getContents().isSimilar(cursor)) {
 
-                    final int remaining = slot.getContents().add(1);
+                    final double remaining = slot.getContents().add(1);
 
                     if (remaining == 0) {   // We added one something
 
@@ -267,9 +267,9 @@ public abstract class ContentSlot extends Slot {
 //                        }
 //                    }
 
-                    final int increase = cursor.getAmount() / context.getSlots().size();
+                    final double increase = cursor.getAmount() / context.getSlots().size();
 
-                    final int taken;
+                    final double taken;
 
                     if (contents != null) {
                         taken = increase - contents.add(increase);
@@ -326,7 +326,7 @@ public abstract class ContentSlot extends Slot {
 //                        }
 //                    }
 
-                    final int taken;
+                    final double taken;
 
                     if (contents != null) {
                         taken = 1 - contents.add(1);

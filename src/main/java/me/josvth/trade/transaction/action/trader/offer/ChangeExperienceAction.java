@@ -33,7 +33,7 @@ public class ChangeExperienceAction extends ChangeOfferAction {
         if (isAdd()) {
 
             // Take experience from player
-            final int added = getChangedAmount();
+            final double added = getChangedAmount();
 
             // Send messages
             getTrader().getFormattedMessage("experience.added.self").send(getPlayer(), "%experience%", String.valueOf(added));
@@ -52,7 +52,7 @@ public class ChangeExperienceAction extends ChangeOfferAction {
         } else {
 
             // Grant experience
-            final int removed = getChangedAmount();
+            final double removed = getChangedAmount();
 
             // Send messages
             getTrader().getFormattedMessage("experience.removed.self").send(getPlayer(), "%experience%", String.valueOf(removed));

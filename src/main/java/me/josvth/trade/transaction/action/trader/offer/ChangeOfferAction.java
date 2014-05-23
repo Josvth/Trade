@@ -40,7 +40,7 @@ public class ChangeOfferAction extends OfferAction {
         return add;
     }
 
-    public int getCurrentAmount() {
+    public double getCurrentAmount() {
         if (result == null) {
             throw new IllegalStateException("No result!");
         }
@@ -54,18 +54,18 @@ public class ChangeOfferAction extends OfferAction {
         return result.isComplete();
     }
 
-    public int getRemaining() {
+    public double getRemaining() {
         if (result == null) {
             throw new IllegalStateException("No result!");
         }
         return result.getRemaining();
     }
 
-    public final int getInitialAmount() {
+    public final double getInitialAmount() {
         return offer.getAmount();
     }
 
-    public final int getChangedAmount() {
+    public final double getChangedAmount() {
         if (result == null) {
             throw new IllegalStateException("No result!");
         }

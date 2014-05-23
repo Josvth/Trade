@@ -35,8 +35,8 @@ public abstract class OfferAction extends TraderAction {
     public void updateOffers() {
 
         // TODO THIS IS HORRIBLE! COME UP WITH A FIX
-        int newExperience = ExperienceSlot.getExperience(list);
-        int newMoney = MoneySlot.getMoney(list);
+        double newExperience = ExperienceSlot.getExperience(list);
+        double newMoney = MoneySlot.getMoney(list);
 
         for (Map.Entry<Integer, ? extends Offer> entry : getChanges().entrySet()) {
 

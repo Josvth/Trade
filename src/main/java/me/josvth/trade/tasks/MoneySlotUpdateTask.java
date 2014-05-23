@@ -7,9 +7,9 @@ import java.util.Set;
 
 public class MoneySlotUpdateTask extends SlotUpdateTask {
 
-    private final int money;
+    private final double money;
 
-    public MoneySlotUpdateTask(Set<MoneySlot> slots, int money) {
+    public MoneySlotUpdateTask(Set<MoneySlot> slots, double money) {
         super(slots);
         this.money = money;
     }

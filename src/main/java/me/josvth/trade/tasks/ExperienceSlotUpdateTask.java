@@ -7,9 +7,9 @@ import java.util.Set;
 
 public class ExperienceSlotUpdateTask extends SlotUpdateTask {
 
-    private final int levels;
+    private final double levels;
 
-    public ExperienceSlotUpdateTask(Set<? extends Slot> slots, int levels) {
+    public ExperienceSlotUpdateTask(Set<? extends Slot> slots, double levels) {
         super(slots);
         this.levels = levels;
     }

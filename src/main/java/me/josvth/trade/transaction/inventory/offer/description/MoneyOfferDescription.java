@@ -20,7 +20,13 @@ public class MoneyOfferDescription extends OfferDescription<MoneyOffer> {
 
         if (moneyItem != null) {
             itemStack = moneyItem.clone();
-            itemStack.setAmount(offer.getAmount());
+
+            if (offer.getAmount() > Integer.MAX_VALUE) {
+                itemStack.setAmount((Integer.MAX_VALUE));
+            } else {
+                itemStack.setAmount(((int) offer.getAmount()));
+            }
+
         } else {
             itemStack = null;
         }
@@ -38,7 +44,13 @@ public class MoneyOfferDescription extends OfferDescription<MoneyOffer> {
         final ItemStack itemStack;
         if (moneyItemMirror != null) {
             itemStack = moneyItemMirror.clone();
-            itemStack.setAmount(offer.getAmount());
+
+            if (offer.getAmount() > Integer.MAX_VALUE) {
+                itemStack.setAmount((Integer.MAX_VALUE));
+            } else {
+                itemStack.setAmount(((int) offer.getAmount()));
+            }
+
         } else {
             itemStack = null;
         }

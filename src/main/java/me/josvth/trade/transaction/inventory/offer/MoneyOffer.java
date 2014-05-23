@@ -8,13 +8,13 @@ import org.bukkit.inventory.ItemStack;
 
 public class MoneyOffer extends Offer {
 
-    private int amount = 0;
+    private double amount = 0;
 
     public MoneyOffer() {
         this(0);
     }
 
-    public MoneyOffer(int amount) {
+    public MoneyOffer(double amount) {
         super();
         this.amount = amount;
         setAllowedInInventory(true);
@@ -48,12 +48,12 @@ public class MoneyOffer extends Offer {
     }
 
     @Override
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 
     @Override
-    public void setAmount(int amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
@@ -78,7 +78,7 @@ public class MoneyOffer extends Offer {
     }
 
     @Override
-    public void grant(Trader trader, boolean nextTick, int amount) {
+    public void grant(Trader trader, boolean nextTick, double amount) {
         Trade.getInstance().getEconomy().depositPlayer(trader.getName(), amount / 100);
     }
 

@@ -38,7 +38,7 @@ public class ChangeMoneyAction extends ChangeOfferAction {
         if (isAdd()) {
 
             // Take money from player
-            final int added = getChangedAmount();
+            final double added = getChangedAmount();
             final double addedDouble = added / Math.pow(10, getEconomy().fractionalDigits());
 
             // Send messages
@@ -61,7 +61,7 @@ public class ChangeMoneyAction extends ChangeOfferAction {
         } else {
 
             // Deposit money
-            final int removed = getChangedAmount();
+            final double removed = getChangedAmount();
             final double removedDouble = (double) removed / Math.pow(10, getEconomy().fractionalDigits());
 
             // Send messages

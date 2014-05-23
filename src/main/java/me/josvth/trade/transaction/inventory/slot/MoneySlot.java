@@ -24,15 +24,15 @@ public class MoneySlot extends Slot {
         super(slot, holder);
     }
 
-    public static int getMoney(OfferList offers) {
-        int money = 0;
+    public static double getMoney(OfferList offers) {
+        double money = 0;
         for (MoneyOffer tradeable : offers.getOfClass(MoneyOffer.class).values()) {
             money += tradeable.getAmount();
         }
         return money;
     }
 
-    public static void updateMoneySlots(TransactionHolder holder, boolean nextTick, int money) {
+    public static void updateMoneySlots(TransactionHolder holder, boolean nextTick, double money) {
         final Set<MoneySlot> slots = holder.getSlotsOfType(MoneySlot.class);
 
         if (!nextTick) {
@@ -101,7 +101,7 @@ public class MoneySlot extends Slot {
         update(getMoney(holder.getOfferList()));
     }
 
-    public void update(int money) {
+    public void update(double money) {
         final double divider = Math.pow(10, holder.getEconomy().fractionalDigits());
         setGUIItem(
                 ItemStackUtils.argument(

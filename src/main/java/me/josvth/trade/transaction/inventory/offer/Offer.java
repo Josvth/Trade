@@ -8,7 +8,6 @@ import me.josvth.trade.transaction.inventory.interact.ClickContext;
 import me.josvth.trade.transaction.inventory.interact.DragBehaviour;
 import me.josvth.trade.transaction.inventory.interact.DragContext;
 import me.josvth.trade.transaction.inventory.offer.description.OfferDescription;
-import me.josvth.trade.transaction.inventory.slot.ContentSlot;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.DragType;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -33,7 +32,7 @@ public abstract class Offer {
     //TODO Cleanup offer creation and cloning
     public static <T extends Offer> T split(T offer) {
 
-        final int total = offer.getAmount();
+        final double total = offer.getAmount();
 
         final T clone = (T) offer.clone();
 
@@ -61,9 +60,9 @@ public abstract class Offer {
 
     }
 
-    public abstract int getAmount();
+    public abstract double getAmount();
 
-    public abstract void setAmount(int amount);
+    public abstract void setAmount(double amount);
 
     public abstract int getMaxAmount();
 
@@ -75,7 +74,7 @@ public abstract class Offer {
         return getAmount() == 0;
     }
 
-    public int add(int amount) {
+    public double add(double amount) {
 
         if (getMaxAmount() == -1) { // If infinite stackable, add all
             setAmount(getAmount() + amount);
@@ -86,7 +85,7 @@ public abstract class Offer {
             return amount;
         }
 
-        final int remainder = getAmount() + amount - getMaxAmount();
+        final double remainder = getAmount() + amount - getMaxAmount();
         if (remainder > 0) {
             setAmount(getMaxAmount());
             return remainder;
@@ -97,8 +96,8 @@ public abstract class Offer {
 
     }
 
-    public int remove(int amount) {
-        final int remainder = getAmount() - amount;
+    public double remove(double amount) {
+        final double remainder = getAmount() - amount;
         if (remainder > 0) {
             setAmount(remainder);
             return 0;
@@ -108,7 +107,7 @@ public abstract class Offer {
         }
     }
 
-    public abstract void grant(Trader trader, boolean nextTick, int amount);
+    public abstract void grant(Trader trader, boolean nextTick, double amount);
 
     public abstract Offer clone();
 
