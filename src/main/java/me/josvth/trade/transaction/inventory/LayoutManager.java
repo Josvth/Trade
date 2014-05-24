@@ -3,6 +3,9 @@ package me.josvth.trade.transaction.inventory;
 import me.josvth.bukkitformatlibrary.message.FormattedMessage;
 import me.josvth.bukkitformatlibrary.message.managers.MessageManager;
 import me.josvth.trade.Trade;
+import me.josvth.trade.transaction.inventory.offer.ExperienceOffer;
+import me.josvth.trade.transaction.inventory.offer.ItemOffer;
+import me.josvth.trade.transaction.inventory.offer.MoneyOffer;
 import me.josvth.trade.transaction.inventory.offer.Offer;
 import me.josvth.trade.transaction.inventory.offer.description.ExperienceOfferDescription;
 import me.josvth.trade.transaction.inventory.offer.description.ItemOfferDescription;
@@ -33,6 +36,11 @@ public class LayoutManager {
     public LayoutManager(Trade plugin, MessageManager messageManager) {
         this.plugin = plugin;
         this.messageManager = messageManager;
+    }
+
+
+    public Trade getPlugin() {
+        return plugin;
     }
 
     public void load(ConfigurationSection layoutSection, ConfigurationSection messageSection, ConfigurationSection offerSection) {
@@ -160,17 +168,17 @@ public class LayoutManager {
 
                 final ConfigurationSection offerSection = section.getConfigurationSection(offerKey);
 
-                if ("item".equalsIgnoreCase(offerKey)) {
+                if (ItemOffer.TYPE_NAME.equalsIgnoreCase(offerKey)) {
                     final ItemOfferDescription description = new ItemOfferDescription();
                     offerDescriptions.put(description.getOfferClass(), description);
-                } else if ("experience".equalsIgnoreCase(offerKey)) {
+                } else if (ExperienceOffer.TYPE_NAME.equalsIgnoreCase(offerKey)) {
                     final ExperienceOfferDescription description = new ExperienceOfferDescription();
                     description.setSmallModifier(offerSection.getInt("small-modifier"));
                     description.setLargeModifier(offerSection.getInt("large-modifier"));
                     description.setExperienceItem(ItemStackUtils.fromSection(offerSection.getConfigurationSection("experience-item"), messageManager));
                     description.setExperienceItemMirror(ItemStackUtils.fromSection(offerSection.getConfigurationSection("experience-item-mirror"), messageManager));
                     offerDescriptions.put(description.getOfferClass(), description);
-                } else if ("money".equalsIgnoreCase(offerKey)) {
+                } else if (MoneyOffer.TYPE_NAME.equalsIgnoreCase(offerKey)) {
                     final MoneyOfferDescription description = new MoneyOfferDescription();
                     description.setSmallModifier(offerSection.getInt("small-modifier"));
                     description.setLargeModifier(offerSection.getInt("large-modifier"));

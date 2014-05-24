@@ -8,6 +8,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class ExperienceOffer extends Offer {
 
+    public static final String TYPE_NAME = "experience";
+
     private double experience = 0;
 
     public ExperienceOffer() {

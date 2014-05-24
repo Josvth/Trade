@@ -15,6 +15,8 @@ import java.util.Set;
 
 public class MoneySlot extends Slot {
 
+    public static final String TYPE_NAME = "money";
+
     private ItemStack moneyItem;
 
     private int smallModifier;

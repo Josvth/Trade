@@ -4,10 +4,7 @@ import me.josvth.bukkitformatlibrary.message.FormattedMessage;
 import me.josvth.bukkitformatlibrary.message.MessageHolder;
 import me.josvth.trade.transaction.inventory.offer.Offer;
 import me.josvth.trade.transaction.inventory.offer.description.OfferDescription;
-import me.josvth.trade.transaction.inventory.slot.InventorySlot;
-import me.josvth.trade.transaction.inventory.slot.OutsideSlot;
-import me.josvth.trade.transaction.inventory.slot.Slot;
-import me.josvth.trade.transaction.inventory.slot.SlotDescription;
+import me.josvth.trade.transaction.inventory.slot.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -133,21 +130,30 @@ public class Layout extends MessageHolder {
 
         for (Map.Entry<Integer, SlotDescription> entry : getSlotDescriptions().entrySet()) {
 
-            final Class<? extends Slot> slotClass = manager.getRegisteredSlots().get(entry.getValue().getType());
+            // If the type is money we check first if economy is enabled
+            if (MoneySlot.TYPE_NAME.equalsIgnoreCase(entry.getValue().getType()) && !manager.getPlugin().useEconomy()) {
 
-            Slot slot = null;
+                slots[entry.getKey()] = null;
 
-            try {
-                slot = (Slot) slotClass.getMethod("deserialize", int.class, TransactionHolder.class, SlotDescription.class).invoke(null, entry.getKey(), holder, entry.getValue());
-            } catch (Exception e) {
+            } else {
+
+                final Class<? extends Slot> slotClass = manager.getRegisteredSlots().get(entry.getValue().getType());
+
+                Slot slot = null;
+
                 try {
-                    slot = slotClass.getConstructor(int.class).newInstance(entry.getKey(), holder);
-                } catch (Exception ignored) {
+                    slot = (Slot) slotClass.getMethod("deserialize", int.class, TransactionHolder.class, SlotDescription.class).invoke(null, entry.getKey(), holder, entry.getValue());
+                } catch (Exception e) {
+                    try {
+                        slot = slotClass.getConstructor(int.class).newInstance(entry.getKey(), holder);
+                    } catch (Exception ignored) {
 
+                    }
                 }
-            }
 
-            slots[entry.getKey()] = slot;
+                slots[entry.getKey()] = slot;
+
+            }
 
         }
 

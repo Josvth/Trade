@@ -8,6 +8,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class MoneyOffer extends Offer {
 
+    public static final String TYPE_NAME = "money";
+
     private double amount = 0;
 
     public MoneyOffer() {

@@ -9,6 +9,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemOffer extends Offer {
 
+    public static final String TYPE_NAME = "item";
+
 //    static {
 //
 //        final LinkedList<OfferClickBehaviour> cursorLeftBehaviours = new LinkedList<OfferClickBehaviour>();
