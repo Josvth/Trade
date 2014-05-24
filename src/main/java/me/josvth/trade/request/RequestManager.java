@@ -9,6 +9,7 @@ import me.josvth.trade.transaction.action.StartAction;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.*;
 
@@ -102,9 +103,9 @@ public class RequestManager {
 
         }
 
-        if (!hasExclusion(requesterPlayer, RequestRestriction.PERMISSION)) {
-            return RequestRestriction.PERMISSION;
-        }
+//        if (!hasExclusion(requesterPlayer, RequestRestriction.PERMISSION)) {
+//            return RequestRestriction.PERMISSION;
+//        }
 
         if (isIgnoring(player)) {
             return RequestRestriction.IGNORING;
@@ -142,6 +143,10 @@ public class RequestManager {
 
     }
 
+    private boolean hasExclusion(Player player, RequestRestriction restriction) {
+        return player.hasPermission(restriction.excludePermission) || player.isOp();
+    }
+
     private boolean mayUseMethod(Player player, RequestMethod method) {
 
         // First we check permissions
@@ -165,9 +170,7 @@ public class RequestManager {
         return true;
     }
 
-    private boolean hasExclusion(Player player, RequestRestriction restriction) {
-        return player.hasPermission(restriction.excludePermission);
-    }
+
 
     private boolean isRequested(String player, String by) {
 
@@ -292,8 +295,10 @@ public class RequestManager {
         }
 
         // Send message to requester
-        if (restriction == RequestRestriction.METHOD && messageHolder.hasMessage(request.getMethod().messagePath)) {
-            messageHolder.getMessage(request.getMethod().messagePath).send(request.getRequesterPlayer());
+        if (restriction == RequestRestriction.METHOD) {
+            if (messageHolder.hasMessage(request.getMethod().messagePath)) {
+                messageHolder.getMessage(request.getMethod().messagePath).send(request.getRequesterPlayer());
+            }
         } else {
             messageHolder.getMessage(restriction.requestMessagePath).send(request.getRequesterPlayer(), "%player%", request.getRequested());
         }

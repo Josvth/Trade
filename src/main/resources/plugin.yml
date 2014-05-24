@@ -24,6 +24,11 @@ permissions:
     children:
       trade.allow.cross-game-mode: true
       trade.allow.cross-world: true
+  # trade.use:
+    # description: Grants permission to use player features of Trade
+    # default: true
+    # children:
+      # trade.request.*: true
   trade.request.*:
     description: Grants permission to all requesting features.
     default: true

@@ -46,7 +46,7 @@ public class ExperienceOfferDescription extends OfferDescription<ExperienceOffer
         } else {
             itemStack = null;
         }
-        return ItemStackUtils.argument(itemStack, "%experience%", String.valueOf(offer.getAmount()));
+        return ItemStackUtils.argument(itemStack, "%player%", holder.getTrader().getName(), "%experience%", String.valueOf(offer.getAmount()));
     }
 
     @Override
