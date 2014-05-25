@@ -72,7 +72,7 @@ public abstract class Slot {
     }
 
     // Event handling
-    public void onClick(ClickContext context) {
+    public boolean onClick(ClickContext context) {
 
         final List<ClickBehaviour> behaviours = clickBehaviourMap.get(context.getEvent().getClick());
 
@@ -80,19 +80,17 @@ public abstract class Slot {
 
             final ListIterator<ClickBehaviour> iterator = behaviours.listIterator(behaviours.size());
 
-            boolean executed = false;
+            while (iterator.hasPrevious()) {
 
-            while (iterator.hasPrevious() && !executed) {
-                executed = iterator.previous().onClick(context, null);
+                if (iterator.previous().onClick(context, null)) {
+                    return true;
+                }
+
             }
 
-            if (!executed) {
-                context.getEvent().setCancelled(true);
-            }
-
-        } else {
-            context.getEvent().setCancelled(true);
         }
+
+        return false;
 
     }
 
