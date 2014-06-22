@@ -5,10 +5,11 @@ import me.josvth.trade.transaction.inventory.offer.MoneyOffer;
 import me.josvth.trade.transaction.inventory.offer.OfferList;
 import me.josvth.trade.transaction.inventory.slot.MoneySlot;
 import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
 
 public class ChangeMoneyAction extends ChangeOfferAction {
 
-    public ChangeMoneyAction(Trader trader, OfferList list, int amount) {
+    public ChangeMoneyAction(Trader trader, OfferList list, double amount) {
         super(trader, list);
         setOffer(MoneyOffer.create(getTrader(), Math.abs(amount)));
         setAddition(amount > 0);
@@ -21,12 +22,11 @@ public class ChangeMoneyAction extends ChangeOfferAction {
     @Override
     public void execute() {
 
+        // First we check if the player has the money
         if (isAdd()) {
 
-            final double moneyToAdd = (double) getInitialAmount() / Math.pow(10, getEconomy().fractionalDigits());
-
-            if (!getEconomy().has(getTrader().getName(), moneyToAdd)) {
-                getTrader().getFormattedMessage("money.insufficient").send(getPlayer(), "%money%", getEconomy().format(moneyToAdd));
+            if (!getEconomy().has(getTrader().getName(), getInitialAmount())) {
+                getTrader().getFormattedMessage("money.insufficient").send(getPlayer(), "%money%", getEconomy().format(getInitialAmount()));
                 return;
             }
 
@@ -37,21 +37,17 @@ public class ChangeMoneyAction extends ChangeOfferAction {
 
         if (isAdd()) {
 
-            // Take money from player
-            final double added = getChangedAmount();
-            final double addedDouble = added / Math.pow(10, getEconomy().fractionalDigits());
+            final EconomyResponse response = getEconomy().withdrawPlayer(getTrader().getName(), getChangedAmount());
+
+            // TODO Check if withdraw success
 
             // Send messages
-            getTrader().getFormattedMessage("money.added.self").send(getPlayer(), "%money%", getEconomy().format(addedDouble));
+            getTrader().getFormattedMessage("money.added.self").send(getPlayer(), "%money%", getEconomy().format(getChangedAmount()), "%balance%", getEconomy().format(response.balance));
 
-            if (added > 0) {
+            if (getChangedAmount() > 0) {
 
                 // Only send the other trader a message if something actually was changed
-                if (getOtherTrader().hasFormattedMessage("money.added.other")) {
-                    getOtherTrader().getFormattedMessage("money.added.other").send(getOtherPlayer(), "%player%", getTrader().getName(), "%money%", getEconomy().format(addedDouble));
-                }
-
-                getEconomy().withdrawPlayer(getTrader().getName(), addedDouble);
+                getOtherTrader().getFormattedMessage("money.added.other").send(getOtherPlayer(), "%player%", getTrader().getName(), "%money%", getEconomy().format(getChangedAmount()));
 
                 // Update money slots
                 MoneySlot.updateMoneySlots(getTrader().getHolder(), true, getCurrentAmount());
@@ -60,19 +56,17 @@ public class ChangeMoneyAction extends ChangeOfferAction {
 
         } else {
 
-            // Deposit money
-            final double removed = getChangedAmount();
-            final double removedDouble = (double) removed / Math.pow(10, getEconomy().fractionalDigits());
+            final EconomyResponse response = getEconomy().depositPlayer(getTrader().getName(), getChangedAmount());
+
+            // TODO Check if deposit success
 
             // Send messages
-            getTrader().getFormattedMessage("money.removed.self").send(getPlayer(), "%money%", getEconomy().format(removedDouble));
+            getTrader().getFormattedMessage("money.removed.self").send(getPlayer(), "%money%", getEconomy().format(getChangedAmount()), "%balance%", getEconomy().format(response.balance));
 
-            if (removed > 0) {
-
-                getEconomy().depositPlayer(getTrader().getName(), removedDouble);
+            if (getChangedAmount() > 0) {
 
                 // Only send the other trader a message if something actually was changed
-                getOtherTrader().getFormattedMessage("money.removed.other").send(getOtherPlayer(), "%player%", getTrader().getName(), "%money%", getEconomy().format(removedDouble));
+                getOtherTrader().getFormattedMessage("money.removed.other").send(getOtherPlayer(), "%player%", getTrader().getName(), "%money%", getEconomy().format(getChangedAmount()));
 
                 // Update money slots
                 MoneySlot.updateMoneySlots(getTrader().getHolder(), true, getCurrentAmount());

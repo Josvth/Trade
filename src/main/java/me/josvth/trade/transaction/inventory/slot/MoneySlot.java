@@ -79,7 +79,7 @@ public class MoneySlot extends Slot {
     }
 
     @Override
-    public void onClick(ClickContext context) {
+    public boolean onClick(ClickContext context) {
 
         // We always cancel the event.
         context.getEvent().setCancelled(true);
@@ -87,7 +87,7 @@ public class MoneySlot extends Slot {
         final int amount = context.getEvent().isShiftClick() ? largeModifier : smallModifier;
 
         if (amount <= 0) { // If amount is smaller or equal to 0 we do nothing to allow disabling of shift clicking
-            return;
+            return true;
         }
 
         if (context.getEvent().isLeftClick()) {
@@ -95,6 +95,8 @@ public class MoneySlot extends Slot {
         } else if (context.getEvent().isRightClick()) {
             new ChangeMoneyAction(holder.getTrader(), holder.getOfferList(), -1 * amount).execute();
         }
+
+        return true;
 
     }
 

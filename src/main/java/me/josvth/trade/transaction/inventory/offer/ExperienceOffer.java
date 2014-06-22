@@ -88,9 +88,4 @@ public class ExperienceOffer extends Offer {
         new ExperienceManager(trader.getPlayer()).changeExp(experience);
     }
 
-    @Override
-    public String toString() {
-        return "EXP: " + experience;
-    }
-
 }

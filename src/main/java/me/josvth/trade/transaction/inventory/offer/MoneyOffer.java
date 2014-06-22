@@ -23,7 +23,7 @@ public class MoneyOffer extends Offer {
         setCanStayInInventory(false);
     }
 
-    public static MoneyOffer create(Trader trader, int amount) {
+    public static MoneyOffer create(Trader trader, double amount) {
         final MoneyOffer offer = trader.getLayout().getOfferDescription(MoneyOffer.class).createOffer();
         offer.setAmount(amount);
         return offer;
@@ -81,7 +81,8 @@ public class MoneyOffer extends Offer {
 
     @Override
     public void grant(Trader trader, boolean nextTick, double amount) {
-        Trade.getInstance().getEconomy().depositPlayer(trader.getName(), amount / 100);
+        Trade.getInstance().getEconomy().depositPlayer(trader.getName(), amount);
+        // TODO Check if successful
     }
 
 }

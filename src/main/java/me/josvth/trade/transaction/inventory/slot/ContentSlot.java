@@ -10,6 +10,7 @@ import me.josvth.trade.transaction.inventory.offer.Offer;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.DragType;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -377,19 +378,26 @@ public abstract class ContentSlot extends Slot {
     public abstract void setContents(Offer contents);
 
     @Override
-    public void onClick(ClickContext context) {
+    public boolean onClick(ClickContext context) {
 
         final Offer contents = getContents();
 
         if (contents != null) {
 
-            if (contents.onContentClick(context)) {
-                return;
+            contents.onContentClick(context);
+
+            if (context.isHandled()) {
+                return true;
             }
+
         }
 
-        super.onClick(context);
+        return super.onClick(context);
 
     }
 
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName()).append("{").append((getContents() == null)? null : getContents().toString()).append("}").toString();
+    }
 }

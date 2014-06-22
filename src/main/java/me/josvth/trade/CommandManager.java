@@ -57,9 +57,9 @@ public class CommandManager implements CommandExecutor {
         // /trade accept [player]
         if ("accept".equalsIgnoreCase(args[0])) {
             if (args.length == 2) {
-                return executeRequestCommand(commandSender, args[1]);
+                return executeRequestCommand(commandSender, args);
             } else {
-                return executeRequestCommand(commandSender);
+                return executeRequestCommand(commandSender, null);
             }
         }
 
@@ -69,7 +69,7 @@ public class CommandManager implements CommandExecutor {
         }
 
         // /trade <player>
-        return executeRequestCommand(commandSender, args[0]);
+        return executeRequestCommand(commandSender, args);
 
     }
 
@@ -100,7 +100,7 @@ public class CommandManager implements CommandExecutor {
             return true;
         }
 
-        getPlugin().getRequestManager().toggleIgnoring(player.getName());
+        getPlugin().getRequestManager().toggleIgnoring(player);
 
         return true;
 
@@ -129,21 +129,6 @@ public class CommandManager implements CommandExecutor {
 
     private boolean executeRequestCommand(CommandSender commandSender, String[] args) {
 
-        if (args.length < 1) {
-            getMessageHolder().getMessage("command.invalid-usage").send(commandSender, "%usage%", "/trade request <player>");
-            return true;
-        }
-
-        return executeRequestCommand(commandSender, args[0]);
-
-    }
-
-    private boolean executeRequestCommand(CommandSender commandSender) {
-        return executeRequestCommand(commandSender, "");
-    }
-
-    private boolean executeRequestCommand(CommandSender commandSender, String requested) {
-
         if (!(commandSender instanceof Player)) {
             getMessageHolder().getMessage("commands.player-only").send(commandSender);
             return true;
@@ -151,22 +136,31 @@ public class CommandManager implements CommandExecutor {
 
         final Player player = (Player) commandSender;
 
-        if ("".equalsIgnoreCase(requested)) {
-            final List<Request> requests = getRequestManager().getActiveRequests(player.getName());
+        // Check if this player is requested before and tries to accept using /trade request
+        if (args == null) {
+
+            final List<Request> requests = getRequestManager().getActiveRequests(player);
+
             if (requests == null || requests.isEmpty()) {
                 getMessageHolder().getMessage("requesting.not-requested").send(commandSender);
                 return true;
-            } else {
-                requested = requests.get(0).getRequester();
             }
+
+            getRequestManager().submit(Request.createRequest(requests.get(0).getRequestedPlayer(), player, RequestMethod.COMMAND));
+            return true;
+
         }
 
-        getRequestManager().submit(new Request(player.getName(), requested, RequestMethod.COMMAND));
+        if (args.length < 1) {
+            getMessageHolder().getMessage("command.invalid-usage").send(commandSender, "%usage%", "/trade request <player>");
+            return true;
+        }
+
+        getRequestManager().submit(Request.createRequest(plugin.getServer().getPlayer(args[0]), player, RequestMethod.COMMAND));
 
         return true;
 
     }
-
 
     public MessageHolder getMessageHolder() {
         return getPlugin().getMessageManager().getMessageHolder();

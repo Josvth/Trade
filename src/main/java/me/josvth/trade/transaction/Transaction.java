@@ -4,6 +4,9 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.action.Action;
 import me.josvth.trade.transaction.action.ActionProvoker;
 import me.josvth.trade.transaction.inventory.Layout;
+import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class Transaction {
 
@@ -17,13 +20,17 @@ public class Transaction {
     private Transaction.Stage stage = Transaction.Stage.PRE;
     private TransactionActionProvoker transactionProvoker = new TransactionActionProvoker(this);
 
-    public Transaction(TransactionManager manager, Layout layout, String playerA, String playerB) {
+    public static Transaction createTransaction(TransactionManager transactionManager, Layout layout, Player playerA, Player playerB) {
+        return new Transaction(transactionManager, layout, playerA.getUniqueId(), playerB.getUniqueId());
+    }
+
+    public Transaction(TransactionManager manager, Layout layout, UUID uuidA, UUID uuidB) {
 
         this.manager = manager;
         this.layout = layout;
 
-        traderA = new Trader(this, playerA, layout.getOfferSize());
-        traderB = new Trader(this, playerB, layout.getOfferSize());
+        traderA = new Trader(this, uuidA, layout.getOfferSize());
+        traderB = new Trader(this, uuidB, layout.getOfferSize());
 
         traderA.setOther(traderB);
         traderB.setOther(traderA);
@@ -92,6 +99,8 @@ public class Transaction {
     public TransactionActionProvoker getTransactionProvoker() {
         return transactionProvoker;
     }
+
+
 
     public enum Stage {
         PRE,

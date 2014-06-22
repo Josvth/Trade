@@ -122,4 +122,9 @@ public abstract class Slot {
 
     }
 
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName()).toString();
+    }
+
 }

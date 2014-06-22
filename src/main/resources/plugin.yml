@@ -41,19 +41,13 @@ permissions:
       trade.request.ignore: true
   trade.request.command:
     description: Grants permission to request by command.
-    default: false
   trade.request.right-click:
     description: Grants permission to request by right clicking.
-    default: false
   trade.request.shift-right-click:
     description: Grants permission to request by shift right clicking.
-    default: false
   trade.request.left-click:
     description: Grants permission to request by left clicking.
-    default: false
   trade.request.shift-left-click:
     description: Grants permission to request by shift left clicking.
-    default: false
   trade.request.ignore:
     description: Grants permission to ignore all incomming requests
-    default: false

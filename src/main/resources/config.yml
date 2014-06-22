@@ -1,4 +1,6 @@
+debug-mode: true
 requesting:
+  use-permissions: true
   allow-cross-game-mode: false
   allow-cross-world: false
   must-see: true
@@ -9,40 +11,31 @@ requesting:
   max-requests: 5
   method-allow:
     command: true
-    right-click: false
+    right-click: true
     shift-right-click: false
     left-click: false
     shift-left-click: false
 trading:
   allow-inventory-closing: false
-  use-economy: false
+  use-economy: true
   offers:
     experience:
       experience-item:
         material: 384
-        display-name: "%experience% experience."
-        lore:
-          - "Left click to add %small% level(s)"
-          - "Right click to remove %small% level(s)"
-          - "Shift left click to add %large% experience"
-          - "Shift right click to remove %large% experience"
+        display-name: '%experience% experience.'
       experience-item-mirror:
         material: 384
-        display-name: "%player% offers %experience% experience."
+        display-name: '%player% offers %experience% experience.'
       small-modifier: 1
       large-modifier: 5
     money:
       money-item:
         material: 266
-        display-name: "%money%"
-        lore:
-          - "Left click to add %small%"
-          - "Right click to remove %small%"
-          - "Shift left click to add %large%"
-          - "Shift right click to remove %large%"
+        display-name: '%money%'
       money-item-mirror:
         material: 266
-        display-name: "%money%"
+        display-name: '%player% offers %money%'
       small-modifier: 1
       large-modifier: 5
     item: {}
+version: 1.0-ALPHA-ver2

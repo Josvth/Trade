@@ -21,6 +21,7 @@ import org.bukkit.event.inventory.InventoryType;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class LayoutManager {
 
@@ -199,12 +200,9 @@ public class LayoutManager {
         layouts.clear();
     }
 
-    public Layout getLayout(String playerNameA, String playerNameB) {
+    public Layout getLayout(Player playerA, Player playerB) {
 
         Layout found = getDefaultLayout();
-
-        final Player playerA = Bukkit.getPlayerExact(playerNameA);
-        final Player playerB = Bukkit.getPlayerExact(playerNameB);
 
         for (Layout layout : layouts.values()) {
             if ((found != null && layout.getPriority() > found.getPriority())) {

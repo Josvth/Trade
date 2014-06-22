@@ -54,7 +54,7 @@ public class Layout extends MessageHolder {
     }
 
     public int getGuiSize() {
-        return guiRows * 9;
+        return getGuiRows() * 9;
     }
 
     public String generateTitle(TransactionHolder holder) {

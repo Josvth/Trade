@@ -30,11 +30,13 @@ public class RefuseSlot extends Slot {
     }
 
     @Override
-    public void onClick(ClickContext context) {
+    public boolean onClick(ClickContext context) {
 
         new RefuseAction(holder.getTrader(), RefuseAction.Reason.BUTTON).execute();
 
         context.getEvent().setCancelled(true);
+
+        return true;
 
     }
 

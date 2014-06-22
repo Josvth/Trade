@@ -11,6 +11,7 @@ import me.josvth.trade.transaction.inventory.offer.ExperienceOffer;
 import me.josvth.trade.transaction.inventory.slot.*;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -183,4 +184,7 @@ public class Trade extends JavaPlugin {
         return economy;
     }
 
+    public boolean isDebugMode() {
+        return getGeneralConfiguration().getBoolean("debug-mode", false);
+    }
 }

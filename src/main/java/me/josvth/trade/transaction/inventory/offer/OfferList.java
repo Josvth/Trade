@@ -50,10 +50,10 @@ public class OfferList {
     @Override
     public String toString() {
 
-        final StringBuilder builder = new StringBuilder("Contents:");
+        final StringBuilder builder = new StringBuilder();
 
-        for (Offer offer : offers) {
-            builder.append((offer == null) ? "\n null" : "\n " + offer.toString());
+        for (int i = 0; i < offers.length; i++) {
+            builder.append("[").append(i).append("] ").append((offers[i] == null) ? null : offers[i].toString()).append(" ");
         }
 
         return builder.toString();

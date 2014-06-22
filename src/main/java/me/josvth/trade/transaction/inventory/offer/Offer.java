@@ -189,7 +189,7 @@ public abstract class Offer {
     }
 
     // Event handling
-    public boolean onCursorClick(ClickContext context) {
+    public void onCursorClick(ClickContext context) {
 
         final List<ClickBehaviour> behaviours = getCursorClickBehaviourMap().get(context.getEvent().getClick());
 
@@ -197,19 +197,16 @@ public abstract class Offer {
 
             final ListIterator<ClickBehaviour> iterator = behaviours.listIterator(behaviours.size());
 
-            boolean executed = false;
+            while (iterator.hasPrevious() && !context.isHandled()) {
+                final ClickBehaviour behaviour = iterator.previous();
 
-            while (iterator.hasPrevious() && !executed) {
-                executed = iterator.previous().onClick(context, this);
-            }
-
-            if (executed) {
-                return true;
+                if (behaviour.onClick(context, this)) {
+                    context.setHandled(true);
+                    context.setExecutedBehaviour(behaviour);
+                }
             }
 
         }
-
-        return false;
 
     }
 
@@ -222,27 +219,24 @@ public abstract class Offer {
         return true;
     }
 
-    public boolean onContentClick(ClickContext context) {
+    public void onContentClick(ClickContext context) {
 
-        final List<ClickBehaviour> behaviours = getContentClickBehaviourMap().get(context.getEvent().getClick());
+        final List<ClickBehaviour> behaviours = getCursorClickBehaviourMap().get(context.getEvent().getClick());
 
         if (behaviours != null) {
 
             final ListIterator<ClickBehaviour> iterator = behaviours.listIterator(behaviours.size());
 
-            boolean executed = false;
+            while (iterator.hasPrevious() && !context.isHandled()) {
+                final ClickBehaviour behaviour = iterator.previous();
 
-            while (iterator.hasPrevious() && !executed) {
-                executed = iterator.previous().onClick(context, this);
-            }
-
-            if (executed) {
-                return true;
+                if (behaviour.onClick(context, this)) {
+                    context.setHandled(true);
+                    context.setExecutedBehaviour(behaviour);
+                }
             }
 
         }
-
-        return false;
 
     }
 
@@ -250,5 +244,8 @@ public abstract class Offer {
         return false;
     }
 
-
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName()).append("{").append(getAmount()).append("}").toString();
+    }
 }

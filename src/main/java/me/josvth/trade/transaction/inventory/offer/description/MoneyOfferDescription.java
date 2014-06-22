@@ -11,8 +11,8 @@ public class MoneyOfferDescription extends OfferDescription<MoneyOffer> {
     private ItemStack moneyItem;
     private ItemStack moneyItemMirror;
 
-    private int smallModifier;
-    private int largeModifier;
+    private double smallModifier;
+    private double largeModifier;
 
     @Override
     public ItemStack createItem(MoneyOffer offer, TransactionHolder holder) {
@@ -33,9 +33,9 @@ public class MoneyOfferDescription extends OfferDescription<MoneyOffer> {
 
         return ItemStackUtils.argument(
                 itemStack,
-                "%money%", Trade.getInstance().getEconomy().format(offer.getAmount() / Math.pow(10, holder.getEconomy().fractionalDigits())),
-                "%small%", Trade.getInstance().getEconomy().format(smallModifier / Math.pow(10, holder.getEconomy().fractionalDigits())),
-                "%large%", Trade.getInstance().getEconomy().format(largeModifier / Math.pow(10, holder.getEconomy().fractionalDigits()))
+                "%money%", Trade.getInstance().getEconomy().format(offer.getAmount()),
+                "%small%", Trade.getInstance().getEconomy().format(getSmallModifier()),
+                "%large%", Trade.getInstance().getEconomy().format(getLargeModifier())
         );
     }
 
@@ -54,7 +54,7 @@ public class MoneyOfferDescription extends OfferDescription<MoneyOffer> {
         } else {
             itemStack = null;
         }
-        return ItemStackUtils.argument(itemStack, "%money%", Trade.getInstance().getEconomy().format(offer.getAmount() / Math.pow(10, holder.getEconomy().fractionalDigits())));
+        return ItemStackUtils.argument(itemStack, "%money%", Trade.getInstance().getEconomy().format(offer.getAmount()));
     }
 
     @Override
@@ -83,7 +83,7 @@ public class MoneyOfferDescription extends OfferDescription<MoneyOffer> {
         this.moneyItemMirror = moneyItemMirror;
     }
 
-    public int getSmallModifier() {
+    public double getSmallModifier() {
         return smallModifier;
     }
 
@@ -91,7 +91,7 @@ public class MoneyOfferDescription extends OfferDescription<MoneyOffer> {
         this.smallModifier = smallModifier;
     }
 
-    public int getLargeModifier() {
+    public double getLargeModifier() {
         return largeModifier;
     }
 

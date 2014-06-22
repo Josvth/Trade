@@ -29,11 +29,13 @@ public class CloseSlot extends Slot {
     }
 
     @Override
-    public void onClick(ClickContext context) {
+    public boolean onClick(ClickContext context) {
 
         holder.getTrader().closeInventory();
 
         context.getEvent().setCancelled(true);
+
+        return true;
 
     }
 

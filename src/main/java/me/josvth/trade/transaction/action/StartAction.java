@@ -28,7 +28,8 @@ public class StartAction extends Action {
             throw new IllegalStateException("Cannot start transaction without an layout.");
         }
 
-        if (getManager().isInTransaction(getTransaction().getTraderA().getName()) || getManager().isInTransaction(getTransaction().getTraderB().getName())) {
+        // TODO Add method like isInTransaction(Trader)
+        if (getManager().isInTransaction(getTransaction().getTraderA().getPlayer()) || getManager().isInTransaction(getTransaction().getTraderB().getPlayer())) {
             throw new IllegalArgumentException("One of the traders is already trading!");
         }
 

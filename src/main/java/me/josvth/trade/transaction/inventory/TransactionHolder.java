@@ -163,16 +163,38 @@ public class TransactionHolder implements InventoryHolder {
 
         final ClickContext context = new ClickContext(this, event, slot);
 
+        // First we pass the event to the cursor if there is one
         if (getCursorOffer() != null) {
-            if (getCursorOffer().onCursorClick(context)) {
-                return;
-            }
+            getCursorOffer().onCursorClick(context);
         }
 
-        if (slot == null) {
-            event.setCancelled(true);
-        } else {
+        // If the cursor didn't handle the event we pass it to the slot
+        if (!context.isHandled() && slot != null) {
             slot.onClick(context);
+        }
+
+        // If the event is not handled we cancel it
+        if (!context.isHandled()) {
+            event.setCancelled(true);
+        }
+
+        // Display debug information
+        if (getTransaction().getPlugin().isDebugMode()) {
+            StringBuilder builder = new StringBuilder("[DEBUG]\n");
+            builder.append("Event:   ").append("onClick\n");
+            builder.append("Trader:  ").append(getTrader().getName()).append("\n");
+            if (context.isHandled()) {
+                builder.append("Handled: ").append(context.getExecutedBehaviour().toString()).append("\n");
+            } else {
+                builder.append("Handled: ").append(false).append("\n");
+            }
+            builder.append("Slot:    ").append(slot).append("\n");
+            builder.append("Cursor:  ").append(cursorOffer).append("\n");
+            builder.append("Offers:  ").append(trader.getOffers().toString());
+
+            getTransaction().getPlugin().getLogger().info(builder.toString());
+            getTrader().getPlayer().sendMessage(builder.toString());
+
         }
 
     }

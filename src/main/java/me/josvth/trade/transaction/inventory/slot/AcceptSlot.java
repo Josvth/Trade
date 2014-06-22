@@ -60,7 +60,7 @@ public class AcceptSlot extends Slot {
     }
 
     @Override
-    public void onClick(ClickContext context) {
+    public boolean onClick(ClickContext context) {
 
         final Trader trader = holder.getTrader();
 
@@ -71,6 +71,8 @@ public class AcceptSlot extends Slot {
         }
 
         context.getEvent().setCancelled(true);
+
+        return true;
 
     }
 

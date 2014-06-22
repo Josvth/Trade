@@ -19,7 +19,7 @@ public class RequestTimeOutTask implements Runnable {
         if (manager.removeRequest(request)) {
             final Player player = request.getRequesterPlayer();
             if (player != null) {
-                manager.getMessageHolder().getMessage("requesting.timeout").send(player, "%player%", request.getRequested());
+                manager.getMessageHolder().getMessage("requesting.timeout").send(player, "%player%", request.getRequestedPlayer().getName());
             }
         }
     }

@@ -13,6 +13,9 @@ public class ClickContext {
     private final InventoryClickEvent event;
     private final Slot slot;
 
+    private ClickBehaviour executedBehaviour;
+    private boolean handled = false;
+
     public ClickContext(TransactionHolder holder, InventoryClickEvent event, Slot slot) {
         this.holder = holder;
         this.event = event;
@@ -29,6 +32,22 @@ public class ClickContext {
 
     public Slot getSlot() {
         return slot;
+    }
+
+    public void setExecutedBehaviour(ClickBehaviour executed) {
+        this.executedBehaviour = executed;
+    }
+
+    public ClickBehaviour getExecutedBehaviour() {
+        return executedBehaviour;
+    }
+
+    public boolean isHandled() {
+        return handled;
+    }
+
+    public void setHandled(boolean handled) {
+        this.handled = handled;
     }
 
     public Trader getTrader() {return holder.getTrader(); }
@@ -52,5 +71,6 @@ public class ClickContext {
     public void setCancelled(boolean cancelled) {
         event.setCancelled(cancelled);
     }
+
 
 }

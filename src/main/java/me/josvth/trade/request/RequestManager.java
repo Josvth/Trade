@@ -9,7 +9,6 @@ import me.josvth.trade.transaction.action.StartAction;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.*;
 
@@ -24,9 +23,9 @@ public class RequestManager {
 
     private final RequestOptions options = new RequestOptions();
 
-    private final Set<String> ignoring = new HashSet<String>();
+    private final Set<UUID> ignoring = new HashSet<UUID>();
 
-    private final Map<String, List<Request>> activeRequests = new HashMap<String, List<Request>>();
+    private final Map<UUID, List<Request>> activeRequests = new HashMap<UUID, List<Request>>();
 
     public RequestManager(Trade plugin, MessageHolder messageHolder, TransactionManager transactionManager) {
         this.plugin = plugin;
@@ -57,85 +56,82 @@ public class RequestManager {
     }
 
     // Ignoring handling
-    public boolean toggleIgnoring(String player) {
+    public boolean toggleIgnoring(Player player) {
         if (isIgnoring(player)) {
-            ignoring.remove(player.toLowerCase());
+            ignoring.remove(player.getUniqueId());
             return false;
         } else {
-            ignoring.add(player.toLowerCase());
+            ignoring.add(player.getUniqueId());
             return true;
         }
     }
 
-    public boolean isIgnoring(String player) {
-        return ignoring.contains(player.toLowerCase());
+    public boolean isIgnoring(Player player) {
+        return ignoring.contains(player.getUniqueId());
     }
 
     // Restriction handling
-    public RequestRestriction mayRequest(String player, String by, RequestMethod method) {
+    public RequestRestriction mayRequest(Player requester, Player requested, RequestMethod method) {
 
-        final Player requesterPlayer = Bukkit.getPlayerExact(player);
-        final Player requestedPlayer = Bukkit.getPlayerExact(by);
-
-        if (requesterPlayer == null || requestedPlayer == null) {
+        if (requester == null || requested == null) {
             return RequestRestriction.OFFLINE;
         }
 
         // We check if the entity is a NPC
-        if (requestedPlayer.hasMetadata("NPC")) {
+        if (requested.hasMetadata("NPC")) {
             return RequestRestriction.NPC;
         }
 
-        if (requestedPlayer == requesterPlayer) {
+        if (requested == requester) {
             return RequestRestriction.SELF;
         }
 
         RequestRestriction restriction = RequestRestriction.ALLOW;
 
         // We check method first
-        if (!mayUseMethod(requesterPlayer, method)) {
+        if (!mayUseMethod(requester, method)) {
             restriction = RequestRestriction.METHOD;
 
             // We directly check for exclusion
-            if (!hasExclusion(requestedPlayer, restriction)) {
+            if (!hasExclusion(requested, restriction)) {
                 return restriction;
             }
 
         }
 
-//        if (!hasExclusion(requesterPlayer, RequestRestriction.PERMISSION)) {
+//        if (!hasExclusion(requester, RequestRestriction.PERMISSION)) {
 //            return RequestRestriction.PERMISSION;
 //        }
 
-        if (isIgnoring(player)) {
+        if (isIgnoring(requested)) {
             return RequestRestriction.IGNORING;
         }
 
-        if (transactionManager.isInTransaction(by)) {
+        if (transactionManager.isInTransaction(requested)) {
             return RequestRestriction.BUSY;
         }
 
-        if (isRequested(player, by)) {
+        if (isRequested(requested, requester)) {
             return RequestRestriction.PENDING;
         }
 
-        if (!hasExclusion(requesterPlayer, RequestRestriction.FLOOD) && countRequestsBy(requesterPlayer.getName()) >= options.getMaxRequests()) {
+        if (!hasExclusion(requester, RequestRestriction.FLOOD) && countRequestsBy(requester) >= options.getMaxRequests()) {
             return RequestRestriction.FLOOD;
         }
 
-        if (!requesterPlayer.getWorld().equals(requestedPlayer.getWorld()) && !options.allowCrossWorld()) {
+        if (!requester.getWorld().equals(requested.getWorld()) && !options.allowCrossWorld()) {
             restriction = RequestRestriction.CROSS_WORLD;
-        } else if (!requesterPlayer.getGameMode().equals(requestedPlayer.getGameMode()) && !options.allowCrossGameMode()) {
+        } else if (!requester.getGameMode().equals(requested.getGameMode()) && !options.allowCrossGameMode()) {
             restriction = RequestRestriction.CROSS_GAME_MODE;
-        } else if (!requesterPlayer.canSee(requestedPlayer) && !options.mustSee()) {
+        } else if (!requester.canSee(requested) && !options.mustSee()) {
             restriction = RequestRestriction.VISION;
-        } else if (requesterPlayer.getLocation().distance(requestedPlayer.getPlayer().getLocation()) > options.getMaxDistance() && options.getMaxDistance() != -1) {
+        } else if (requester.getLocation().distance(requested.getPlayer().getLocation()) > options.getMaxDistance() && options.getMaxDistance() != -1) {
             restriction = RequestRestriction.DISTANCE;
-        } else if (options.getDisabledWorlds() != null && options.getDisabledWorlds().contains(requesterPlayer.getWorld().getName())) {
+        } else if (options.getDisabledWorlds() != null && options.getDisabledWorlds().contains(requester.getWorld().getName())) {
             restriction = RequestRestriction.WORLD;
         }// TODO ADD REGION CHECK
 
-        if (restriction != RequestRestriction.ALLOW && hasExclusion(requestedPlayer, restriction)) {
+        if (restriction != RequestRestriction.ALLOW && hasExclusion(requested, restriction)) {
             return RequestRestriction.ALLOW;
         }
 
@@ -172,14 +168,14 @@ public class RequestManager {
 
 
 
-    private boolean isRequested(String player, String by) {
+    private boolean isRequested(Player player, Player by) {
 
-        final List<Request> list = getActiveRequests(player);
+        final List<Request> list = getActiveRequests(by);
 
         if (list == null) return false;
 
         for (Request request : list) {
-            if (request.getRequester().equalsIgnoreCase(by)) {
+            if (request.getIdRequester() == by.getUniqueId()) {
                 return true;
             }
         }
@@ -188,11 +184,11 @@ public class RequestManager {
 
     }
 
-    private int countRequestsBy(String player) {
+    private int countRequestsBy(Player player) {
         int amount = 0;
         for (List<Request> requests : activeRequests.values()) {
             for (Request request : requests) {
-                if (player.equalsIgnoreCase(request.getRequester())) {
+                if (request.getIdRequester() == player.getUniqueId()) {
                     amount++;
                 }
             }
@@ -201,14 +197,14 @@ public class RequestManager {
     }
 
     // Current request methods
-    private Request getRequest(String player, String by) {
+    private Request getRequest(Player player, Player by) {
 
         final List<Request> set = getActiveRequests(player);
 
         if (set == null) return null;
 
         for (Request request : set) {
-            if (request.getRequester().equalsIgnoreCase(by)) {
+            if (request.getIdRequester() == by.getUniqueId()) {
                 return request;
             }
         }
@@ -219,11 +215,11 @@ public class RequestManager {
 
     private boolean addRequest(Request request) {
 
-        List<Request> list = getActiveRequests(request.getRequested());
+        List<Request> list = getActiveRequests(request.getRequestedPlayer());
 
         if (list == null) {
             list = new LinkedList<Request>();
-            setActiveRequests(request.getRequested(), list);
+            setActiveRequests(request.getRequestedPlayer(), list);
         }
 
         return list.add(request);
@@ -232,14 +228,14 @@ public class RequestManager {
 
     public boolean removeRequest(Request request) {
 
-        final List<Request> list = getActiveRequests(request.getRequested());
+        final List<Request> list = getActiveRequests(request.getRequestedPlayer());
 
         if (list != null) {
 
             final boolean removed = list.remove(request);
 
             if (list.isEmpty()) {
-                setActiveRequests(request.getRequested(), null);
+                setActiveRequests(request.getRequestedPlayer(), null);
             }
 
             return removed;
@@ -250,25 +246,25 @@ public class RequestManager {
 
     }
 
-    public List<Request> getActiveRequests(String player) {
-        return activeRequests.get(player.toLowerCase());
+    public List<Request> getActiveRequests(Player player) {
+        return activeRequests.get(player.getUniqueId());
     }
 
-    private List<Request> setActiveRequests(String requested, List<Request> list) {
+    private List<Request> setActiveRequests(Player player, List<Request> list) {
         if (list == null) {
-            return activeRequests.remove(requested.toLowerCase());
+            return activeRequests.remove(player.getUniqueId());
         }
-        return activeRequests.put(requested.toLowerCase(), list);
+        return activeRequests.put(player.getUniqueId(), list);
     }
 
     public RequestResponse submit(Request request) {
 
-        final RequestRestriction restriction = mayRequest(request.getRequested(), request.getRequester(), request.getMethod());
+        final RequestRestriction restriction = mayRequest(request.getRequestedPlayer(), request.getRequesterPlayer(), request.getMethod());
 
         if (restriction == RequestRestriction.ALLOW) {
 
             // We check if there is a counter request
-            final Request counterRequest = getRequest(request.getRequester(), request.getRequested());
+            final Request counterRequest = getRequest(request.getRequesterPlayer(), request.getRequestedPlayer());
 
             // If so we start a transaction
             if (counterRequest != null) {
@@ -276,7 +272,7 @@ public class RequestManager {
                 // We remove the counter request from the active requests
                 removeRequest(counterRequest);
 
-                final Transaction transaction = transactionManager.createTransaction(counterRequest.getRequester(), counterRequest.getRequested());
+                final Transaction transaction = transactionManager.createTransaction(counterRequest.getRequesterPlayer(), counterRequest.getRequestedPlayer());
 
                 new StartAction(transaction).execute();
 
@@ -290,7 +286,7 @@ public class RequestManager {
             Bukkit.getScheduler().runTaskLater(plugin, new RequestTimeOutTask(this, request), options.getTimeoutMillis() / 50);
 
             // And send a message to the requested
-            messageHolder.getMessage("requesting.requested-by").send(request.getRequestedPlayer(), "%player%", request.getRequester());
+            messageHolder.getMessage("requesting.requested-by").send(request.getRequestedPlayer(), "%player%", request.getRequesterPlayer().getName());
 
         }
 
@@ -300,7 +296,7 @@ public class RequestManager {
                 messageHolder.getMessage(request.getMethod().messagePath).send(request.getRequesterPlayer());
             }
         } else {
-            messageHolder.getMessage(restriction.requestMessagePath).send(request.getRequesterPlayer(), "%player%", request.getRequested());
+            messageHolder.getMessage(restriction.requestMessagePath).send(request.getRequesterPlayer(), "%player%", request.getRequestedPlayer().getName());
         }
 
         // In all other cases we return only the restriction

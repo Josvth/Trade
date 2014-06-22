@@ -4,10 +4,12 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.action.EndAction;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.UUID;
 
 public class TransactionManager {
 
@@ -17,7 +19,7 @@ public class TransactionManager {
 
     private TransactionOptions options = new TransactionOptions();
 
-    private Map<String, Transaction> transactions = new HashMap<String, Transaction>();
+    private Map<UUID, Transaction> transactions = new HashMap<UUID, Transaction>();
 
     public TransactionManager(Trade plugin) {
         this.plugin = plugin;
@@ -47,7 +49,7 @@ public class TransactionManager {
         return options;
     }
 
-    public Transaction createTransaction(String playerA, String playerB) {
+    public Transaction createTransaction(Player playerA, Player playerB) {
 
         Transaction transaction = removeTransaction(playerA);
         if (transaction != null) {
@@ -59,14 +61,14 @@ public class TransactionManager {
             new EndAction(transaction, EndAction.Reason.GENERIC).execute();
         }
 
-        transaction = new Transaction(this, plugin.getLayoutManager().getLayout(playerA, playerB), playerA, playerB);
+        transaction = Transaction.createTransaction(this, plugin.getLayoutManager().getLayout(playerA, playerB), playerA, playerB);
 
         return transaction;
 
     }
 
-    public boolean isInTransaction(String player) {
-        return transactions.containsKey(player);
+    public boolean isInTransaction(Player player) {
+        return transactions.containsKey(player.getUniqueId());
     }
 
     public Transaction getTransaction(String player) {
@@ -74,17 +76,17 @@ public class TransactionManager {
     }
 
     public void addTransaction(Transaction transaction) {
-        transactions.put(transaction.getTraderA().getName(), transaction);
-        transactions.put(transaction.getTraderB().getName(), transaction);
+        transactions.put(transaction.getTraderA().getID(), transaction);
+        transactions.put(transaction.getTraderB().getID(), transaction);
     }
 
     public void removeTransaction(Transaction transaction) {
-        removeTransaction(transaction.getTraderA().getName());
-        removeTransaction(transaction.getTraderB().getName());
+        transactions.remove(transaction.getTraderA().getID());
+        transactions.remove(transaction.getTraderB().getID());
     }
 
-    private Transaction removeTransaction(String player) {
-        return transactions.remove(player);
+    private Transaction removeTransaction(Player player) {
+        return transactions.remove(player.getUniqueId());
     }
 
 }

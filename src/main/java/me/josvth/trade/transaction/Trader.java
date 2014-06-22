@@ -5,14 +5,14 @@ import me.josvth.trade.transaction.action.ActionProvoker;
 import me.josvth.trade.transaction.inventory.Layout;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.offer.OfferList;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class Trader implements ActionProvoker {
 
     private final Transaction transaction;
-    private final String name;
-
+    private final UUID id;
     private final OfferList offers;
     private final Layout layout;
     private final TransactionHolder holder;
@@ -24,10 +24,10 @@ public class Trader implements ActionProvoker {
     private boolean accepted = false;
     private boolean refused = false;
 
-    public Trader(Transaction transaction, String name, int offerSize) {
+    public Trader(Transaction transaction, UUID id, int offerSize) {
 
         this.transaction = transaction;
-        this.name = name;
+        this.id = id;
 
         this.offers = new OfferList(this, offerSize, OfferList.Type.TRADE);
         this.layout = transaction.getLayout();  //TODO Trader specific layouts?
@@ -35,14 +35,17 @@ public class Trader implements ActionProvoker {
 
     }
 
+    public UUID getID() {
+        return id;
+    }
+
     public Transaction getTransaction() {
         return transaction;
     }
 
     public String getName() {
-        return name;
+        return getPlayer().getName();
     }
-
 
     public OfferList getOffers() {
         return offers;
@@ -58,7 +61,7 @@ public class Trader implements ActionProvoker {
 
 
     public Player getPlayer() {
-        return Bukkit.getPlayerExact(name);
+        return transaction.getPlugin().getServer().getPlayer(id);
     }
 
     public Trader getOtherTrader() {

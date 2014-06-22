@@ -3,35 +3,41 @@ package me.josvth.trade.request;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 public class Request {
 
-    private final String requester;
-    private final String requested;
+    private final UUID idRequester;
+    private final UUID idRequested;
 
     private final RequestMethod method;
 
     private long submitDate = -1;
 
-    public Request(String requester, String requested, RequestMethod method) {
-        this.requester = requester;
-        this.requested = requested;
+    public static Request createRequest(Player player, Player by, RequestMethod method){
+        return new Request(player.getUniqueId(), by.getUniqueId(), method);
+    }
+
+    public Request(UUID idRequester, UUID idRequested, RequestMethod method) {
+        this.idRequester = idRequester;
+        this.idRequested = idRequested;
         this.method = method;
     }
 
-    public String getRequester() {
-        return requester;
+    public UUID getIdRequester() {
+        return idRequester;
     }
 
     public Player getRequesterPlayer() {
-        return Bukkit.getPlayerExact(requester);
+        return Bukkit.getPlayer(idRequester);
     }
 
-    public String getRequested() {
-        return requested;
+    public UUID getRequestedID() {
+        return idRequested;
     }
 
     public Player getRequestedPlayer() {
-        return Bukkit.getPlayerExact(requested);
+        return Bukkit.getPlayer(idRequested);
     }
 
     public RequestMethod getMethod() {
