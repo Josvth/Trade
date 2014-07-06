@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ public class ItemStackUtils {
             - "is"
             - "lore"
     */
-    public static final ItemStack fromSection(ConfigurationSection section, MessageManager messageManager) {
+    public static ItemStack fromSection(ConfigurationSection section, MessageManager messageManager) {
 
         if (section == null) {
             return null;
@@ -79,7 +80,12 @@ public class ItemStackUtils {
 
     }
 
-
+    public static ItemStack create(Material type, int amount, short durability, MaterialData data, ItemMeta meta) {
+        final ItemStack item = new ItemStack(type, amount, durability);
+        item.setData(data);
+        item.setItemMeta(meta);
+        return item;
+    }
     public static ItemStack[] split(ItemStack currentItem) {
         final ItemStack[] stacks = new ItemStack[2];
         stacks[0] = currentItem.clone();

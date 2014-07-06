@@ -53,6 +53,11 @@ public abstract class ContentSlot extends Slot {
 
                 return false;
             }
+
+            @Override
+            public String getName() {
+                return "PICKUP_ALL";
+            }
         });
 
         // PICKUP_SOME ???
@@ -78,6 +83,12 @@ public abstract class ContentSlot extends Slot {
                 return true;
 
             }
+
+            @Override
+            public String getName() {
+                return "PICKUP_HALF";
+            }
+
         });
 
         // PICKUP_ONE ??
@@ -105,6 +116,11 @@ public abstract class ContentSlot extends Slot {
                 }
 
                 return false;
+            }
+
+            @Override
+            public String getName() {
+                return "PLACE_ALL";
             }
         });
 
@@ -139,6 +155,10 @@ public abstract class ContentSlot extends Slot {
 
                 return false;
 
+            }
+
+            public String getName() {
+                return "PLACE_ONE";
             }
         });
 
@@ -178,6 +198,11 @@ public abstract class ContentSlot extends Slot {
 
                 return false;
             }
+
+            public String getName() {
+                return "ADD_SOME";
+            }
+
         });
 
         // ADD_ONE (Bukkit: PLACE_ONE)
@@ -216,6 +241,11 @@ public abstract class ContentSlot extends Slot {
                 return false;
 
             }
+
+            public String getName() {
+                return "ADD_ONE";
+            }
+
         });
 
         // SWAP_WITH_CURSOR
@@ -241,7 +271,13 @@ public abstract class ContentSlot extends Slot {
                 return false;
 
             }
+
+            public String getName() {
+                return "SWAP_WITH_CURSOR";
+            }
+
         };
+
         DEFAULT_CLICK_BEHAVIOURS.get(ClickType.LEFT).add(swapWithCursor);
         DEFAULT_CLICK_BEHAVIOURS.get(ClickType.RIGHT).add(swapWithCursor);
 
@@ -275,9 +311,9 @@ public abstract class ContentSlot extends Slot {
                     if (contents != null) {
                         taken = increase - contents.add(increase);
                     } else {
-                        taken = increase;
                         contents = cursor.clone();
-                        contents.setAmount(taken);
+                        contents.setAmount(0);      // We first set the contents to zero so we can use .add()
+                        taken = increase - contents.add(increase);  // Because add returns us what we couldn't add think of adding 1.667 to a item stack
                     }
 
                     if (taken > 0) {    // We added something

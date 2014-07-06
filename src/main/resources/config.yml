@@ -1,4 +1,4 @@
-debug-mode: true
+debug-mode: false
 requesting:
   use-permissions: true
   allow-cross-game-mode: false
@@ -17,6 +17,7 @@ requesting:
     shift-left-click: false
 trading:
   allow-inventory-closing: false
+  disable-dragging: false
   use-economy: true
   offers:
     experience:

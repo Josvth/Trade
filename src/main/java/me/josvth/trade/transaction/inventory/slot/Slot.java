@@ -80,10 +80,13 @@ public abstract class Slot {
 
             final ListIterator<ClickBehaviour> iterator = behaviours.listIterator(behaviours.size());
 
-            while (iterator.hasPrevious()) {
+            while (iterator.hasPrevious() && !context.isHandled()) {
 
-                if (iterator.previous().onClick(context, null)) {
-                    return true;
+                final ClickBehaviour behaviour = iterator.previous();
+
+                if (behaviour.onClick(context, null)) {
+                    context.setHandled(true);
+                    context.setExecutedBehaviour(behaviour);
                 }
 
             }

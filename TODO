@@ -1,0 +1,4 @@
+Because behaviours are changing slots during the event handling loop behaviours after the handled event trigger causing unexpected behaviour.
+Solutions:
+- Only let 1 behaviour be able to handle the event (this is how it used to be)
+- Add a set future in click context.

@@ -28,9 +28,6 @@ public class TransactionListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (Trade.getInstance().getGeneralConfiguration().getBoolean("debug-mode")) {
-            ((Player) event.getWhoClicked()).sendMessage("Raw: " + event.getRawSlot() + " Slot: " + event.getSlot());
-        }
         if (event.getInventory().getHolder() instanceof TransactionHolder) {
             ((TransactionHolder) event.getInventory().getHolder()).onClick(event);
         }

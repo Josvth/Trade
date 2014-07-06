@@ -4,8 +4,12 @@ import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.Trader;
 import me.josvth.trade.transaction.inventory.TransactionHolder;
 import me.josvth.trade.transaction.inventory.offer.description.ItemOfferDescription;
+import me.josvth.trade.util.ItemStackUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 
 public class ItemOffer extends Offer {
 
@@ -90,15 +94,30 @@ public class ItemOffer extends Offer {
 //
 //    }
 
-    private ItemStack item = null;
+
+    // 6-7-2014 I decided to not use an ItemStack field anymore because ItemStacks have some hard programmed behaviour
+    // For example: ItemStack.setAmount(0) will always make the ItemStack of type AIR
+    //private ItemStack item = null;
+    private Material type;
+    private int amount;
+    private MaterialData data;
+    private short durability;
+    private ItemMeta meta;
 
     public ItemOffer() {
         this(null);
     }
 
     public ItemOffer(ItemStack item) {
-        super();
-        this.item = item;
+        this(item.getType(), item.getAmount(), item.getDurability(), item.getData(), item.getItemMeta());
+    }
+
+    public ItemOffer(Material type, int amount, short durability, MaterialData data, ItemMeta meta) {
+        this.type = type;
+        this.amount = amount;
+        this.data = data;
+        this.durability = durability;
+        this.meta = meta;
         setAllowedInInventory(true);
         setCanStayInInventory(true);
     }
@@ -124,12 +143,24 @@ public class ItemOffer extends Offer {
     }
 
     @Override
+    public double add(double amount) {
+        final double integerAmount = Math.floor(amount);
+        return (amount - integerAmount) + super.add(integerAmount);
+    }
+
+    @Override
+    public double remove(double amount) {
+        final double integerAmount = Math.floor(amount);
+        return (amount - integerAmount) + super.remove(integerAmount);
+    }
+
+    @Override
     public double getAmount() {
         return getIntAmount();
     }
 
     public int getIntAmount() {
-        return (item == null) ? 0 : item.getAmount();
+        return amount;
     }
 
     @Override
@@ -142,25 +173,44 @@ public class ItemOffer extends Offer {
     }
 
     public void setIntAmount(int amount) {
-        if (item == null) {
-            throw new IllegalArgumentException("Cannot set amount if item is zero");
-        }
-
-        item.setAmount(amount);
+        this.amount = amount;
     }
 
     @Override
     public int getMaxAmount() {
-        return (item == null) ? 0 : item.getMaxStackSize();
+        return type.getMaxStackSize();
     }
 
     @Override
     public boolean isFull() {
-        return item != null && item.getMaxStackSize() - item.getAmount() <= 0;
+        return amount >= type.getMaxStackSize();
     }
 
     @Override
     public void grant(final Trader trader, boolean nextTick) {
+        if (nextTick) {
+            Bukkit.getScheduler().runTask(Trade.getInstance(), new Runnable() {         //TODO Make this nicer
+                @Override
+                public void run() {
+                    trader.getPlayer().getInventory().addItem(createItemStack());
+                }
+            });
+        } else {
+            trader.getPlayer().getInventory().addItem(createItemStack());
+        }
+    }
+
+    @Override
+    public void grant(final Trader trader, boolean nextTick, double amount) {
+
+        final ItemStack item = createItemStack();
+
+        if (amount > Integer.MAX_VALUE) {
+            item.setAmount((Integer.MAX_VALUE));
+        } else {
+            item.setAmount(((int) amount));
+        }
+
         if (nextTick) {
             Bukkit.getScheduler().runTask(Trade.getInstance(), new Runnable() {         //TODO Make this nicer
                 @Override
@@ -173,44 +223,25 @@ public class ItemOffer extends Offer {
         }
     }
 
-    @Override
-    public void grant(final Trader trader, boolean nextTick, double amount) {
-
-        final ItemStack clone = item.clone();
-
-        if (amount > Integer.MAX_VALUE) {
-            clone.setAmount((Integer.MAX_VALUE));
-        } else {
-            clone.setAmount(((int) amount));
-        }
-
-        if (nextTick) {
-            Bukkit.getScheduler().runTask(Trade.getInstance(), new Runnable() {         //TODO Make this nicer
-                @Override
-                public void run() {
-                    trader.getPlayer().getInventory().addItem(clone);
-                }
-            });
-        } else {
-            trader.getPlayer().getInventory().addItem(clone);
-        }
-    }
-
-    public ItemStack getItem() {
-        return item;
+    public ItemStack createItemStack() {
+        return ItemStackUtils.create(type, amount, durability, data, meta);
     }
 
     public void setItem(ItemStack item) {
-        this.item = item;
+        type = item.getType();
+        amount = item.getAmount();
+        durability = item.getDurability();
+        data = item.getData();
+        meta = item.getItemMeta();
     }
 
     public ItemOffer clone() {
-        return new ItemOffer(item.clone());
+        return new ItemOffer(type, amount, durability, data, meta);
     }
 
     @Override
     public boolean isSimilar(Offer offer) {
-        return offer instanceof ItemOffer && (getItem() != null) && getItem().isSimilar(((ItemOffer) offer).getItem());
+        return offer instanceof ItemOffer && (createItemStack() != null) && createItemStack().isSimilar(((ItemOffer) offer).createItemStack());
     }
 
 }

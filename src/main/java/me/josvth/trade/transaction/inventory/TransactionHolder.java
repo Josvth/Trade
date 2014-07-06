@@ -184,7 +184,7 @@ public class TransactionHolder implements InventoryHolder {
             builder.append("Event:   ").append("onClick\n");
             builder.append("Trader:  ").append(getTrader().getName()).append("\n");
             if (context.isHandled()) {
-                builder.append("Handled: ").append(context.getExecutedBehaviour().toString()).append("\n");
+                builder.append("Handled: ").append(context.getExecutedBehaviour().getName()).append("\n");
             } else {
                 builder.append("Handled: ").append(false).append("\n");
             }
@@ -194,13 +194,18 @@ public class TransactionHolder implements InventoryHolder {
 
             getTransaction().getPlugin().getLogger().info(builder.toString());
             getTrader().getPlayer().sendMessage(builder.toString());
-
         }
 
     }
 
     public void onDrag(InventoryDragEvent event) {
 
+        if (getTransaction().getManager().getOptions().disableDragging()) {
+            event.setCancelled(true);
+            return;
+        }
+
+        // We find all slot classes that were involved in this event
         final Set<Slot> slots = new HashSet<Slot>(event.getRawSlots().size());
 
         for (int slotID : event.getRawSlots()) {
@@ -213,16 +218,30 @@ public class TransactionHolder implements InventoryHolder {
 
         final DragContext context = new DragContext(this, event, slots);
 
+        // Pass the event to the cursor
         if (getCursorOffer() != null) {
             if (getCursorOffer().onCursorDrag(context)) {
                 return;
             }
         }
 
+        // Go through all slots
         for (Slot slot : slots) {
             if (slot != null) {
                 slot.onDrag(context);
             }
+        }
+
+        // Display debug information
+        if (getTransaction().getPlugin().isDebugMode()) {
+            StringBuilder builder = new StringBuilder("[DEBUG]\n");
+            builder.append("Event:   ").append("onDrag\n");
+            builder.append("Trader:  ").append(getTrader().getName()).append("\n");
+            builder.append("Cursor:  ").append(cursorOffer).append("\n");
+            builder.append("Offers:  ").append(trader.getOffers().toString());
+
+            getTransaction().getPlugin().getLogger().info(builder.toString());
+            getTrader().getPlayer().sendMessage(builder.toString());
         }
 
     }
