@@ -6,7 +6,7 @@
 
     <groupId>me.josvth</groupId>
     <artifactId>trade</artifactId>
-    <version>1.0</version>
+    <version>1.0 BETA</version>
 
     <name>Trade</name>
     <description>A Trade plugin for Bukkit</description>
