@@ -16,10 +16,13 @@ requesting:
     left-click: false
     shift-left-click: false
 trading:
-  allow-inventory-closing: false
-  disable-dragging: false
-  use-economy: true
-  offers:
+  options:
+    allow-inventory-closing: false
+    allow-dragging: true
+    use-economy: true
+    default-layout: default
+  global-offers:
+    item: {}
     experience:
       experience-item:
         material: 384
@@ -36,7 +39,3 @@ trading:
       money-item-mirror:
         material: 266
         display-name: '%player% offers %money%'
-      small-modifier: 1
-      large-modifier: 5
-    item: {}
-version: 1.0-ALPHA-ver2

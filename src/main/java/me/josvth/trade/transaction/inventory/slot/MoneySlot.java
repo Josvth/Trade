@@ -19,8 +19,8 @@ public class MoneySlot extends Slot {
 
     private ItemStack moneyItem;
 
-    private int smallModifier;
-    private int largeModifier;
+    private double smallModifier;
+    private double largeModifier;
 
     public MoneySlot(int slot, TransactionHolder holder) {
         super(slot, holder);
@@ -49,8 +49,8 @@ public class MoneySlot extends Slot {
     public static MoneySlot deserialize(int slotID, TransactionHolder holder, SlotDescription description) {
         final MoneySlot slot = new MoneySlot(slotID, holder);
         slot.setMoneyItem(ItemStackUtils.fromSection(description.getConfiguration().getConfigurationSection("money-item"), Trade.getInstance().getMessageManager()));
-        slot.setSmallModifier(description.getConfiguration().getInt("small-modifier", 1));
-        slot.setLargeModifier(description.getConfiguration().getInt("large-modifier", 5));
+        slot.setSmallModifier(description.getConfiguration().getDouble("small-modifier", 1.0));
+        slot.setLargeModifier(description.getConfiguration().getDouble("large-modifier", 5.0));
         return slot;
     }
 
@@ -62,19 +62,19 @@ public class MoneySlot extends Slot {
         this.moneyItem = moneyItem;
     }
 
-    public int getSmallModifier() {
+    public double getSmallModifier() {
         return smallModifier;
     }
 
-    public void setSmallModifier(int smallModifier) {
+    public void setSmallModifier(double smallModifier) {
         this.smallModifier = smallModifier;
     }
 
-    public int getLargeModifier() {
+    public double getLargeModifier() {
         return largeModifier;
     }
 
-    public void setLargeModifier(int largeModifier) {
+    public void setLargeModifier(double largeModifier) {
         this.largeModifier = largeModifier;
     }
 
@@ -84,7 +84,7 @@ public class MoneySlot extends Slot {
         // We always cancel the event.
         context.getEvent().setCancelled(true);
 
-        final int amount = context.getEvent().isShiftClick() ? largeModifier : smallModifier;
+        final double amount = context.getEvent().isShiftClick() ? largeModifier : smallModifier;
 
         if (amount <= 0) { // If amount is smaller or equal to 0 we do nothing to allow disabling of shift clicking
             return true;
@@ -106,13 +106,12 @@ public class MoneySlot extends Slot {
     }
 
     public void update(double money) {
-        final double divider = Math.pow(10, holder.getEconomy().fractionalDigits());
         setGUIItem(
                 ItemStackUtils.argument(
                         moneyItem.clone(),
-                        "%money%", holder.getEconomy().format(money / divider),
-                        "%small%", holder.getEconomy().format(smallModifier / divider),
-                        "%large%", holder.getEconomy().format(largeModifier / divider)
+                        "%money%", holder.getEconomy().format(money),
+                        "%small%", holder.getEconomy().format(smallModifier),
+                        "%large%", holder.getEconomy().format(largeModifier)
                 )
         );
     }

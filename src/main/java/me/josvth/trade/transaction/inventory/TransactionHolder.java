@@ -14,7 +14,6 @@ import me.josvth.trade.transaction.inventory.slot.OutsideSlot;
 import me.josvth.trade.transaction.inventory.slot.Slot;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -200,7 +199,7 @@ public class TransactionHolder implements InventoryHolder {
 
     public void onDrag(InventoryDragEvent event) {
 
-        if (getTransaction().getManager().getOptions().disableDragging()) {
+        if (!getTransaction().getManager().getOptions().getAllowDragging()) {
             event.setCancelled(true);
             return;
         }
@@ -248,7 +247,7 @@ public class TransactionHolder implements InventoryHolder {
 
     public void onClose(InventoryCloseEvent event) {
         if (getTransaction().getStage() == Transaction.Stage.IN_PROGRESS) {
-            if (getTransaction().getManager().getOptions().allowInventoryClosing()) {
+            if (getTransaction().getManager().getOptions().getAllowInventoryClosing()) {
                 new CloseAction(getTrader()).execute();
             } else {
                 new RefuseAction(getTrader(), RefuseAction.Reason.CLOSE).execute();

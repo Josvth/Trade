@@ -1,5 +1,6 @@
 package me.josvth.trade.transaction;
 
+import com.conventnunnery.libraries.config.ConventYamlConfiguration;
 import me.josvth.trade.Trade;
 import me.josvth.trade.transaction.action.EndAction;
 import org.bukkit.Bukkit;
@@ -32,6 +33,10 @@ public class TransactionManager {
 
     public void load(ConfigurationSection section) {
         options.load(section);
+    }
+
+    public void store(ConfigurationSection section) {
+        options.store(section);
     }
 
     public void unload() {
@@ -88,5 +93,6 @@ public class TransactionManager {
     private Transaction removeTransaction(Player player) {
         return transactions.remove(player.getUniqueId());
     }
+
 
 }

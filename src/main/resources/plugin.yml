@@ -13,10 +13,14 @@ permissions:
     default: op
     children:
       trade.reload: true
+      trade.configure: true
       trade.request.*: true
       trade.allow.*: true
   trade.reload:
     description: Grants permission to reload Trade.
+    default: op
+  trade.configure:
+    description: Grants permission to configure Trade.
     default: op
   trade.allow.*:
     description: Grants permission to all default restrictions.

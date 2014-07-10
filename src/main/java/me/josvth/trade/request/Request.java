@@ -15,10 +15,10 @@ public class Request {
     private long submitDate = -1;
 
     public static Request createRequest(Player player, Player by, RequestMethod method){
-        return new Request(player.getUniqueId(), by.getUniqueId(), method);
+        return new Request((player == null)? null : player.getUniqueId(), (by == null)? null : by.getUniqueId(), method);
     }
 
-    public Request(UUID idRequester, UUID idRequested, RequestMethod method) {
+    public Request(UUID idRequested, UUID idRequester, RequestMethod method) {
         this.idRequester = idRequester;
         this.idRequested = idRequested;
         this.method = method;

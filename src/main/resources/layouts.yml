@@ -3,106 +3,435 @@ default:
   shared: true
   rows: 3
   offer-size: 7
-  title: "You%spaces%%other%"
+  title: You%spaces%%other%
   slots:
-    0:
+    '0':
       type: trade
       offer-index: 0
-    1:
+    '1':
       type: trade
       offer-index: 1
-    2:
+    '2':
       type: trade
       offer-index: 2
-    3:
+    '3':
       type: accept
       accept-item:
         material: STAINED_CLAY
         data: 13
-        display-name: "&2Accept"
+        display-name: '&2Accept'
       accepted-item:
         material: 159
         data: 3
-        display-name: "&9Click to deny"
-    4:
+        display-name: '&9Click to deny'
+    '4':
       type: refuse
       refuse-item:
         material: STAINED_CLAY
         data: 14
-        display-name: "&4Refuse"
-    5:
+        display-name: '&4Refuse'
+    '5':
       type: status
       considering-item:
         material: STAINED_CLAY
         data: 4
-        display-name: "&6%player% is considering"
+        display-name: '&6%player% is considering'
       accepted-item:
         material: STAINED_CLAY
         data: 13
-        display-name: "&2%player% accepted"
-    6:
+        display-name: '&2%player% accepted'
+    '6':
       type: mirror
       offer-index: 0
-    7:
+    '7':
       type: mirror
       offer-index: 1
-    8:
+    '8':
       type: mirror
       offer-index: 2
-    9:
+    '9':
       type: trade
       offer-index: 3
-    10:
+    '10':
       type: trade
       offer-index: 4
-    11:
+    '11':
       type: trade
       offer-index: 5
-    12:
+    '12':
       type: trade
       offer-index: 6
-    13:
+    '13':
       type: dummy
       dummy-item:
         material: 280
-    14:
+    '14':
       type: mirror
       offer-index: 3
-    15:
+    '15':
       type: mirror
       offer-index: 4
-    16:
+    '16':
       type: mirror
       offer-index: 5
-    17:
+    '17':
       type: mirror
       offer-index: 6
-    18:
+    '18':
       type: experience
       experience-item:
         material: 384
-        display-name: "You added %experience% experience."
+        display-name: You added %experience% experience.
         lore:
-          - "Left click to add %small% level(s)"
-          - "Right click to remove %small% level(s)"
-          - "Shift left click to add %large% experience"
-          - "Shift right click to remove %large% experience"
-      small-modifier: 1
-      large-modifier: 5
-    19:
+        - Left click to add %small% level(s)
+        - Right click to remove %small% level(s)
+        - Shift left click to add %large% experience
+        - Shift right click to remove %large% experience
+      small-modifier: 1.0
+      large-modifier: 5.0
+    '19':
       type: money
       money-item:
         material: 266
-        display-name: "You added %money%."
+        display-name: You added %money%.
         lore:
-          - "Left click to add %small%"
-          - "Right click to remove %small%"
-          - "Shift left click to add %large%"
-          - "Shift right click to remove %large%"
-      small-modifier: 1
-      large-modifier: 5
-    22:
+        - Left click to add %small%
+        - Right click to remove %small%
+        - Shift left click to add %large%
+        - Shift right click to remove %large%
+      small-modifier: 1.0
+      large-modifier: 5.0
+    '22':
       type: close
       close-item:
         material: 352
-        display-name: "Click to close this inventory."
+        display-name: Click to close this inventory.
+default-4-rows:
+  priority: 0
+  shared: true
+  rows: 4
+  offer-size: 11
+  title: You%spaces%%other%
+  slots:
+    '0':
+      type: trade
+      offer-index: 0
+    '1':
+      type: trade
+      offer-index: 1
+    '2':
+      type: trade
+      offer-index: 2
+    '3':
+      type: accept
+      accept-item:
+        material: STAINED_CLAY
+        data: 13
+        display-name: '&2Accept'
+      accepted-item:
+        material: 159
+        data: 3
+        display-name: '&9Click to deny'
+    '4':
+      type: refuse
+      refuse-item:
+        material: STAINED_CLAY
+        data: 14
+        display-name: '&4Refuse'
+    '5':
+      type: status
+      considering-item:
+        material: STAINED_CLAY
+        data: 4
+        display-name: '&6%player% is considering'
+      accepted-item:
+        material: STAINED_CLAY
+        data: 13
+        display-name: '&2%player% accepted'
+    '6':
+      type: mirror
+      offer-index: 0
+    '7':
+      type: mirror
+      offer-index: 1
+    '8':
+      type: mirror
+      offer-index: 2
+    '9':
+      type: trade
+      offer-index: 3
+    '10':
+      type: trade
+      offer-index: 4
+    '11':
+      type: trade
+      offer-index: 5
+    '12':
+      type: trade
+      offer-index: 6
+    '13':
+      type: dummy
+      dummy-item:
+        material: 280
+    '14':
+      type: mirror
+      offer-index: 3
+    '15':
+      type: mirror
+      offer-index: 4
+    '16':
+      type: mirror
+      offer-index: 5
+    '17':
+      type: mirror
+      offer-index: 6
+    '18':
+      type: trade
+      offer-index: 7
+    '19':
+      type: trade
+      offer-index: 8
+    '20':
+      type: trade
+      offer-index: 9
+    '21':
+      type: trade
+      offer-index: 10
+    '22':
+      type: dummy
+      dummy-item:
+        material: 280
+    '23':
+      type: mirror
+      offer-index: 7
+    '24':
+      type: mirror
+      offer-index: 8
+    '25':
+      type: mirror
+      offer-index: 9
+    '26':
+      type: mirror
+      offer-index: 10
+    '27':
+      type: experience
+      experience-item:
+        material: 384
+        display-name: You added %experience% experience.
+        lore:
+        - Left click to add %small% level(s)
+        - Right click to remove %small% level(s)
+        - Shift left click to add %large% experience
+        - Shift right click to remove %large% experience
+      small-modifier: 1.0
+      large-modifier: 5.0
+    '28':
+      type: money
+      money-item:
+        material: 266
+        display-name: You added %money%.
+        lore:
+        - Left click to add %small%
+        - Right click to remove %small%
+        - Shift left click to add %large%
+        - Shift right click to remove %large%
+      small-modifier: 1.0
+      large-modifier: 5.0
+    '31':
+      type: close
+      close-item:
+        material: 352
+        display-name: Click to close this inventory.
+default-6-rows:
+  priority: 0
+  shared: true
+  rows: 6
+  offer-size: 19
+  title: You%spaces%%other%
+  slots:
+    '0':
+      type: trade
+      offer-index: 0
+    '1':
+      type: trade
+      offer-index: 1
+    '2':
+      type: trade
+      offer-index: 2
+    '3':
+      type: accept
+      accept-item:
+        material: STAINED_CLAY
+        data: 13
+        display-name: '&2Accept'
+      accepted-item:
+        material: 159
+        data: 3
+        display-name: '&9Click to deny'
+    '4':
+      type: refuse
+      refuse-item:
+        material: STAINED_CLAY
+        data: 14
+        display-name: '&4Refuse'
+    '5':
+      type: status
+      considering-item:
+        material: STAINED_CLAY
+        data: 4
+        display-name: '&6%player% is considering'
+      accepted-item:
+        material: STAINED_CLAY
+        data: 13
+        display-name: '&2%player% accepted'
+    '6':
+      type: mirror
+      offer-index: 0
+    '7':
+      type: mirror
+      offer-index: 1
+    '8':
+      type: mirror
+      offer-index: 2
+    '9':
+      type: trade
+      offer-index: 3
+    '10':
+      type: trade
+      offer-index: 4
+    '11':
+      type: trade
+      offer-index: 5
+    '12':
+      type: trade
+      offer-index: 6
+    '13':
+      type: dummy
+      dummy-item:
+        material: 280
+    '14':
+      type: mirror
+      offer-index: 3
+    '15':
+      type: mirror
+      offer-index: 4
+    '16':
+      type: mirror
+      offer-index: 5
+    '17':
+      type: mirror
+      offer-index: 6
+    '18':
+      type: trade
+      offer-index: 7
+    '19':
+      type: trade
+      offer-index: 8
+    '20':
+      type: trade
+      offer-index: 9
+    '21':
+      type: trade
+      offer-index: 10
+    '22':
+      type: dummy
+      dummy-item:
+        material: 280
+    '23':
+      type: mirror
+      offer-index: 7
+    '24':
+      type: mirror
+      offer-index: 8
+    '25':
+      type: mirror
+      offer-index: 9
+    '26':
+      type: mirror
+      offer-index: 10
+    '27':
+      type: trade
+      offer-index: 11
+    '28':
+      type: trade
+      offer-index: 12
+    '29':
+      type: trade
+      offer-index: 13
+    '30':
+      type: trade
+      offer-index: 14
+    '31':
+      type: dummy
+      dummy-item:
+        material: 280
+    '32':
+      type: mirror
+      offer-index: 11
+    '33':
+      type: mirror
+      offer-index: 12
+    '34':
+      type: mirror
+      offer-index: 13
+    '35':
+      type: mirror
+      offer-index: 14 
+    '36':
+      type: trade
+      offer-index: 15
+    '37':
+      type: trade
+      offer-index: 16
+    '38':
+      type: trade
+      offer-index: 17
+    '39':
+      type: trade
+      offer-index: 18
+    '40':
+      type: dummy
+      dummy-item:
+        material: 280
+    '41':
+      type: mirror
+      offer-index: 15
+    '42':
+      type: mirror
+      offer-index: 16
+    '43':
+      type: mirror
+      offer-index: 17
+    '44':
+      type: mirror
+      offer-index: 18  
+    '45':
+      type: experience
+      experience-item:
+        material: 384
+        display-name: You added %experience% experience.
+        lore:
+        - Left click to add %small% level(s)
+        - Right click to remove %small% level(s)
+        - Shift left click to add %large% experience
+        - Shift right click to remove %large% experience
+      small-modifier: 1.0
+      large-modifier: 5.0
+    '46':
+      type: money
+      money-item:
+        material: 266
+        display-name: You added %money%.
+        lore:
+        - Left click to add %small%
+        - Right click to remove %small%
+        - Shift left click to add %large%
+        - Shift right click to remove %large%
+      small-modifier: 1.0
+      large-modifier: 5.0
+    '49':
+      type: close
+      close-item:
+        material: 352
+        display-name: Click to close this inventory.
+version: 1.0 BETA

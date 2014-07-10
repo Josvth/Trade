@@ -34,43 +34,90 @@ public class CommandManager implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
 
-        if (args.length < 1) {
-            getMessageHolder().getMessage("command.invalid-usage").send(commandSender, "%usage%", "/trade <sub command> or /trade <player>");
+        if (args.length > 0) {
+
+            // /trade reload
+            if ("reload".equalsIgnoreCase(args[0])) {
+                return executeReloadCommand(commandSender, Arrays.copyOfRange(args, 1, args.length));
+            }
+
+            // /trade layout
+            if ("layout".equalsIgnoreCase(args[0])) {
+                return executeLayoutCommand(commandSender, Arrays.copyOfRange(args, 1, args.length));
+            }
+
+            // /trade ignore
+            if ("ignore".equalsIgnoreCase(args[0])) {
+                return executeIgnoreCommand(commandSender, Arrays.copyOfRange(args, 1, args.length));
+            }
+
+            // /trade request <player>
+            if ("request".equalsIgnoreCase(args[0])) {
+                return executeRequestCommand(commandSender, Arrays.copyOfRange(args, 1, args.length));
+            }
+
+            // /trade accept [player]
+            if ("accept".equalsIgnoreCase(args[0])) {
+                if (args.length == 2) {
+                    return executeRequestCommand(commandSender, args);
+                } else {
+                    return executeRequestCommand(commandSender, null);
+                }
+            }
+
+            // /trade open
+            if ("open".equalsIgnoreCase(args[0])) {
+                return executeOpenCommand(commandSender, Arrays.copyOfRange(args, 1, args.length));
+            }
+
+        }
+
+        // /trade <player> or /trade to accept a request
+        if (args.length <= 1) {
+            return executeRequestCommand(commandSender, args);
+        }
+
+        getMessageHolder().getMessage("command.invalid-usage").send(commandSender, "%usage%", "/trade <sub command> or /trade <player>");
+        return true;
+
+    }
+
+    private boolean executeLayoutCommand(CommandSender commandSender, String[] args) {
+
+        if (!plugin.hasPermission(commandSender, "trade.configure")) {
+            getMessageHolder().getMessage("commands.no-permission").send(commandSender);
             return true;
         }
 
-        // /trade reload
-        if ("reload".equalsIgnoreCase(args[0])) {
-            return executeReloadCommand(commandSender, Arrays.copyOfRange(args, 1, args.length));
+        if (args.length < 1) {
+            getMessageHolder().getMessage("commands.invalid-usage").send(commandSender, "%usage%", "/trade layout <subcommand>");
+            return true;
         }
 
-        // /trade ignore
-        if ("ignore".equalsIgnoreCase(args[0])) {
-            return executeIgnoreCommand(commandSender, Arrays.copyOfRange(args, 1, args.length));
-        }
-
-        // /trade request <player>
-        if ("request".equalsIgnoreCase(args[0])) {
-            return executeRequestCommand(commandSender, Arrays.copyOfRange(args, 1, args.length));
-        }
-
-        // /trade accept [player]
-        if ("accept".equalsIgnoreCase(args[0])) {
-            if (args.length == 2) {
-                return executeRequestCommand(commandSender, args);
-            } else {
-                return executeRequestCommand(commandSender, null);
+        if ("list".equalsIgnoreCase(args[0])) {
+            commandSender.sendMessage("Loaded layouts: ");
+            for (String layout : plugin.getLayoutManager().getLayouts().keySet()) {
+                commandSender.sendMessage("- " + layout);
             }
+            return true;
         }
 
-        // /trade open
-        if ("open".equalsIgnoreCase(args[0])) {
-            return executeOpenCommand(commandSender, Arrays.copyOfRange(args, 1, args.length));
+        if ("setdefault".equalsIgnoreCase(args[0])) {
+
+            if (args.length < 2) {
+                getMessageHolder().getMessage("commands.invalid-usage").send(commandSender, "%usage%", "/trade layout setdefault <defaultlayout>");
+                return true;
+            }
+
+            plugin.getTransactionManager().getOptions().setDefaultLayoutName(args[1]);
+            plugin.getTransactionManager().store(plugin.getGeneralConfiguration().getConfigurationSection("trading.options"));
+            plugin.getGeneralConfiguration().save();
+            commandSender.sendMessage("Setted default layout to: " + args[1]);
+            return true;
         }
 
-        // /trade <player>
-        return executeRequestCommand(commandSender, args);
-
+        getMessageHolder().getMessage("commands.invalid-usage").send(commandSender, "%usage%", "/trade layout <subcommand> or /trade layout <default layout id>");
+        return true;
     }
 
     private boolean executeReloadCommand(CommandSender commandSender, String[] args) {
@@ -137,7 +184,7 @@ public class CommandManager implements CommandExecutor {
         final Player player = (Player) commandSender;
 
         // Check if this player is requested before and tries to accept using /trade request
-        if (args == null) {
+        if (args.length == 0) {
 
             final List<Request> requests = getRequestManager().getActiveRequests(player);
 
@@ -146,13 +193,13 @@ public class CommandManager implements CommandExecutor {
                 return true;
             }
 
-            getRequestManager().submit(Request.createRequest(requests.get(0).getRequestedPlayer(), player, RequestMethod.COMMAND));
+            getRequestManager().submit(Request.createRequest(requests.get(0).getRequesterPlayer(), player, RequestMethod.COMMAND));
             return true;
 
         }
 
         if (args.length < 1) {
-            getMessageHolder().getMessage("command.invalid-usage").send(commandSender, "%usage%", "/trade request <player>");
+            getMessageHolder().getMessage("command.invalid-usage").send(commandSender, "%usage%", "/trade <player> or /trade request <player>");
             return true;
         }
 

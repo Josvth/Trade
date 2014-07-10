@@ -246,6 +246,6 @@ public abstract class Offer {
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append("{").append(getAmount()).append("}").toString();
+        return getClass().getSimpleName() + "{" + getAmount() + "}";
     }
 }

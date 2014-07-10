@@ -76,7 +76,36 @@ public class Trade extends JavaPlugin {
     private void loadConfigurations() {
         generalConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "config.yml"), getDescription().getVersion());
         generalConfiguration.setDefaults(getResource("config.yml"));
-        generalConfiguration.load();
+
+        generalConfiguration.load(false, true);
+
+        // Update generalConfiguration nodes
+        if (generalConfiguration.needToUpdate()) {
+
+            if (generalConfiguration.isSet("trading.offers")) {
+                generalConfiguration.set("trading.options.allow-inventory-closing", generalConfiguration.getBoolean("trading.allow-inventory-closing"));
+                generalConfiguration.set("trading.allow-inventory-closing", null);
+            }
+
+            if (generalConfiguration.isSet("trading.offers")) {
+                generalConfiguration.set("trading.options.allow-dragging", !generalConfiguration.getBoolean("trading.disable-dragging"));
+                generalConfiguration.set("trading.disable-dragging", null);
+            }
+
+            if (generalConfiguration.isSet("trading.offers")) {
+                generalConfiguration.set("trading.options.use-economy", generalConfiguration.get("trading.use-economy"));
+                generalConfiguration.set("trading.use-economy", null);
+            }
+
+            if (generalConfiguration.isSet("trading.offers")) {
+                generalConfiguration.set("trading.global-offers", generalConfiguration.getConfigurationSection("trading.offers"));
+                generalConfiguration.set("trading.offers", null);
+            }
+
+            generalConfiguration.update();
+
+        }
+
 
         messageConfiguration = new ConventYamlConfiguration(new File(getDataFolder(), "messages.yml"), getDescription().getVersion());
         messageConfiguration.setDefaults(getResource("messages.yml"));
@@ -97,7 +126,7 @@ public class Trade extends JavaPlugin {
         messageManager.getMessageHolder().setKeyWhenMissing(generalConfiguration.getBoolean("debug-mode", false));
         messageManager.loadMessages(messageConfiguration);
 
-        layoutManager.load(layoutConfiguration, messageConfiguration.getConfigurationSection("trading"), generalConfiguration.getConfigurationSection("trading.offers"));
+        layoutManager.load(layoutConfiguration, messageConfiguration.getConfigurationSection("trading"), generalConfiguration.getConfigurationSection("trading.global-offers"));
         layoutManager.getRegisteredSlots().put("accept", AcceptSlot.class);
         layoutManager.getRegisteredSlots().put("refuse", RefuseSlot.class);
         layoutManager.getRegisteredSlots().put("status", StatusSlot.class);
@@ -108,7 +137,7 @@ public class Trade extends JavaPlugin {
         layoutManager.getRegisteredSlots().put("money", MoneySlot.class);
         layoutManager.getRegisteredSlots().put("experience", ExperienceSlot.class);
 
-        transactionManager.load(generalConfiguration.getConfigurationSection("trading"));
+        transactionManager.load(generalConfiguration.getConfigurationSection("trading.options"));
 
         requestManager.load(generalConfiguration.getConfigurationSection("requesting"));
 

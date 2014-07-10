@@ -14,16 +14,22 @@ import me.josvth.trade.transaction.inventory.offer.description.OfferDescription;
 import me.josvth.trade.transaction.inventory.slot.Slot;
 import me.josvth.trade.transaction.inventory.slot.SlotDescription;
 import me.josvth.trade.util.ItemStackUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class LayoutManager {
+
+    private static final Map<Class<? extends Offer>, OfferDescription> DEFAULT_OFFER_DESCRIPTIONS = new HashMap<Class<? extends Offer>, OfferDescription>();
+
+    static {
+        DEFAULT_OFFER_DESCRIPTIONS.put(ItemOffer.class, new ItemOfferDescription());
+        DEFAULT_OFFER_DESCRIPTIONS.put(ExperienceOffer.class, new ExperienceOfferDescription());
+        DEFAULT_OFFER_DESCRIPTIONS.put(MoneyOffer.class, new MoneyOfferDescription());
+    }
 
     public static final int PLAYER_INVENTORY_SIZE = InventoryType.PLAYER.getDefaultSize();
 
@@ -44,14 +50,17 @@ public class LayoutManager {
         return plugin;
     }
 
-    public void load(ConfigurationSection layoutSection, ConfigurationSection messageSection, ConfigurationSection offerSection) {
+    public void load(ConfigurationSection layoutSection, ConfigurationSection messageSection, ConfigurationSection globalOfferSection) {
 
         final Map<String, FormattedMessage> defaultMessages = getMessagesFromSection(messageSection);
-        final Map<Class<? extends Offer>, OfferDescription> defaultOfferDescriptions = getOfferDescriptionsFromSection(offerSection);
+
+        final Map<Class<? extends Offer>, OfferDescription> globalOfferDescriptions = new HashMap<Class<? extends Offer>, OfferDescription>();
+        globalOfferDescriptions.putAll(DEFAULT_OFFER_DESCRIPTIONS);
+        globalOfferDescriptions.putAll(getOfferDescriptionsFromSection(globalOfferSection));
 
         // First we load our default default layout
         final Layout defaultLayout = new Layout("default", this);
-        loadLayout(defaultLayout, layoutSection.getDefaultSection().getConfigurationSection("default"), defaultMessages, defaultOfferDescriptions);
+        loadLayout(defaultLayout, layoutSection.getDefaultSection().getConfigurationSection("default"), defaultMessages, globalOfferDescriptions);
 
         // Then we loud the other layouts in the section. Overriding our default if necessary
         for (String key : layoutSection.getKeys(false)) {
@@ -60,7 +69,7 @@ public class LayoutManager {
                 if (layoutSection.isConfigurationSection(key)) {
                     final Layout layout = new Layout(key, this);
                     layouts.put(key, layout);
-                    loadLayout(layout, layoutSection.getConfigurationSection(key), defaultMessages, defaultOfferDescriptions);
+                    loadLayout(layout, layoutSection.getConfigurationSection(key), defaultMessages, globalOfferDescriptions);
                 }
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
@@ -80,6 +89,10 @@ public class LayoutManager {
         layout.getOfferDescriptions().putAll(defaultOfferDescriptions);
 
         layout.setGuiRows(section.getInt("rows"));
+
+        if (layout.getGuiRows() > 6 || layout.getGuiRows() <= 0) {
+            throw new IllegalArgumentException("Layout rows must be greater than 0 and smaller than 7");
+        }
 
         layout.setOfferSize(section.getInt("offer-size", 4));
 
@@ -129,7 +142,7 @@ public class LayoutManager {
             layout.getOfferDescriptions().putAll(getOfferDescriptionsFromSection(section.getConfigurationSection("offers")));
 
             // Load messages
-            layout.setKeyWhenMissing(plugin.getGeneralConfiguration().getBoolean("debug-mode", false));
+            layout.setKeyWhenMissing(plugin.isDebugMode());
             layout.getMessages().putAll(getMessagesFromSection(section.getConfigurationSection("messages")));
 
             layouts.put(layout.getName(), layout);
@@ -200,6 +213,10 @@ public class LayoutManager {
         layouts.clear();
     }
 
+    public Map<String, Layout> getLayouts() {
+        return layouts;
+    }
+
     public Layout getLayout(Player playerA, Player playerB) {
 
         Layout found = getDefaultLayout();
@@ -209,8 +226,8 @@ public class LayoutManager {
 
                 if (layout.getPermission() != null) {
 
-                    final boolean AHasPermission = playerA != null && playerA.hasPermission(layout.getPermission());
-                    final boolean BHasPermission = playerB != null && playerB.hasPermission(layout.getPermission());
+                    final boolean AHasPermission = playerA.hasPermission(layout.getPermission());
+                    final boolean BHasPermission = playerB.hasPermission(layout.getPermission());
 
                     if (AHasPermission && BHasPermission || (layout.isShared() && (AHasPermission || BHasPermission))) {
                         found = layout;
@@ -228,7 +245,14 @@ public class LayoutManager {
     }
 
     public Layout getDefaultLayout() {
-        return layouts.get("default");
+        final Layout defaultLayout = layouts.get(plugin.getTransactionManager().getOptions().getDefaultLayoutName());
+        if (defaultLayout == null) {
+            if (getPlugin().isDebugMode()) {
+                getPlugin().getLogger().info("[DEBUG] Could not find set default layout: " + plugin.getTransactionManager().getOptions().getDefaultLayoutName() + ". Falling back to 'default'.");
+                return layouts.get("default");
+            }
+        }
+        return defaultLayout;
     }
 
     public Map<String, Class<? extends Slot>> getRegisteredSlots() {

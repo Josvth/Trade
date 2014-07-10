@@ -147,6 +147,7 @@ public class OfferList {
                 if (overflow <= 0) {
 
                     final Offer clone = offer.clone();
+                    clone.setAmount(result.getRemaining());
 
                     set(firstEmpty, clone);
                     changes.put(firstEmpty, clone); // We keep track of what we changed
@@ -168,7 +169,7 @@ public class OfferList {
 
                     result.setCurrentAmount(result.getCurrentAmount() + fullStack.getMaxAmount());
 
-                    result.setRemaining(-1 * overflow);
+                    result.setRemaining(overflow);
 
                     firstEmpty = getFirstEmpty();
 
@@ -197,13 +198,13 @@ public class OfferList {
             if (offer.isSimilar(entry.getValue())) {
                 if (result.getRemaining() > 0) {
 
-                    final double overflow = entry.getValue().remove(offer.getAmount());
+                    final double overflow = entry.getValue().remove(result.getRemaining());
 
                     if (overflow < result.getRemaining()) {    // We only changed something if the overflow is smaller then the amount
 
                         result.setRemaining(overflow);
 
-                        if (((Offer) entry.getValue()).getAmount() == 0) {    // If the amount of the changed offer is 0 we remove it
+                        if (entry.getValue().getAmount() == 0) {    // If the amount of the changed offer is 0 we remove it
                             set(entry.getKey(), null);
                             changes.put(entry.getKey(), null);
                         } else {
