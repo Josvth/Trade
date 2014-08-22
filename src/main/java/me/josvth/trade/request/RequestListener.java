@@ -58,7 +58,7 @@ public class RequestListener implements Listener {
 
     private void handleEvent(Cancellable event, Player requester, Player requested, RequestMethod method) {
 
-        if (requestManager.submit(new Request(requester.getUniqueId(), requested.getUniqueId(), method)).getRequestRestriction() == RequestRestriction.ALLOW) {
+        if (requestManager.submit(new Request(requested.getUniqueId(), requester.getUniqueId(), method)).getRequestRestriction() == RequestRestriction.ALLOW) {
             event.setCancelled(true);
         }
 

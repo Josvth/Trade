@@ -184,7 +184,7 @@ public class CommandManager implements CommandExecutor {
         final Player player = (Player) commandSender;
 
         // Check if this player is requested before and tries to accept using /trade request
-        if (args.length == 0) {
+        if (args == null || args.length == 0) {
 
             final List<Request> requests = getRequestManager().getActiveRequests(player);
 

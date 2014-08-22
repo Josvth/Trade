@@ -1,6 +1,7 @@
 package me.josvth.trade.request;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -32,6 +33,8 @@ public class Request {
         return Bukkit.getPlayer(idRequester);
     }
 
+    public OfflinePlayer getRequesterOfflinePlayer() {return Bukkit.getOfflinePlayer(idRequester); }
+
     public UUID getRequestedID() {
         return idRequested;
     }
@@ -39,6 +42,8 @@ public class Request {
     public Player getRequestedPlayer() {
         return Bukkit.getPlayer(idRequested);
     }
+
+    public OfflinePlayer getRequestedOfflinePlayer() {return Bukkit.getOfflinePlayer(idRequested); }
 
     public RequestMethod getMethod() {
         return method;

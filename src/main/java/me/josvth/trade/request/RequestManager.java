@@ -143,10 +143,10 @@ public class RequestManager {
         return player.hasPermission(restriction.excludePermission) || player.isOp();
     }
 
-    private boolean mayUseMethod(Player player, RequestMethod method) {
+    private boolean mayUseMethod(Player requester, RequestMethod method) {
 
         // First we check permissions
-        if (!player.hasPermission(method.permission)) {
+        if (!requester.hasPermission(method.permission)) {
             return false;
         }
 
@@ -170,12 +170,12 @@ public class RequestManager {
 
     private boolean isRequested(Player player, Player by) {
 
-        final List<Request> list = getActiveRequests(by);
+        final List<Request> list = getActiveRequests(player);
 
         if (list == null) return false;
 
         for (Request request : list) {
-            if (request.getIdRequester() == by.getUniqueId()) {
+            if (request.getIdRequester().equals(by.getUniqueId())) {
                 return true;
             }
         }
@@ -259,7 +259,7 @@ public class RequestManager {
 
     public RequestResponse submit(Request request) {
 
-        final RequestRestriction restriction = mayRequest(request.getRequestedPlayer(), request.getRequesterPlayer(), request.getMethod());
+        final RequestRestriction restriction = mayRequest(request.getRequesterPlayer(), request.getRequestedPlayer(), request.getMethod());
 
         if (restriction == RequestRestriction.ALLOW) {
 
@@ -296,7 +296,7 @@ public class RequestManager {
                 messageHolder.getMessage(request.getMethod().messagePath).send(request.getRequesterPlayer());
             }
         } else {
-            messageHolder.getMessage(restriction.requestMessagePath).send(request.getRequesterPlayer(), "%player%", request.getRequestedPlayer().getName());
+            messageHolder.getMessage(restriction.requestMessagePath).send(request.getRequesterPlayer(), "%player%", (request.getRequestedPlayer() != null) ? request.getRequestedPlayer().getName() : "unknown");
         }
 
         // In all other cases we return only the restriction

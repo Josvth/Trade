@@ -57,7 +57,7 @@ requesting:
   not-requested: You have not been requested by anyone.
   restriction:
     allow: You requested %player% to trade.
-    offline: You can't request %player% because he or she is offline.
+    offline: The player you requested is not online.
     busy: You can't request %player% because he is in trade.
     ignoring: You can't request %player% because he's ignoring requests.
     already-requested: You can't request %player% again! Please wait before requesting again.
